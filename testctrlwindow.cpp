@@ -120,7 +120,7 @@ void TestCtrlWindow::initConnection()
 
 
 //扫描过程中存图回调
-int TestCtrlWindow::doScanReceiveCB(const uchar*data,int size,int w,int h,int nBpp,int nDPI)
+int TestCtrlWindow::doScanReceiveCB(uchar*data,int size,int w,int h,int nBpp,int nDPI)
 {
     //图像文件夹路径
     QString imgFolderPath = "/tmp/";

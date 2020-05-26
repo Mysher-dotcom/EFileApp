@@ -135,7 +135,15 @@ void ScanWindow::slotFinishThread()
         saveExit(true);
     }
 
-    changeScanBtnStyle(false);//按钮变成普通样式
+    if(listViewIsShow == false)
+    {
+        successScanUI();
+        showImageList();
+        listViewIsShow = true;
+    }
+    changeScanBtnStyle(false);//修改扫描按钮样式，true=扫描中样式，false=普通样式
+    //closeThread();//发生错误，结束扫描线程
+    //changeScanBtnStyle(false);//按钮变成普通样式
 }
 
 //成功扫描UI，出现图像列表和底部扫描按钮
@@ -396,6 +404,7 @@ void ScanWindow::addItem(QString path)
         showImageList();
         listViewIsShow = true;
     }
+    qDebug("ScanWindow::addItem 1\n");
     QStandardItem *pItem = new QStandardItem ();
     PicListItemData itemData;
     itemData.picPath =path;
@@ -406,6 +415,7 @@ void ScanWindow::addItem(QString path)
     fileNames << path;
     //changeScanBtnStyle(false);
     imgList->scrollToBottom();//自动滚动到最下面
+    qDebug("ScanWindow::addItem 2\n");
 
 }
 
@@ -453,14 +463,6 @@ void ScanWindow::slotScanError(QString msg)
     dialog->addButton("确定",true);
     dialog->exec();
 
-    if(listViewIsShow == false)
-    {
-        successScanUI();
-        showImageList();
-        listViewIsShow = true;
-    }
-    changeScanBtnStyle(false);//修改扫描按钮样式，true=扫描中样式，false=普通样式
-    closeThread();//发生错误，结束扫描线程
 }
 
 
@@ -469,6 +471,7 @@ CJpeg m_jpg_scan;//CJPEG对象
 
 void ScanWindow::slotScanSaveImage(char* data,int w,int h,char* part_path1,int nSize,int nDPI)
 {
+    qDebug("ScanWindow::slotScanSaveImage start\n");
     //图像文件夹路径
     QString imgFolderPath = GlobalHelper::getScanTempFoler();
     char *folderPath;
@@ -699,7 +702,7 @@ void ScanWindow::slotScanSaveImage(char* data,int w,int h,char* part_path1,int n
     srcWater = NULL;
 
     addItem(part_path);
-
+    qDebug("addItem end\n");
 }
 
 char* ScanWindow::substrend(char * str, int n)

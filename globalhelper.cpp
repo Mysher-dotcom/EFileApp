@@ -113,8 +113,8 @@ void GlobalHelper::writeSettingFile()
     psettings->setValue("savepath","/tmp/viisan/");//存储路径
     psettings->setValue("fileover","0");//文件覆盖警告开关
     psettings->setValue("nodevice","1");//无设备警告开关
-    psettings->setValue("finishbeep","1");//完成后提示音开关
-    psettings->setValue("finishexit","0");//完成后关闭开关
+    psettings->setValue("finishbeep","0");//完成后提示音开关
+    psettings->setValue("finishexit","1");//完成后关闭开关
     psettings->setValue("iconList","0");//缩略图模式
     psettings->endGroup();
 

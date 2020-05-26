@@ -28,9 +28,11 @@ void DoScanThread::closeThread()
 }
 
 //扫描过程中存图回调
-int DoScanThread::doScanReceiveCB(const uchar*data,int size,int w,int h,int nBpp,int nDPI)
+int DoScanThread::doScanReceiveCB(uchar*data,int size,int w,int h,int nBpp,int nDPI)
 {
+    qDebug("DoScanThread::doScanReceiveCB start\n");
     emit g_doScanThread->signalScanSaveImage((char*)data,w,h,NULL,size,nDPI);
+    qDebug("DoScanThread::doScanReceiveCB end\n");
     return 0;
 }
 
@@ -82,7 +84,7 @@ void DoScanThread::startScanSlot()
    int devIndex = 0;//str.toInt();
    Scan(devIndex,doScanReceiveCB,doScanStatuCB);//扫描
 
-   //qDebug()<<"scan finish";
+   qDebug("scan finish\n");
 
    emit g_doScanThread->signalScanOver();//扫描结束
 }

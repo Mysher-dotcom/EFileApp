@@ -19,7 +19,7 @@ TEMPLATE = app
 # deprecated API in order to know how to port your code away from it.
 
 DEFINES += QT_DEPRECATED_WARNINGS
-#DESTDIR =../../target_
+DESTDIR =../target_EFileApp
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -90,28 +90,28 @@ RESOURCES += \
 LIBS += /usr/lib/x86_64-linux-gnu/libsane.so.1 #x86+uos sane路径
 
 #扫描仪
-INCLUDEPATH += /usr/local/include
-INCLUDEPATH += /usr/local/include/EFILEAPP_CamScanSDK
-#INCLUDEPATH += ../../CamScanSDK
+#INCLUDEPATH += /usr/local/include
+#INCLUDEPATH += /usr/local/include/EFILEAPP_CamScanSDK
+INCLUDEPATH += ../CamScanSDK
 
 #INCLUDEPATH += /usr/local/include/EFILEAPP_CmImage
 #LIBS += /usr/local/lib/libopencv_highgui.so \
 #        /usr/local/lib/libopencv_core.so \
 #        /usr/local/lib/libopencv_imgproc.so \
 #        /usr/local/lib/libopencv_photo.so
-LIBS += -L/usr/local/lib/EFILEAPP_CamScanSDK -lCamScanSDK #此目录下所有包含CamScanSDK命名的so文件
+LIBS += -L../target_EFileApp -lCamScanSDK #此目录下所有包含CamScanSDK命名的so文件
 #LIBS += -L/usr/local/lib/EFILEAPP_CmImage -lCmImage
 
 #拍摄仪
 INCLUDEPATH += /usr/local/include/EFILEAPP_USB
 INCLUDEPATH += /usr/local/include/EFILEAPP_JPEG
-INCLUDEPATH += ../../CmImage#INCLUDEPATH += /usr/local/include/EFILEAPP_CmImage#
+INCLUDEPATH += ../CmImage#INCLUDEPATH += /usr/local/include/EFILEAPP_CmImage#
 LIBS += -L/usr/local/lib/EFILEAPP_USB/libusb-1.0 -lusb-1.0
 LIBS += -L/usr/local/lib/EFILEAPP_JPEG  -ljpeg
-LIBS += -L/usr/local/lib/EFILEAPP_CmImage -lCmImage
+LIBS += -L../target_EFileApp -lCmImage
 
-INCLUDEPATH += /usr/local/include/EFILEAPP_CamCaptureSDK
-LIBS += -L/usr/local/lib/EFILEAPP_CamCaptureSDK  -lCamCaptureSDK
+INCLUDEPATH += ../CamCaptureSDK
+LIBS += -L../target_EFileApp -lCamCaptureSDK
 
 #加载opencv
 INCLUDEPATH += /usr/local/include/EFILEAPP_opencv2411\
