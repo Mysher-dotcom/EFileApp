@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="60px" height="60px" viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 62 (91390) - https://sketch.com -->
+    <title>扫描仪</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-15.1%" y="-17.4%" width="130.2%" height="134.8%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.2 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#59575B" offset="0%"></stop>
+            <stop stop-color="#342E39" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="扫描仪" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="编组" filter="url(#filter-1)" transform="translate(5.000000, 5.000000)">
+            <path d="M0,27.1650635 L50,27.1650635 L50,40.1650635 C50,42.9264873 47.7614237,45.1650635 45,45.1650635 L5,45.1650635 C2.23857625,45.1650635 3.38176876e-16,42.9264873 0,40.1650635 L0,27.1650635 L0,27.1650635 Z" id="矩形" fill="url(#linearGradient-2)"></path>
+            <rect id="矩形备份" fill="#555357" transform="translate(30.000000, 14.500000) rotate(30.000000) translate(-30.000000, -14.500000) " x="6" y="12" width="48" height="5" rx="2"></rect>
+        </g>
+        <path d="M40,32.1650635 C36.6666667,33.4983968 33.3333333,34.1650635 30,34.1650635 C26.6666667,34.1650635 23.3333333,33.4983968 20,32.1650635 L40,32.1650635 Z" id="矩形" fill-opacity="0.24" fill="#FFFFFF"></path>
+        <circle id="椭圆形" fill="#F86562" cx="10.5" cy="38.5" r="1.5"></circle>
+        <circle id="椭圆形备份" fill="#63FF73" cx="15.5" cy="38.5" r="1.5"></circle>
+    </g>
+</svg>
