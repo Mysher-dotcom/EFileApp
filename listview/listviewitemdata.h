@@ -15,7 +15,7 @@ Q_DECLARE_METATYPE(PicListItemData)
 
 //设备信息列表Item数据
 typedef struct{
-    int devType; //设备类型,0=拍摄仪，1=扫描仪
+    int devType; //设备类型，0=扫描仪,1=拍摄仪
     QString devName;//设备名称
     QString devModel;//设备型号
     QString devStatus;//设备状态

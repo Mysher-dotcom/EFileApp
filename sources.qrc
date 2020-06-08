@@ -30,5 +30,8 @@
         <file>img/camera/1t1.svg</file>
         <file>sound/finishSound.wav</file>
         <file>img/camera/shottimer.svg</file>
+        <file>img/camera/book.svg</file>
+        <file>img/upload.svg</file>
+        <file>img/treeIcon.svg</file>
     </qresource>
 </RCC>

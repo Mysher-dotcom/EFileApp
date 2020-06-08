@@ -76,8 +76,7 @@ private:
     QStandardItemModel *pModel;//图像Item
     QSortFilterProxyModel *proxyModel;    
     DSpinner *scanBtnSpinner;//扫描按钮上的动画
-    //DLabel *scanBtnText;//扫描按钮上的文字
-    QLabel *scanBtnText;//扫描按钮上的文字
+    DLabel *scanBtnText;//扫描按钮上的文字
 
 signals:
     //信号

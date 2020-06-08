@@ -59,7 +59,7 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         //图标
         painter->setRenderHint(QPainter::Antialiasing);//反锯齿
         QString iconPath = ":/img/cameraIcon.svg";
-        if(deviceItemData.devType == 1)
+        if(deviceItemData.devType == 0)
         {
             iconPath = ":/img/scannerIcon.svg";
         }
@@ -106,7 +106,7 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
             //图标
             painter->setRenderHint(QPainter::Antialiasing);//反锯齿
             QString iconPath = ":/img/cameraIcon.svg";
-            if(deviceItemData.devType == 1)
+            if(deviceItemData.devType == 0)
             {
                 iconPath = ":/img/scannerIcon.svg";
             }

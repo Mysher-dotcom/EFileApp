@@ -12,6 +12,8 @@ public:
    ~GlobalHelper();
 
 
+   static bool getDeviceInfoIsOver;//获取设备信息是否结束
+
    //获取扫描存放文件夹路径
    static QString getScanFolder();
 

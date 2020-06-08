@@ -13,13 +13,12 @@
 #include <DDialog>
 #include <QFile>
 #include <qdir.h>
-#include "globalhelper.h"
+#include "helper/globalhelper.h"
 #include <QDebug>
 #include <QColorDialog>
 #include "setwindow.h"
 #include <QMenu>
 #include <QStandardPaths>
-#include "testctrlwindow.h"
 #include <DTableView>
 #include <QHeaderView>
 #include <QFileIconProvider>
@@ -34,11 +33,19 @@
 #include <QTextCodec>
 #include <QToolButton>
 #include <QImageReader>
-
+#include "helper/classificationhelper.h"
+#include "helper/deviceinfohelper.h"
+#include <QProcess>
+#include <QPrintPreviewDialog>
+#include <QPrintPreviewWidget>
+#include "hpdfoperation.h"
+ #include <string>
+#include <iostream>
+#include "cmimage.h"
+using namespace std;
 
 #define BUTTON_HEIGHT 30        // 功能按钮高度（扫描 图像设置 文字设置 导出）
 #define BUTTON_WIDTH 30         // 功能按钮宽度（扫描 图像设置 文字设置 导出）
-
 
 MainWindow::MainWindow(QWidget *parent) :
     DMainWindow(parent),
@@ -52,10 +59,14 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         GlobalHelper::writeSettingFile();
     }
+    WebHelper::writeWebDefault();
+
     initUI();
     initConnection();
     refreshData();
+    showTreeViewModel(GlobalHelper::getScanFolder() + "/bacode");
 
+    openCameraThread();
 }
 
 MainWindow::~MainWindow()
@@ -66,7 +77,7 @@ MainWindow::~MainWindow()
 //初始化界面
 void MainWindow::initUI()
 {
-    this->resize(810,520);//窗口初始尺寸
+    this->resize(830,520);//窗口初始尺寸
     this->setMinimumSize(QSize(640,320));//窗口最小尺寸
     this->titlebar()->setTitle("");//标题栏文字设为空
     setWindowIcon(QIcon(":/img/logo/logo-16.svg"));// 状态栏图标
@@ -110,7 +121,7 @@ void MainWindow::initUI()
     //pbtnOutput->setIconSize(QSize(16,16));
     outputMenu = new DMenu(pbtnOutput);//导出按钮菜单
     outputMenu->addAction(QStringLiteral("导出"), this, SLOT(slotTableViewMenuOutputFile()));
-    //outputMenu->addAction(QStringLiteral("打印"), this, SLOT(slotTableViewMenuPrintFile()));
+    outputMenu->addAction(QStringLiteral("打印"), this, SLOT(slotTableViewMenuPrintFile()));
     outputMenu->addAction(QStringLiteral("添加到“邮件”"), this, SLOT(slotTableViewMenuEmailFile()));
     pbtnOutput->setMenu(outputMenu);
     QHBoxLayout *outputHLayout = new QHBoxLayout ();//图标居左显示
@@ -123,6 +134,7 @@ void MainWindow::initUI()
 
     //搜索框
     pSearchEdit = new DSearchEdit (this->titlebar()) ;
+    //pSearchEdit->setFixedHeight(BUTTON_HEIGHT);
 
     //缩略图模式按钮
     pbtnIconLayout = new DIconButton (nullptr);
@@ -131,12 +143,13 @@ void MainWindow::initUI()
     pbtnIconLayout->setStyleSheet("background:transparent;");
     pbtnIconLayout->setIconSize(QSize(12,12));
     pbtnIconLayout->setCheckable(true);//开启可选中模式状态
+    //pbtnIconLayout->setChecked(true);
 
     //列表模式按钮
     pbtnListLayout = new DIconButton (nullptr);
     pbtnListLayout->setIcon(QIcon(":/img/title/listLayout.svg"));
-    pbtnListLayout->setFixedSize(QSize(BUTTON_WIDTH, BUTTON_HEIGHT));
     pbtnListLayout->setStyleSheet("background:transparent;");
+    pbtnListLayout->setFixedSize(QSize(BUTTON_WIDTH, BUTTON_HEIGHT));
     pbtnListLayout->setIconSize(QSize(12,12));
     pbtnListLayout->setCheckable(true);//开启可选中模式状态
 
@@ -146,14 +159,19 @@ void MainWindow::initUI()
     g->addButton(pbtnIconLayout);
     g->addButton(pbtnListLayout);
 
-    pbtnIconLayout->setAutoExclusive(true);
-    pbtnListLayout->setAutoExclusive(true);
-    pbtnIconLayout->setChecked(true);
+    //上传文件按钮
+    uploadBtn = new QPushButton();
+    uploadBtn->setIcon(QIcon(":/img/upload.svg"));
+    uploadBtn->setFixedSize(QSize(BUTTON_WIDTH, BUTTON_HEIGHT));
+    uploadBtn->setIconSize(QSize(16,16));
+    uploadBtn->setVisible(false);
+    uploadBtn->setToolTip("上传已识别完成的档案");
 
     this->titlebar()->addWidget(pbtnScan,Qt::AlignLeft);
     this->titlebar()->addWidget(pbtnPicEdit,Qt::AlignLeft);
     this->titlebar()->addWidget(pbtnFontEdit,Qt::AlignLeft);
     this->titlebar()->addWidget(pbtnOutput,Qt::AlignLeft);
+    this->titlebar()->addWidget(uploadBtn,Qt::AlignLeft);//上传文件按钮
     this->titlebar()->addWidget(pSearchEdit,Qt::AlignCenter);
     this->titlebar()->addWidget(pbtnIconLayout,Qt::AlignRight);
     this->titlebar()->addWidget(pbtnListLayout,Qt::AlignRight);
@@ -162,9 +180,26 @@ void MainWindow::initUI()
     m->addAction(QStringLiteral("设置"), this, SLOT(slotMenuSetButtonClicked()));
     this->titlebar()->setMenu(m);
 
-    winStackedLayout = new QStackedLayout();
-    ui->centralWidget->setLayout(winStackedLayout);
+    //主布局，分左右结构;左侧为tree，分类显示时设置宽度>0;右侧为缩略图、详细信息列表
+    mainHLayout = new QHBoxLayout();
+    //左侧tree
+    treeView = new DTreeView();
+    treeView->setFixedWidth(0);
+    treeViewModel = new QStandardItemModel();
+    treeView->setModel(treeViewModel);
+    treeViewModel->setHorizontalHeaderLabels(QStringList()<<"档案信息");
+    treeView->setEditTriggers(QAbstractItemView::NoEditTriggers);//双击Item屏蔽可编辑
 
+    rightWidget = new QWidget () ;//右侧容器
+    winStackedLayout = new QStackedLayout();//右侧容器布局
+    rightWidget->setLayout(winStackedLayout);
+
+    mainHLayout->addWidget(treeView);
+    mainHLayout->addWidget(rightWidget);
+
+    ui->centralWidget->setLayout(mainHLayout);
+
+    showMaskWidgetUI();
     showNoFileUI();
     showFileListUI();
     showFileTableUI();
@@ -181,26 +216,73 @@ void MainWindow::initConnection()
     connect(pbtnIconLayout, SIGNAL(clicked()), this, SLOT(slotIconLayoutButtonClicked()));//缩略图显示
     connect(pbtnListLayout, SIGNAL(clicked()), this, SLOT(slotListLayoutButtonClicked()));//列表显示
     connect(pSearchEdit,SIGNAL(textChanged(QString)),this,SLOT(slotSearchTextChange(QString)));//搜索框文本改变信号槽
+    connect(treeView,SIGNAL(clicked ( const QModelIndex)),this,SLOT(slotTreeViewClick(const QModelIndex)));//树节点单击
+    connect(uploadBtn,SIGNAL(clicked()),this,SLOT(slotUploadBtnClick()));//上传按钮
 }
 
 //更新UI
-void MainWindow::refreshData()
+void MainWindow::refreshData(bool isTreeClick,QString folderPath)
 {
-    QStringList list = getFileByFolder(GlobalHelper::getScanFolder());
+    QString folderPathTmp = GlobalHelper::getScanFolder();
+    int isDZDA = GlobalHelper::readSettingValue("set","dzda").toInt();
+    if(isDZDA == 0)//是否支持分类
+    {
+        int isClassification = GlobalHelper::readSettingValue("set","classification").toInt();//是否显示分类
+        if(isClassification == 0)
+        {
+            uploadBtn->setVisible(true);
+            showTreeViewUI(true);
+
+            //检查分类配置文件是否存在，不存在就创建，并写入初始值
+            QFileInfo settingFile(ClassificationHelper::getClassificationFilePath());
+            if(settingFile.exists()==false)
+            {
+                ClassificationHelper::writeClassficationFileDefault();
+            }
+
+            writeClassShowFile();
+            folderPathTmp = GlobalHelper::getScanFolder() + "/bacode";
+            //showTreeViewModel(folderPathTmp);
+        }
+        else
+        {
+            uploadBtn->setVisible(false);
+            showTreeViewUI(false);
+        }
+    }
+    else
+    {
+        uploadBtn->setVisible(false);
+    }
+
+    QStringList list ;
+    if(isTreeClick)
+    {
+        //if(QFile::exists(folderPath))
+        {
+            list = getFileByFolder(folderPath);
+        }
+    }
+    else
+    {
+       list = getFileByFolder(folderPathTmp);
+    }
+    //QStringList list = getFileByFolder(GlobalHelper::getScanFolder());
     if(list.size() <= 0)
-    {        
+    {
         winStackedLayout->setCurrentIndex(0);//无图UI
     }
     else
     {
         int showModel = GlobalHelper::readSettingValue("set","iconList").toInt();//读取配置文件
         if(showModel == 0)
-        {           
+        {
             winStackedLayout->setCurrentIndex(1); //缩略图模式
         }
         else
-        {           
+        {
             winStackedLayout->setCurrentIndex(2); //文件信息模式
+            setFileTableSize();//设置文件信息列表尺寸
         }
 
         int fileListViewItemCount = fileListView->count();
@@ -221,6 +303,534 @@ void MainWindow::refreshData()
            addItem(str);
         }
     }
+
+}
+
+//写文件分类配置文件,主窗根据此配置文件显示树
+bool MainWindow::writeClassShowFile()
+{
+    //没有图像
+    if(ClassificationHelper::captureFilePath.length() <= 0)
+    {
+        return false;
+    }
+    maskWidget->show();
+    maskSpinner->start();
+    maskLabel->setText("处理中，请稍等...");
+    startRecognizeThread();
+    return true;
+}
+
+//开启识别线程
+void MainWindow::startRecognizeThread()
+{
+    recognizeThread = new RecognizeThread ();
+    _recognizeThread = new QThread();
+    recognizeThread->moveToThread(_recognizeThread);
+
+    connect(_recognizeThread,SIGNAL(started()),recognizeThread,SLOT(startRecognize()));//开启线程槽函数
+    connect(_recognizeThread,SIGNAL(finished()),recognizeThread,SLOT(deleteLater()));//终止线程时要调用deleteLater槽函数
+    connect(recognizeThread,SIGNAL(signalSendCode(QString,QString,QStringList )),this,SLOT(slotGetCodeInfo(QString,QString,QStringList)));//获取条码信息(图片路径，条码号，条码名称)
+    connect(recognizeThread,SIGNAL(signalOver()),this,SLOT(slotRecognizeOver()));//识别结束
+    _recognizeThread->start();//开启多线程
+}
+
+//关闭识别线程
+void MainWindow::closeRecognizeThread()
+{
+    if(_recognizeThread->isRunning())
+    {
+        _recognizeThread->quit();//退出事件循环
+        _recognizeThread->wait();//释放线程槽函数资源
+    }
+    qDebug()<<tr("关闭识别线程,线程状态：")<<_recognizeThread->isRunning();
+}
+
+//识别结束
+void MainWindow::slotRecognizeOver()
+{
+    qDebug()<<"signal Recognize Over";
+    ClassificationHelper::captureFilePath.clear();
+    closeRecognizeThread();
+    treeViewModel->clear();
+    treeViewModel->setHorizontalHeaderLabels(QStringList()<<"档案信息");
+    showTreeViewModel(GlobalHelper::getScanFolder() + "/bacode");
+    maskWidget->hide();
+    maskSpinner->stop();
+}
+
+//获取条码信息(图片路径，条码号，条码信息)
+void MainWindow::slotGetCodeInfo(QString filePath,QString code,QStringList codeInfo)
+{
+    //"/home/viisan/Desktop/ViisanScanPic/000001.jpg" , "10004" , ("张三", "入职体检")
+    qDebug()<<"code back:"<<filePath<<","<<code<<","<<codeInfo;
+
+    if(!QFile::exists(filePath)) return;
+    QString codeTmp = code;
+    QStringList codeInfoTmp = codeInfo;
+    //如果是无条码，就用上一次识别的结果
+    if(code.isEmpty() || codeInfo.length() <= 0 )
+    {
+        if(!preCode.isEmpty())
+            codeTmp = preCode;
+
+        if(preCodeInfo.length() > 0)
+            codeInfoTmp = preCodeInfo;
+    }
+    else
+    {
+        preCode = code;
+        preCodeInfo = codeInfo;
+    }
+
+    QString newFolder =  ClassificationHelper::createFolderByCodeInfo(GlobalHelper::getScanFolder(),codeInfoTmp);
+    QString newFilePath = ClassificationHelper::renameFile(filePath,newFolder,codeTmp);
+    qDebug()<<"new path:"<<newFilePath;
+}
+
+//展示Tree节点
+void MainWindow::showTreeViewModel(QString folderPath,QStandardItem* item)
+{
+    QDir dir(folderPath);
+    QStringList list;
+    QStringList::Iterator iter;
+    list = dir.entryList(QDir::Dirs, QDir::Name);
+    for(iter=list.begin(); iter!=list.end(); ++iter)
+    {
+        if( "." == *iter || ".." == *iter ) continue;
+
+        QStandardItem *treeParentNode = new QStandardItem ();
+        treeParentNode->setIcon(QIcon(":/img/treeIcon.svg"));
+        treeParentNode->setText(*iter);
+        treeParentNode->setToolTip(folderPath + "/" + *iter);
+        if(item == NULL)
+        {
+            treeViewModel->appendRow(treeParentNode);
+        }
+        else
+        {
+            item->appendRow(treeParentNode);
+        }
+
+        showTreeViewModel(folderPath+"/"+*iter,treeParentNode);
+
+    }
+
+}
+
+//树节点单击
+void MainWindow::slotTreeViewClick(const QModelIndex &index)
+{
+    QList<QVariant> list = treeViewModel->itemData(index).values();//选中节点的数据集合 0=显示的字符，1=图标，2=路径
+    QString nodeText  = treeViewModel->itemData(index).values()[0].toString();
+    QString folderPath  = treeViewModel->itemData(index).values()[list.length()-1].toString();
+
+    qDebug()<<"double click:"<<nodeText<<","<<folderPath;
+    refreshData(true,folderPath);
+}
+
+//遮罩窗口
+void MainWindow::showMaskWidgetUI()
+{
+    maskWidget = new  QWidget(this);
+    QString str("QWidget{background-color:rgba(0,0,0,0.5);}");//0.5代表透明度
+    maskWidget->setStyleSheet(str);
+    maskWidget->setGeometry(0, 0, this->width(), this->height());//遮罩窗口位置
+
+    QVBoxLayout *vLayout = new QVBoxLayout();
+    maskSpinner = new DSpinner ();//遮罩窗口进度动画
+    maskSpinner->setFixedSize(QSize(28,36));
+    maskLabel = new QLabel();//遮罩窗口显示文本
+    maskLabel->setText("处理中，请稍等...");
+    maskLabel->setStyleSheet("color:white;background:transparent;");
+
+    vLayout->addStretch();
+    vLayout->addWidget(maskSpinner, 0,Qt::AlignHCenter);
+    vLayout->addWidget(maskLabel, 0, Qt::AlignHCenter);
+    vLayout->addStretch();
+    maskWidget->setLayout(vLayout);
+    maskWidget->hide();
+}
+
+//上传按钮单击
+void MainWindow::slotUploadBtnClick()
+{
+    maskWidget->show();
+    maskSpinner->start();
+    maskLabel->setText("上传中，请稍等...");
+
+    QStringList list;
+    //list<<"/home/viisan//Desktop/ViisanScanPic/bacode/李四/中共党员需有自传材料/10191002.jpg";
+
+    QStringList folderList ;
+    getAllFolder(GlobalHelper::getScanFolder() + "/bacode",folderList);
+    for(int i=0;i<folderList.length();i++)
+    {
+        QStringList l = getFileByFolder(folderList.at(i));
+        list.append(l);
+    }
+
+
+    uploadFile(list);
+}
+
+//上传文件
+void MainWindow::uploadFile(QStringList list)
+{
+    uploadThread = new UploadFileThread ();
+    _uploadThread = new QThread();
+    uploadThread->moveToThread(_uploadThread);
+
+    uploadThread->setFileList(list);
+
+    connect(_uploadThread,SIGNAL(started()),uploadThread,SLOT(startUpload()));//开启线程槽函数
+    connect(_uploadThread,SIGNAL(finished()),uploadThread,SLOT(deleteLater()));//终止线程时要调用deleteLater槽函数
+
+    connect(uploadThread,SIGNAL(signalSingleUploadOver(QString,bool)),this,SLOT(slotSingleUploadOver(QString,bool)));//单个文件上传完成
+    connect(uploadThread,SIGNAL(signalOver()),this,SLOT(slotUploadOver()));//上传结束
+    _uploadThread->start();//开启线程
+}
+
+//单个文件上传完成
+void MainWindow::slotSingleUploadOver(QString filepath,bool uploadResult)
+{
+    qDebug()<<"single upload:"<<filepath<<","<<uploadResult;
+}
+
+//上传结束
+void MainWindow::slotUploadOver()
+{
+    qDebug()<<"upload over";
+    if(_uploadThread->isRunning())
+    {
+        _uploadThread->quit();//退出事件循环
+        _uploadThread->wait();//释放线程槽函数资源
+    }
+    maskWidget->hide();
+    maskSpinner->stop();
+    qDebug()<<tr("关闭上传线程,线程状态：")<<_uploadThread->isRunning();
+}
+
+
+//开启拍摄仪线程
+void MainWindow::openCameraThread()
+{
+    QStringList list;
+    //参数可以是任何值，线程对象的参数用于获取指定设备的参数，在获取设备信息中用不到
+    getCameraInfoThread = new GetCameraInfoThread (list);
+    _getCameraInfoThread = new QThread();
+    getCameraInfoThread->moveToThread(_getCameraInfoThread);
+
+    connect(_getCameraInfoThread,SIGNAL(started()),getCameraInfoThread,SLOT(slotStartCameraThread()));//开启线程槽函数
+    connect(_getCameraInfoThread,SIGNAL(finished()),getCameraInfoThread,SLOT(deleteLater()));//终止线程时要调用deleteLater槽函数
+    //connect(getCameraInfoThread,SIGNAL(signalNoCamera()),this,SLOT(slotNoCameraUI()));//无设备信号槽
+    connect(getCameraInfoThread,SIGNAL(signalCameraInfo(QVariant, const QString &)),this,SLOT(slotCameraInfo(QVariant,const QString &)),Qt::QueuedConnection);//设备信息信号槽
+    _getCameraInfoThread->start();//开启线程
+}
+
+//记录拍摄仪设备信息
+void MainWindow::slotCameraInfo(QVariant qv, const QString &str)
+{
+    QMap<int ,QStringList> cameraInfoMap = qv.value<QMap<int ,QStringList>>();//还原为原来的数据结构类型
+    if(cameraInfoMap.size() <= 0)
+    {
+        //无设备
+        closeCameraThread();
+        return;
+    }
+    //循环记录设备信息
+    QString devListFilePath = DeviceInfoHelper::getDeviceListInfoFilePath();
+    QMap<int,QStringList>::iterator itCameraInfo;
+    for(itCameraInfo = cameraInfoMap.begin();itCameraInfo!=cameraInfoMap.end();itCameraInfo++)
+    {
+        //记录设备信息,key: 0 ,value: ("拍摄仪 1", "Document Scanner", "空闲", "0")
+        QStringList tmpQSList = itCameraInfo.value();//参数值
+        qDebug()<<"Camera线程回传的设备信息数据,key:"<<itCameraInfo.key()<<",value:"<<itCameraInfo.value();
+        if(tmpQSList.size()>=4)
+        {
+            DeviceInfoHelper::writeValue(devListFilePath,"device"+tmpQSList.at(3),"type","1");//类型，0=扫描仪，1=拍摄仪
+            DeviceInfoHelper::writeValue(devListFilePath,"device"+tmpQSList.at(3),"index",tmpQSList.at(3));//设备下标
+            DeviceInfoHelper::writeValue(devListFilePath,"device"+tmpQSList.at(3),"name",tmpQSList.at(0));//设备名称
+            DeviceInfoHelper::writeValue(devListFilePath,"device"+tmpQSList.at(3),"model",tmpQSList.at(1));//设备类型
+            DeviceInfoHelper::writeValue(devListFilePath,"device"+tmpQSList.at(3),"status",tmpQSList.at(2));//设备状态，0=空闲
+            DeviceInfoHelper::writeValue(devListFilePath,"device"+tmpQSList.at(3),"config", DeviceInfoHelper::getDeviceInfoFilePath(tmpQSList.at(1)));//设备具体配置文件路径
+            deviceCount++;
+        }
+    }
+
+    closeCameraThread();//停止拍摄仪线程
+
+}
+
+//关闭拍摄仪线程
+void MainWindow::closeCameraThread()
+{
+    qDebug()<<tr("关闭Camera线程");
+    if(_getCameraInfoThread->isRunning())
+    {
+        _getCameraInfoThread->quit();//退出事件循环
+        _getCameraInfoThread->wait();//释放线程槽函数资源
+    }
+    qDebug()<<tr("Camera线程停止,线程状态：")<<_getCameraInfoThread->isRunning();
+    openScannerThread();//开启SANE线程
+}
+
+//开启SANE线程
+void MainWindow::openScannerThread()
+{
+    QStringList list;
+    //参数可以是任何值，线程对象的参数用于获取指定设备的参数，在获取设备信息中用不到
+    getScannerInfoThread = new GetScannerInfoThread (list);
+    _getCameraInfoThread = new QThread();
+    getScannerInfoThread->moveToThread(_getCameraInfoThread);
+
+    connect(_getCameraInfoThread,SIGNAL(started()),getScannerInfoThread,SLOT(slotStartThread()));//开启线程槽函数
+    connect(_getCameraInfoThread,SIGNAL(finished()),getScannerInfoThread,SLOT(deleteLater()));//终止线程时要调用deleteLater槽函数
+    connect(getScannerInfoThread,SIGNAL(signalOver()),this,SLOT(slotCloseScannerThread()));//关闭SANE线程
+    connect(getScannerInfoThread,SIGNAL(signalNoScanner()),this,SLOT(slotNoScanner()));//无扫描仪设备
+    connect(getScannerInfoThread,SIGNAL(signalScannerInfo(QVariant, const QString &)),this,SLOT(slotScannerInfo(QVariant, const QString &)),Qt::QueuedConnection); //设备信息信号槽
+    _getCameraInfoThread->start();//开启多线程槽函数
+
+}
+
+//无扫描仪设备
+void MainWindow::slotNoScanner()
+{
+    scannerDeviceCount = 0;
+    if(_getCameraInfoThread->isRunning())
+    {
+        _getCameraInfoThread->quit();//退出事件循环
+        _getCameraInfoThread->wait();//释放线程槽函数资源
+    }
+    qDebug()<<tr("(无扫描仪设备)SANE线程停止,线程状态：")<<_getCameraInfoThread->isRunning();
+}
+
+//记录扫描仪设备信息
+void MainWindow::slotScannerInfo(QVariant qv, const QString &str)
+{
+    QMap<int ,QStringList> cameraInfoMap = qv.value<QMap<int ,QStringList>>();//还原为原来的数据结构类型
+    if(cameraInfoMap.size() <= 0)
+    {
+        //无设备
+        slotCloseScannerThread();
+        return;
+    }
+    //循环记录设备信息
+    QString devListFilePath = DeviceInfoHelper::getDeviceListInfoFilePath();
+    QMap<int,QStringList>::iterator itInfo;
+    for(itInfo = cameraInfoMap.begin();itInfo!=cameraInfoMap.end();itInfo++)
+    {
+        //记录设备信息,key: 0 ,value: ("拍摄仪 1", "Document Scanner", "空闲", "0")
+        QStringList tmpQSList = itInfo.value();//参数值
+        qDebug()<<"sane线程回传的设备信息数据,key:"<<itInfo.key()<<",value:"<<itInfo.value();
+        if(tmpQSList.size()>=4)
+        {
+            int groupNameIndex = tmpQSList.at(3).toInt() ;
+            groupNameIndex = groupNameIndex + deviceCount;
+            QString groupName = QString("device%1").arg(QString::number(groupNameIndex));
+            DeviceInfoHelper::writeValue(devListFilePath,groupName,"type","0");//类型，0=扫描仪，1=拍摄仪
+            DeviceInfoHelper::writeValue(devListFilePath,groupName,"index",tmpQSList.at(3));//设备下标
+            DeviceInfoHelper::writeValue(devListFilePath,groupName,"name",tmpQSList.at(0));//设备名称
+            DeviceInfoHelper::writeValue(devListFilePath,groupName,"model",tmpQSList.at(1));//设备类型
+            DeviceInfoHelper::writeValue(devListFilePath,groupName,"status",tmpQSList.at(2));//设备状态，0=空闲
+            DeviceInfoHelper::writeValue(devListFilePath,groupName,"config", DeviceInfoHelper::getDeviceInfoFilePath(tmpQSList.at(1)));//设备具体配置文件路径
+            deviceCount++;
+            scannerDeviceCount++;
+        }
+    }
+
+    slotCloseScannerThread();//停止线程
+    deviceCount=0;
+}
+
+//关闭SANE线程
+void MainWindow::slotCloseScannerThread()
+{
+    qDebug()<<tr("关闭SANE线程");
+    if(_getCameraInfoThread->isRunning())
+    {
+        _getCameraInfoThread->quit();//退出事件循环
+        _getCameraInfoThread->wait();//释放线程槽函数资源
+    }
+    qDebug()<<tr("SANE线程停止,线程状态：")<<_getCameraInfoThread->isRunning();
+    getDevicePar();
+}
+
+//获取设备参数
+void MainWindow::getDevicePar()
+{
+    QStringList cameraDevIndexList,scannerDevIndexList;
+
+    QList<DeviceInfoData> devList = DeviceInfoHelper::getDeviceListInfo();
+    for(int i=0;i<devList.length();i++)
+    {
+        int devType = devList.at(i).type;
+        int devIndex = devList.at(i).index;
+        qDebug()<<"dev type:"<<devType<<",dev index:"<<devIndex;
+        if(devType == 0)
+        {
+            scannerDevIndexList<<QString::number(devIndex);
+        }
+        else
+        {
+           cameraDevIndexList<<QString::number(devIndex);
+        }
+    }
+
+    //拍摄仪参数
+    getCameraInfoThread = new GetCameraInfoThread (cameraDevIndexList);
+    _getCameraInfoThread = new QThread();
+    getCameraInfoThread->moveToThread(_getCameraInfoThread);
+    connect(_getCameraInfoThread,SIGNAL(started()),getCameraInfoThread,SLOT(slotGetCameraPar()));//开启线程槽函数
+    connect(_getCameraInfoThread,SIGNAL(finished()),getCameraInfoThread,SLOT(deleteLater()));//终止线程时要调用deleteLater槽函数
+    connect(getCameraInfoThread,SIGNAL(signalCameraParInfo(QVariant, const QString &)),this,SLOT(slotCameraParInfo(QVariant,const QString &)),Qt::QueuedConnection);//设备参数信号槽
+    if(scannerDeviceCount == 0)
+    {
+        connect(getCameraInfoThread,SIGNAL(signalParOver()), this,SLOT(slotDeviceParOver()));//设备参数停止线程
+    }
+    _getCameraInfoThread->start();//开启多线程
+
+    if(scannerDeviceCount == 0) return;
+
+    //扫描仪参数
+    getScannerInfoThread = new GetScannerInfoThread (scannerDevIndexList);
+    _getScannerInfoThread = new QThread();
+    getScannerInfoThread->moveToThread(_getScannerInfoThread);
+    connect(_getScannerInfoThread,SIGNAL(started()),getScannerInfoThread,SLOT(slotGetDevicePar()));//开启线程槽函数
+    connect(_getScannerInfoThread,SIGNAL(finished()),getScannerInfoThread,SLOT(deleteLater()));//终止线程时要调用deleteLater槽函数
+    connect(getScannerInfoThread,SIGNAL(signalScannerParInfo(QVariant, const QString &)), this,SLOT(slotScannerParInfo(QVariant,const QString &)),Qt::QueuedConnection);//设备参数信号槽
+    connect(getScannerInfoThread,SIGNAL(signalParOver()), this,SLOT(slotDeviceParOver()));//设备参数停止线程
+    _getScannerInfoThread->start();//开启多线程
+
+}
+
+//记录拍摄仪设备参数信息
+void MainWindow::slotCameraParInfo(QVariant qv,const QString &str)
+{
+    QString filePath="";
+    QList<DeviceInfoData> devList = DeviceInfoHelper::getDeviceListInfo();
+    for(int i=0;i<devList.length();i++)
+    {
+        int devType = devList.at(i).type;
+        int devIndex = devList.at(i).index;
+
+        if(devType == 1 && devIndex == str.toInt())
+        {
+            filePath = devList.at(i).config;
+            break;
+        }
+    }
+
+    //设备参数数据
+    QMap<int ,QMap<QString ,QStringList>> devParsMap = qv.value<QMap<int ,QMap<QString ,QStringList>>>();//还原为原来的数据结构类型
+    QMap<int ,QMap<QString ,QStringList>>::iterator itDevParInfo;
+    for(itDevParInfo = devParsMap.begin();itDevParInfo!=devParsMap.end();itDevParInfo++)
+    {
+        QMap<QString ,QStringList> tmpValueMap = itDevParInfo.value();
+        QMap<QString ,QStringList>::iterator itTmpDevParInfo;
+        for(itTmpDevParInfo = tmpValueMap.begin();itTmpDevParInfo!=tmpValueMap.end();itTmpDevParInfo++)
+        {
+            qDebug()<<"扫描设置"<<itTmpDevParInfo.key()<<"-"<<itTmpDevParInfo.value();
+
+            qDebug()<<"ini file path:"<<filePath;
+            QString strValue;
+            QStringList strList = itTmpDevParInfo.value();
+            for(int i=0;i<strList.size();i++)
+            {
+                strValue += ";" + strList.at(i);
+            }
+            DeviceInfoHelper::writeValue(filePath,"base",itTmpDevParInfo.key(),strValue);
+            //int groupNameIndex = tmpQSList.at(3).toInt() ;
+            //groupNameIndex = groupNameIndex + deviceCount;
+            //QString groupName = QString("device%1").arg(QString::number(groupNameIndex));
+            //DeviceInfoHelper::writeValue(devListFilePath,groupName,"type","0");//类型，0=扫描仪，1=拍摄仪
+
+        }
+
+        qDebug()<<"thread back camera par info,key:"<<itDevParInfo.key()<<",value:"<<itDevParInfo.value();
+
+    }
+
+    //closeCameraThread();
+    if(_getCameraInfoThread->isRunning())
+    {
+        _getCameraInfoThread->quit();//退出事件循环
+        _getCameraInfoThread->wait();//释放线程槽函数资源
+    }
+    qDebug()<<tr("Camera线程停止,线程状态：")<<_getCameraInfoThread->isRunning();
+}
+
+//记录扫描仪设备参数信息
+void MainWindow::slotScannerParInfo(QVariant qv,const QString &str)
+{
+    QString filePath="";
+    QList<DeviceInfoData> devList = DeviceInfoHelper::getDeviceListInfo();
+    for(int i=0;i<devList.length();i++)
+    {
+        int devType = devList.at(i).type;
+        int devIndex = devList.at(i).index;
+
+        if(devType == 0 && devIndex == str.toInt())
+        {
+            filePath = devList.at(i).config;
+            break;
+        }
+    }
+
+    qDebug()<<"scanner ini file path:"<<filePath;
+    QString parOrder;//记录参数顺序，在下参扫描的时候用到
+    //设备参数数据
+    QMap<int ,QMap<QString ,QStringList>> devParsMap = qv.value<QMap<int ,QMap<QString ,QStringList>>>();//还原为原来的数据结构类型
+    QMap<int ,QMap<QString ,QStringList>>::iterator itDevParInfo;
+    for(itDevParInfo = devParsMap.begin();itDevParInfo!=devParsMap.end();itDevParInfo++)
+    {
+        //参数值 如：<色彩模式,"Color24,Gary8,Lineart">
+        QMap<QString ,QStringList> tmpValueMap = itDevParInfo.value();
+        QMap<QString ,QStringList>::iterator itTmpDevParInfo;
+        for(itTmpDevParInfo = tmpValueMap.begin();itTmpDevParInfo!=tmpValueMap.end();itTmpDevParInfo++)
+        {
+            //读取配置文件，判断参数是否显示
+            int nParIsShow = GlobalHelper::readSettingValue("show",itTmpDevParInfo.key()).toInt();
+            if(nParIsShow == 1)
+            {
+
+                if(QString::compare(itTmpDevParInfo.value().at(0).right(1),"1")==0)
+                {
+                    itTmpDevParInfo.value().clear();
+                    itTmpDevParInfo.value()<<QString::number(200)<<QString::number(300)<<QString::number(600);
+                }
+                QString strValue;
+                QStringList strList = itTmpDevParInfo.value();
+                for(int i=0;i<strList.size();i++)
+                {
+                    strValue += ";" + strList.at(i);
+                }
+                DeviceInfoHelper::writeValue(filePath,"base",itTmpDevParInfo.key(),strValue);
+                parOrder += itTmpDevParInfo.key() + ";";
+            }
+        }
+
+        qDebug()<<"thread back scanner par info,key:"<<itDevParInfo.key()<<",value:"<<itDevParInfo.value();
+
+    }
+
+    //记录参数顺序，在下参扫描的时候用到
+    DeviceInfoHelper::writeValue(filePath,"baseorder","order",parOrder);
+
+    if(_getCameraInfoThread->isRunning())
+    {
+        _getCameraInfoThread->quit();//退出事件循环
+        _getCameraInfoThread->wait();//释放线程槽函数资源
+    }
+    qDebug()<<tr("par SANE线程停止,线程状态：")<<_getCameraInfoThread->isRunning();
+}
+
+//设备参数停止线程
+void MainWindow::slotDeviceParOver()
+{
+    GlobalHelper::getDeviceInfoIsOver = true;
+    qDebug()<<"par emit thread over";
+    emit signalThreadOver();
 }
 
 //无文件UI
@@ -268,9 +878,10 @@ void MainWindow::showFileListUI()
     //右键菜单
     listViewMenu = new DMenu(fileListView);
     listViewMenu->addAction(QStringLiteral("打开"), this, SLOT(slotTableViewMenuOpenFile()));
-    //listViewMenu->addAction(QStringLiteral("编辑"), this, SLOT(slotTableViewMenuEditFile()));
+    listViewMenu->addAction(QStringLiteral("编辑"), this, SLOT(slotTableViewMenuEditFile()));
     listViewMenu->addAction(QStringLiteral("导出"), this, SLOT(slotTableViewMenuOutputFile()));
     listViewMenu->addSeparator();
+    listViewMenu->addAction(QStringLiteral("合并PDF"), this, SLOT(slotTableViewMenuOutputPDFFile()));
     //listViewMenu->addAction(QStringLiteral("打印"), this, SLOT(slotTableViewMenuPrintFile()));
     listViewMenu->addAction(QStringLiteral("添加到“邮件”"), this, SLOT(slotTableViewMenuEmailFile()));
     listViewMenu->addSeparator();
@@ -305,11 +916,9 @@ void MainWindow::showFileTableUI()
     tableViewModel->setHeaderData(2, Qt::Horizontal, tr("类型"));
     tableViewModel->setHeaderData(3, Qt::Horizontal, tr("大小"));
 
+
     //设置列宽
-    fileTableView->setColumnWidth(0,(this->width()-300)/2);
-    fileTableView->setColumnWidth(1,(this->width()-300)/2);
-    fileTableView->setColumnWidth(2,150);
-    fileTableView->setColumnWidth(3,150);
+    setFileTableSize();
 
     // tableview 初始化设置
     fileTableView->setSelectionBehavior(QAbstractItemView::SelectRows); // 选中整行
@@ -325,9 +934,10 @@ void MainWindow::showFileTableUI()
     //右键菜单
     tableViewMenu = new DMenu(fileTableView);
     tableViewMenu->addAction(QStringLiteral("打开"), this, SLOT(slotTableViewMenuOpenFile()));
-    //tableViewMenu->addAction(QStringLiteral("编辑"), this, SLOT(slotTableViewMenuEditFile()));
+    tableViewMenu->addAction(QStringLiteral("编辑"), this, SLOT(slotTableViewMenuEditFile()));
     tableViewMenu->addAction(QStringLiteral("导出"), this, SLOT(slotTableViewMenuOutputFile()));
     tableViewMenu->addSeparator();
+    tableViewMenu->addAction(QStringLiteral("合并PDF"), this, SLOT(slotTableViewMenuOutputPDFFile()));
     //tableViewMenu->addAction(QStringLiteral("打印"), this, SLOT(slotTableViewMenuPrintFile()));
     tableViewMenu->addAction(QStringLiteral("添加到“邮件”"), this, SLOT(slotTableViewMenuEmailFile()));
     tableViewMenu->addSeparator();
@@ -339,6 +949,41 @@ void MainWindow::showFileTableUI()
     //列表项双击
     connect(fileTableView,SIGNAL(doubleClicked(const QModelIndex)),this,SLOT(slotListDoubleClicked(const QModelIndex)));
     winStackedLayout->addWidget(fileTableView);
+}
+
+//显示电子档案模式
+void MainWindow::showTreeViewUI(bool isShow)
+{
+    if(isShow == true)
+    {
+        treeView->setFixedWidth(300);
+    }
+    else
+    {
+        treeView->setFixedWidth(0);
+    }
+
+}
+
+//设置文件信息列表尺寸
+void MainWindow::setFileTableSize()
+{
+    int winWidth = this->width();
+    int isDZDA = GlobalHelper::readSettingValue("set","dzda").toInt();
+    if(isDZDA == 0)//是否支持分类
+    {
+        int isClassification = GlobalHelper::readSettingValue("set","classification").toInt();//是否显示分类
+        if(isClassification == 0)
+        {
+            winWidth = winWidth - 300;
+        }
+    }
+    //列表根据窗口尺寸改变
+    fileTableView->setFixedWidth(winWidth);
+    fileTableView->setColumnWidth(0,winWidth/5*1.5);
+    fileTableView->setColumnWidth(1,winWidth/5*1.5);
+    fileTableView->setColumnWidth(2,winWidth/5);
+    fileTableView->setColumnWidth(3,winWidth/5);
 }
 
 //增加Item
@@ -372,6 +1017,21 @@ void MainWindow::addItem(QString path)
     tableViewModel->setItem(rowCount, 2, new QStandardItem(strType));//文件类型
     tableViewModel->setItem(rowCount, 3, new QStandardItem(readableFilesize(fi->size())));//文件尺寸
 
+}
+
+//获取文件夹包含子文件夹下所有的文件夹
+void MainWindow::getAllFolder(QString folderPath,QStringList &folderList)
+{
+    QDir dir(folderPath);
+    QStringList::Iterator iter;
+    QStringList list = dir.entryList(QDir::Dirs, QDir::Name);
+    for(iter=list.begin(); iter!=list.end(); ++iter)
+    {
+        if( "." == *iter || ".." == *iter ) continue;
+        folderList<<folderPath + "/" + *iter;
+        getAllFolder(folderPath+"/"+*iter,folderList);
+    }
+    return;
 }
 
 //从文件夹获取所有文件
@@ -461,12 +1121,8 @@ void MainWindow::slotRefreshData()
 //窗口尺寸改变
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    //列表根据窗口尺寸改变
-    fileTableView->setFixedWidth(this->width());
-    fileTableView->setColumnWidth(0,(this->width()-300)/2);
-    fileTableView->setColumnWidth(1,(this->width()-300)/2);
-    fileTableView->setColumnWidth(2,150);
-    fileTableView->setColumnWidth(3,150);
+    setFileTableSize();
+    maskWidget->setGeometry(0, 0, this->width(), this->height());//遮罩窗口位置
 }
 
 //***************按钮 槽*********************************
@@ -514,6 +1170,12 @@ void MainWindow::slotSearchTextChange(QString str)
 //扫描按钮
 void MainWindow::slotScanButtonClicked()
 {
+    if(_getCameraInfoThread->isRunning() || _getCameraInfoThread->isRunning())
+    {
+        GlobalHelper::getDeviceInfoIsOver = false;
+        qDebug()<<"thread is running";
+    }
+
     smWindow = new ScanManagerWindow (this);
     smWindow->setAttribute(Qt::WA_ShowModal,true);//模态窗口
     smWindow->show();
@@ -521,16 +1183,13 @@ void MainWindow::slotScanButtonClicked()
     smWindow->move ((QApplication::desktop()->width() - smWindow->width())/2,
                     (QApplication::desktop()->height() - smWindow->height())/2);
 
+    connect(this, SIGNAL(signalThreadOver()), smWindow, SLOT(slotGetDeviceList()));
 
 }
 
 //图片编辑按钮
 void MainWindow::slotPicEditButtonClicked()
 {
-    //TestCtrlWindow *tcw = new TestCtrlWindow (this);
-    //tcw->show();
-    //return;
-
     DDialog *dialog = new DDialog ();
     dialog->setIcon(QIcon(":/img/dialogWarnIcon.svg"));
     dialog->setTitle("通知");
@@ -620,12 +1279,18 @@ void MainWindow::slotTableViewMenuOpenFile()
 //右键编辑
 void MainWindow::slotTableViewMenuEditFile()
 {
-    DDialog *dialog = new DDialog ();
-    dialog->setIcon(QIcon(":/img/dialogWarnIcon.svg"));
-    dialog->setTitle("通知");
-    dialog->setMessage("图像编辑功能开发中...");
-    dialog->addButton("确定",true);
-    dialog->exec();
+    QStringList list = getListSelectedFile();
+
+
+   // for(int i=0;i<list.size();i++)
+    {
+
+        QProcess *process = new QProcess(this);
+        //process->start("deepin-draw",list);
+        process->startDetached("deepin-draw",QStringList(list.at(0)));
+       //process->waitForFinished();
+       delete process;
+    }
 }
 
 //右键导出
@@ -648,7 +1313,50 @@ void MainWindow::slotTableViewMenuOutputFile()
         }
     }
 }
+void MainWindow::slotTableViewMenuOutputPDFFile()
+{
 
+    QStringList list = getListSelectedFile();
+    if(list.size() <= 0)
+    {
+        return;
+    }
+    char pdfPath[256]={0};
+    strncpy(pdfPath,list.at(0).toUtf8().data(),strlen(list.at(0).toUtf8().data())-3);
+    strcat(pdfPath,"pdf");
+    qDebug("pdf path is %s\n",pdfPath);
+     hpdfoperation pdfop;
+    for (int i =0;i < list.size();i++) {
+        unsigned char* dstBuf = NULL;
+        JPEGInfo jpgInfo;
+        int dstW,dstH;
+        char jpgPath[256] = {0};
+        strcpy(jpgPath,list.at(i).toUtf8().data());
+
+        QString tt = list.at(i).right(3);
+        //char* tmpFile = substrend((char*)list.at(i).toUtf8().data(),2);
+        if(QString::compare(tt,"jpg")==0)
+        {
+            m_jpg.readBufFromJpeg(jpgPath,&dstBuf,jpgInfo,dstW,dstH);
+            pdfop.rgb2pdf(dstBuf,jpgInfo.width,jpgInfo.height,pdfPath,0,list.size());
+
+        }
+        else
+        {
+            char strPath[256]={0};
+            strcpy(strPath,list.at(i).toUtf8().data());
+            QImage* img2 = new QImage(strPath);
+            dstBuf = img2->bits ();
+            //long lWidth=img2->width(),lHeight=img2->height();
+
+            pdfop.rgb2pdf(dstBuf,img2->width(),img2->height(),pdfPath,0,i+1);
+
+           //pdfop.png2pdf(list.at(i).toUtf8().data(),pdfPath);
+        }
+
+    }
+    //Cam_savePDF(list);
+}
 //右键打印
 void MainWindow::slotTableViewMenuPrintFile()
 {

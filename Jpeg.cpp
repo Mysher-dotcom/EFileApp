@@ -328,6 +328,7 @@ long CJpeg::getJPEGInfoFromImage(uchar * src,JPEGInfo &jpgInfo)
         app0length=((BYTE)title[readIndex]<<8)+title[readIndex + 1];
         readIndex += app0length ;
     }
+    return 0;
     //读取APP1
     if((BYTE)title[readIndex ++]!=0xFF | (BYTE)title[readIndex ++]!=APP1)
         return -2;//没有APP1信息
@@ -554,7 +555,7 @@ long CJpeg::saveImageToJpeg(uchar * src,int width,int height,int bpp,char * file
 
     uchar * exifBuff = new uchar[exifBufflength];
     memset(exifBuff,0,exifBufflength);
-    makeEXIFBuf(exifBuff,exifBufflength,jpegInfo);
+    //makeEXIFBuf(exifBuff,exifBufflength,jpegInfo);
     //拷贝标志位 + jfif信息TRUE
     memcpy(desJpgBuf,desJpgBuf + exifBufflength ,jfifbufflength + 2);
     //拷贝exif信息
@@ -689,28 +690,6 @@ long CJpeg::readBufFromJpeg(char * filepath,uchar * * des_buff,JPEGInfo &jpgInfo
 {
     BYTE * jpgBuff;
     long ljpgBuffSize;
-
-    //读取文件
-/*	CFile fileRead;
-    bool bOpenFile = fileRead.Open(CString(filepath),CFile::modeRead ,NULL,NULL);
-    if(bOpenFile)
-    {
-        ljpgBuffSize = fileRead.GetLength();
-
-        if (ljpgBuffSize < 2)
-        {
-            fileRead.Close();
-            return -1;
-        }
-        jpgBuff = new uchar[ljpgBuffSize];
-        fileRead.Read(jpgBuff,ljpgBuffSize);
-        fileRead.Close();
-    }
-    else
-    {
-        return -1;
-    }
-*/
     QFile file(filepath);
             QByteArray fileContent;
             if (file.open(QIODevice::ReadOnly)){
@@ -719,12 +698,12 @@ long CJpeg::readBufFromJpeg(char * filepath,uchar * * des_buff,JPEGInfo &jpgInfo
             }
             file.close();
             jpgBuff = (unsigned char *)fileContent.data();
-    if(getJPEGInfoFromImage(jpgBuff,jpgInfo) == -1)//不是JPG图片
+    /*if(getJPEGInfoFromImage(jpgBuff,jpgInfo) == -1)//不是JPG图片
     {
         delete jpgBuff;
         return -1;
     }
-
+*/
 
     bool bret = false;
 
@@ -794,6 +773,6 @@ long CJpeg::readBufFromJpeg(char * filepath,uchar * * des_buff,JPEGInfo &jpgInfo
     }
     //jpeg_finish_decompress(&cinfo);//解压缩完毕
     jpeg_destroy_decompress(&cinfo);// 释放资源
-    delete jpgBuff;
+    jpgBuff=NULL;
     return 0;
 }

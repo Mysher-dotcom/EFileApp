@@ -3,7 +3,7 @@
 #include <DColorDialog>
 #include <QHBoxLayout>
 #include <DFileDialog>
-#include "globalhelper.h"
+#include "helper/globalhelper.h"
 
 SetWindow::SetWindow(QWidget *parent) :
     DMainWindow(parent),
@@ -26,8 +26,17 @@ void SetWindow::closeEvent(QCloseEvent *event)
 
 void SetWindow::initUI()
 {
+    int nDZDA= GlobalHelper::readSettingValue("set","dzda").toInt();//是否显示分类显示开关
+    if(nDZDA == 0)
+    {
+        this->resize(460,380);
+    }
+    else
+    {
+        this->resize(460,320);
+    }
     //*窗口基本属性设置*
-    this->resize(460,320);//窗口初始尺寸 460,380
+    //this->resize(460,320);//窗口初始尺寸 460,380
     this->titlebar()->setTitle("");//标题栏文字设为空
     setWindowIcon(QIcon(":/img/logo/logo-16.svg"));// 状态栏图标
     this->titlebar()->setIcon(QIcon(":/img/logo/logo-16.svg"));//标题栏图标
@@ -115,11 +124,28 @@ void SetWindow::initUI()
     parHLayout5->addWidget(finishExitSBtn);
     parWidget5->setLayout(parHLayout5);//参数行的容器加入布局
 
+    QWidget *parWidget6 = new QWidget ();
+    GlobalHelper::setWidgetBackgroundColor(parWidget6,QColor(249,249,249,255));//容器设置背景
+    QHBoxLayout *parHLayout6 = new QHBoxLayout ();
+    QLabel *parTitleLbl6= new QLabel ();
+    parTitleLbl6->setText("条码识别分类");
+    setParTitleLabelStyle(parTitleLbl6,140);
+    parHLayout6->addWidget(parTitleLbl6);
+    parHLayout6->addStretch();
+    classificationSBtn = new DSwitchButton ();
+    parHLayout6->addWidget(classificationSBtn);
+    parWidget6->setLayout(parHLayout6);//参数行的容器加入布局
+
     mainVLayout->addWidget(parWidget,0,Qt::AlignTop);
     mainVLayout->addWidget(parWidget2,0,Qt::AlignTop);
     //mainVLayout->addWidget(parWidget3,0,Qt::AlignTop);//无扫描仪时警告
     mainVLayout->addWidget(parWidget4,0,Qt::AlignTop);
     mainVLayout->addWidget(parWidget5,0,Qt::AlignTop);
+    if(nDZDA == 0)
+    {
+        mainVLayout->addWidget(parWidget6,0,Qt::AlignTop);
+    }
+
     mainVLayout->addStretch();
     mainWidget->setLayout(mainVLayout);
     winLayout->addWidget(mainWidget);
@@ -130,6 +156,8 @@ void SetWindow::initUI()
     int nnodevice= GlobalHelper::readSettingValue("set","nodevice").toInt();
     int nfinishbeep= GlobalHelper::readSettingValue("set","finishbeep").toInt();
     int nfinishexit= GlobalHelper::readSettingValue("set","finishexit").toInt();
+    int nClassification= GlobalHelper::readSettingValue("set","classification").toInt();
+
     if(nfileover == 0)
         fileOverWarnSBtn->setChecked(true);
     else
@@ -151,33 +179,22 @@ void SetWindow::initUI()
         finishExitSBtn->setChecked(false);
 
 
-    /*
-    btnGetPar = new QPushButton ();
-    btnGetPar->setText("获取参数");
-    btnGetPar->setFixedSize(QSize(100,30));
 
-    rbColor = new DRadioButton(nullptr);
-    ckbColor = new DCheckBox (nullptr);
-    txtColor = new DTextEdit (nullptr);
-    btnColor = new DIconButton (nullptr);
-    txtColor->setFixedHeight(30);
-    btnColor->setFixedSize(QSize(30,30));
+    if(nClassification == 0)
+    {
+        classificationSBtn->setChecked(true);
+    }
+    else
+    {
+        classificationSBtn->setChecked(false);
+    }
 
-    QHBoxLayout *hlayout = new QHBoxLayout ();
-    hlayout->addWidget(rbColor);
-    hlayout->addWidget(ckbColor);
-    hlayout->addWidget(txtColor);
-    hlayout->addWidget(btnColor);
-    ui->centralwidget->setLayout(hlayout);
-
-
-    connect(btnColor, SIGNAL(clicked()), this, SLOT(onBtnColorClicked()));
-*/
     connect(selectSavePathBtn, SIGNAL(clicked()), this, SLOT(onBtnSelectSavePathClicked()));
     connect(fileOverWarnSBtn, SIGNAL(checkedChanged(bool)), this, SLOT(onSBtnFileOverCheckedChanged(bool)));
     connect(noDeviceWarnSBtn, SIGNAL(checkedChanged(bool)), this, SLOT(onSBtnNoDeviceCheckedChanged(bool)));
     connect(finishBeepSBtn, SIGNAL(checkedChanged(bool)), this, SLOT(onSBtnFinishBeepCheckedChanged(bool)));
     connect(finishExitSBtn, SIGNAL(checkedChanged(bool)), this, SLOT(onSBtnFinishExitCheckedChanged(bool)));
+    connect(classificationSBtn, SIGNAL(checkedChanged(bool)), this, SLOT(onSBtnClassificationCheckedChanged(bool)));
 
 }
 
@@ -260,3 +277,16 @@ void SetWindow::onSBtnFinishExitCheckedChanged(bool ck)
         keyValue = "1";
     GlobalHelper::writeSettingValue("set","finishexit",keyValue);//修改配置文件键值
 }
+
+//电子档案布局开关改变
+void SetWindow::onSBtnClassificationCheckedChanged(bool ck)
+{
+    QString keyValue ;
+    if(ck==true)
+        keyValue = "0";
+    else
+        keyValue = "1";
+    GlobalHelper::writeSettingValue("set","classification",keyValue);//修改配置文件键值
+
+}
+

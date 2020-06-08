@@ -16,7 +16,7 @@
 #include "listview/listviewitemdata.h"
 #include "listview/deviceitemdelegate.h"
 #include "camscansdk.h"
-#include "globalhelper.h"
+#include "helper/globalhelper.h"
 #include <QStandardPaths>
 #include "mainwindow.h"
 #include <DColorDialog>
@@ -26,7 +26,7 @@
 #include "cmimage.h"
 #include "MImage.h"
 #include <QDateTime>
-#include <DDialog>
+#include "helper/deviceinfohelper.h"
 
 
 ScanManagerWindow::ScanManagerWindow(QWidget *parent) :
@@ -40,8 +40,13 @@ ScanManagerWindow::ScanManagerWindow(QWidget *parent) :
     isHaveCamera = false;//是否拥有拍摄仪设备
 
     initUI();
+    //openScannerThread();
 
-    openScannerThread();
+
+    if( GlobalHelper::getDeviceInfoIsOver == true)
+    {
+        slotGetDeviceList();
+    }
 
 }
 
@@ -49,8 +54,9 @@ ScanManagerWindow::ScanManagerWindow(QWidget *parent) :
 void ScanManagerWindow::openScannerThread()
 {
     qDebug()<<"start...";
+    QStringList list;
     //参数可以是任何值，线程对象的参数用于获取指定设备的参数，在获取设备信息中用不到
-    getScannerInfoThread = new GetScannerInfoThread (-1);
+    getScannerInfoThread = new GetScannerInfoThread (list);
     subSANEThread = new QThread();
     getScannerInfoThread->moveToThread(subSANEThread);
 
@@ -107,8 +113,9 @@ void ScanManagerWindow::slotFinishThread()
 //开启拍摄仪线程
 void ScanManagerWindow::openCameraThread()
 {
+    QStringList list;
     //参数可以是任何值，线程对象的参数用于获取指定设备的参数，在获取设备信息中用不到
-    getCameraInfoThread = new GetCameraInfoThread (-1);
+    getCameraInfoThread = new GetCameraInfoThread (list);
     subCameraThread = new QThread();
     getCameraInfoThread->moveToThread(subCameraThread);
 
@@ -128,10 +135,6 @@ void ScanManagerWindow::openCameraThread()
     //connect(getCameraInfoThread,SIGNAL(signalCameraParInfo(QVariant, const QString &)),
     //        this,SLOT(slotCameraParInfoUI(QVariant,const QString &)),
     //        Qt::QueuedConnection);
-
-    //拍摄仪发生错误
-    connect(getCameraInfoThread,SIGNAL(signalCameraError(QString)),
-            this,SLOT(slotCameraError(QString)));
 
     subCameraThread->start();//开启多线程槽函数
 }
@@ -301,7 +304,54 @@ void ScanManagerWindow::initUI()
 
 }
 
-//显示设备列表UI
+//获取设备列表并显示到UI
+void ScanManagerWindow::slotGetDeviceList()
+{
+    QList<DeviceInfoData> devList = DeviceInfoHelper::getDeviceListInfo();
+    if(devList.size() <= 0)
+    {
+        slotNoScannerUI();
+        return;
+    }
+
+    showDeviceListUI();
+    for(int i=0;i<devList.length();i++)
+    {
+        QString strStatus = "未连接";
+        if(devList.at(i).status == 0)
+        {
+            strStatus = "空闲";
+        }
+        /*
+         * 新增设备Item
+         * type=设备类型(0=拍摄仪，1=扫描仪)
+         * name=设备名称
+         * model=设备型号
+         * status=设备状态(空闲或者忙碌)
+         * index=设备下标
+         */
+        addDeviceItem(devList.at(i).type,
+                      devList.at(i).name,
+                      devList.at(i).model,
+                      strStatus,
+                      devList.at(i).index);
+    }
+
+    //默认选中第0项
+    QModelIndex index = proxyModel->index(0,0);
+    devListView->setCurrentIndex(index);
+    slotDevListPressed(index);
+
+    //清理提示信息控件
+    rVLayout->addWidget(rbWidget);//加入右侧下部的容器,开始按钮
+    rtVLayout->removeWidget(rtNLbl);//移除右上空白占位提示信息label
+    delete rtNLbl;
+    rtVLayout->removeWidget(rtipWidget);//移除右侧-上部提示信息label
+    delete rtipWidget;
+
+}
+
+//显示设备列表控件UI
 void ScanManagerWindow::showDeviceListUI()
 {
     //窗口的左侧布局加入设备列表容器
@@ -321,11 +371,6 @@ void ScanManagerWindow::showDeviceListUI()
     lVLayout->removeWidget(lTipWidget);//移除提示信息文字和动画
     delete lTipWidget;//移除控件，一定要delete，不然还会显示在UI上
 
-    //加设备Item
-    //addDeviceItem(1,"扫描仪","UNIS F3135","空闲");
-    //addDeviceItem(0,"拍摄仪","SD544","空闲");
-
-
     //设备列表点击信号槽
     connect(devListView,SIGNAL(pressed(const QModelIndex)),this,SLOT(slotDevListPressed(const QModelIndex)));
 
@@ -334,7 +379,7 @@ void ScanManagerWindow::showDeviceListUI()
 /*
  * 新增设备Item
  * type=设备类型(0=拍摄仪，1=扫描仪)
- * type=设备名称
+ * name=设备名称
  * model=设备型号
  * status=设备状态(空闲或者忙碌)
  * index=设备下标
@@ -362,7 +407,9 @@ void ScanManagerWindow::getDevicePar(int devType,int devIndex)
 {
     if(devType == 0)//拍摄仪
     {
-        getCameraInfoThread = new GetCameraInfoThread (devIndex);
+        QStringList list;
+        list<<QString::number(devIndex);
+        getCameraInfoThread = new GetCameraInfoThread (list);
         subCameraThread = new QThread();
         getCameraInfoThread->moveToThread(subCameraThread);
         connect(subCameraThread,SIGNAL(started()),getCameraInfoThread,SLOT(slotGetCameraPar()));//开启线程槽函数
@@ -399,8 +446,9 @@ void ScanManagerWindow::getDevicePar(int devType,int devIndex)
         }
 
         */
-
-        getScannerInfoThread = new GetScannerInfoThread (devIndex);
+        QStringList list;
+        list<<QString::number(devIndex);
+        getScannerInfoThread = new GetScannerInfoThread (list);
         subSANEThread = new QThread();
         getScannerInfoThread->moveToThread(subSANEThread);
 
@@ -421,19 +469,6 @@ void ScanManagerWindow::getDevicePar(int devType,int devIndex)
     }
 
     rtVLayout->addStretch();//右上布局在加入所有参数后，加入弹簧
-}
-
-//拍摄仪发生错误
-void ScanManagerWindow::slotCameraError(QString msg)
-{
-    DDialog *dialog = new DDialog ();
-    dialog->setIcon(QIcon(":/img/dialogWarnIcon.svg"));
-    dialog->setTitle("警告");
-    dialog->setMessage(msg);
-    dialog->addButton("确定",true);
-    dialog->exec();
-
-    slotNoCameraUI();//发生错误，结束线程
 }
 
 /*
@@ -490,6 +525,7 @@ void ScanManagerWindow::showDeviceParUI(QString titleName,QString parName,QStrin
         ptypeCbb->setObjectName(parIndex);//一定要设置名称，否则无法获取到具体的控件,以参数下标命名
         for(QString pvalue : parValue)
         {
+            if(pvalue.isNull() || pvalue.isEmpty()) continue;
             QString tmpParValue = GlobalHelper::readSettingValue("lan",pvalue);
             if(tmpParValue.isNull() || tmpParValue.isEmpty())
             {
@@ -591,10 +627,22 @@ void ScanManagerWindow::showImgEditParUI()
     parHLayoutFontWM->addWidget(fontWaterText);
     parHLayoutFontWM->addWidget(colorBtn);
     parWidgetFontWM->setLayout(parHLayoutFontWM);
+
+    QWidget *parWidgetImage = new QWidget (rtWidget);
+    parWidgetImage->setFixedHeight(48);
+    GlobalHelper::setWidgetBackgroundColor(parWidgetImage,QColor(249,249,249,255));//容器设置背景
+    QHBoxLayout *parHLayoutImage = new QHBoxLayout ();
+    imageWaterBtn=new DRadioButton (nullptr);
+    imageWaterBtn->setText("图片水印");
+    parHLayoutImage->addWidget(imageWaterBtn);
+    parWidgetImage->setLayout(parHLayoutImage);
+
+
     //单选按钮加入组，互斥效果
     QButtonGroup *btnGroup2=new QButtonGroup ();
     btnGroup2->addButton(noWaterrbBtn);
     btnGroup2->addButton(fontWaterrbBtn);
+    btnGroup2->addButton(imageWaterBtn);
     btnGroup2->setExclusive(true);
 
     QLabel *lblNULLIE=new QLabel();//用一个空白的label，达到上边距距离
@@ -623,6 +671,7 @@ void ScanManagerWindow::showImgEditParUI()
     parHLayoutBB->addWidget(docTypeCBB);
     parWidgetBB->setLayout(parHLayoutBB);
 
+    /*
     QWidget *parWidgetFD = new QWidget (rtWidget);
     parWidgetFD->setFixedHeight(48);
     GlobalHelper::setWidgetBackgroundColor(parWidgetFD,QColor(249,249,249,255));//容器设置背景
@@ -631,6 +680,7 @@ void ScanManagerWindow::showImgEditParUI()
     filterDenoisingCKB->setText("去噪");
     parHLayoutFD->addWidget(filterDenoisingCKB);
     parWidgetFD->setLayout(parHLayoutFD);
+    */
 
     QWidget *parWidgetRepair = new QWidget (rtWidget);
     parWidgetRepair->setFixedHeight(48);
@@ -646,13 +696,14 @@ void ScanManagerWindow::showImgEditParUI()
     rtVLayout->addWidget(lblCut,0,Qt::AlignTop);
     rtVLayout->addWidget(parWidgetNoCut,0,Qt::AlignTop);
     rtVLayout->addWidget(parWidgetSingleCut,0,Qt::AlignTop);
-    //rtVLayout->addWidget(parWidgetMulCut,0,Qt::AlignTop);
+    rtVLayout->addWidget(parWidgetMulCut,0,Qt::AlignTop);
 
     //水印设置
     rtVLayout->addWidget(lblNULLWM,0,Qt::AlignTop);
     rtVLayout->addWidget(lblWM,0,Qt::AlignTop);
     rtVLayout->addWidget(parWidgetNoWM,0,Qt::AlignTop);
     rtVLayout->addWidget(parWidgetFontWM,0,Qt::AlignTop);
+    //rtVLayout->addWidget(parWidgetImage,0,Qt::AlignTop);
 
     //文档处理设置
     rtVLayout->addWidget(lblNULLIE,0,Qt::AlignTop);
@@ -755,11 +806,22 @@ void ScanManagerWindow::showShotTypeUI()
     parWidgetBB2->setLayout(parHLayoutBB2);
     rtVLayout->addWidget(parWidgetBB2,0,Qt::AlignTop);
 
+    QWidget *parWidgetAuto = new QWidget (rtWidget);
+    parWidgetAuto->setFixedHeight(48);
+    GlobalHelper::setWidgetBackgroundColor(parWidgetAuto,QColor(249,249,249,255));//容器设置背景
+    QHBoxLayout *parHLayoutAuto = new QHBoxLayout ();
+    shotTypeAutoCaptureBtn = new DRadioButton (nullptr);
+    shotTypeAutoCaptureBtn->setText("自动拍摄");
+   // shotTypeAutoCaptureBtn->setChecked(true);
+    parHLayoutAuto->addWidget(shotTypeAutoCaptureBtn);
+    parWidgetAuto->setLayout(parHLayoutAuto);
+   // rtVLayout->addWidget(parWidgetAuto,0,Qt::AlignTop);
 
     //单选按钮加入组，互斥效果
     QButtonGroup *btnGroup=new QButtonGroup ();
     btnGroup->addButton(shotTypeManualrbBtn);
     btnGroup->addButton(shotTypeTimerrbBtn);
+    btnGroup->addButton(shotTypeAutoCaptureBtn);
     btnGroup->setExclusive(true);
 
 }
@@ -767,8 +829,16 @@ void ScanManagerWindow::showShotTypeUI()
 //无SANE设备UI
 void ScanManagerWindow::slotNoScannerUI()
 {
-    isHaveScanner = false;
-    closeScannerThread();//停止SANE线程
+    //isHaveScanner = false;
+    //closeScannerThread();//停止SANE线程
+
+    lLbl->setText("未找到扫描设备");
+    rtLbl->setText("没有找到连接到您计算机的扫描设备");
+    rtipLayout->removeWidget(rbLbl);//移除提示信息label
+    delete rbLbl;//移除控件，一定要delete，不然还会显示在UI上
+    lSpinner->stop();
+    rtipLayout->removeWidget(lSpinner);//移除提示信息动画
+    delete lSpinner;
 }
 
 //无拍摄仪UI
@@ -1028,7 +1098,7 @@ void ScanManagerWindow::slotScanButtonClicked()
 {
     GlobalHelper::writeSettingValue("set","imgPreNameIndex","0");//扫描文件的名称编号置0
     qDebug()<<"当前设备类型（0=拍摄仪，1=扫描仪）："<<nCurrentDeviceType<<",当前设备下标:"<<nCurrentDeviceIndex;
-    if(nCurrentDeviceType == 1)//扫描仪
+    if(nCurrentDeviceType == 0)//扫描仪
     {
         getImgEditPar();//从UI上获取图像处理参数
         //if(scanWindow == NULL)
@@ -1042,7 +1112,7 @@ void ScanManagerWindow::slotScanButtonClicked()
                           (QApplication::desktop()->height() - scanWindow->height())/2);
         this->close();//本窗口关闭
     }
-    else if(nCurrentDeviceType == 0)//拍摄仪
+    else if(nCurrentDeviceType == 1)//拍摄仪
     {
         getImgEditPar();//从UI上获取图像处理参数
         //if(cameraWindow == NULL)
@@ -1063,7 +1133,7 @@ void ScanManagerWindow::slotScanButtonClicked()
 
 }
 
-//设备列表点击事件
+//设备列表点击事件,获取指定设备的参数
 void ScanManagerWindow::slotDevListPressed(const QModelIndex)
 {
     //清空参数布局里所有控件
@@ -1083,14 +1153,65 @@ void ScanManagerWindow::slotDevListPressed(const QModelIndex)
     {
         QVariant devData = (QVariant)(mIndex.data(Qt::UserRole+1));
         DeviceItemData d = devData.value<DeviceItemData>();
-        qDebug()<<"device type:"<<d.devType<<"device name:"<<d.devName<<",device index:"<<d.devIndex;
+        QString iniFilePath = DeviceInfoHelper::getDeviceInfoFilePath(d.devModel);
+        qDebug()<<"device par ini file:"<<iniFilePath;
+        QFileInfo file(iniFilePath);
+        if(file.exists())
+        {
+            //扫描仪
+            if(d.devType == 0)
+            {
+                QStringList parList = DeviceInfoHelper::readValue(iniFilePath,"baseorder","order").split(";");
+                for(int i=0;i<parList.size();i++)
+                {
+                    QString parName = parList.at(i);
+                    if(!parName.isEmpty())
+                    {
+                        QStringList parValueList = DeviceInfoHelper::readValue(iniFilePath,"base",parName).split(";");
+                        QString titleName="";
+                        if(i==0) titleName="扫描设置";
+                        showDeviceParUI(titleName,parName,QString::number(i),1,parValueList,false,false);//UI显示参数
+                    }
+                }
+
+                showImgFormatAndTypeUI(false);//图片格式UI
+            }
+            //拍摄仪
+            else if(d.devType == 1)
+            {
+                QString resolution =  DeviceInfoHelper::readValue(iniFilePath,"base","resolution");
+                QString format =  DeviceInfoHelper::readValue(iniFilePath,"base","format");
+                QStringList resolutionList = resolution.split(";");
+                QStringList formatList = format.split(";");
+
+                showDeviceParUI("扫描设置","resolution","1",1,resolutionList,false,false);//UI显示参数
+                showDeviceParUI("","format","1",1,formatList,false,false);//UI显示参数
+                showImgFormatAndTypeUI(true);//图片格式UI
+                showShotTypeUI();//拍摄方式UI
+
+                cameraParMap.insert("resolution",resolutionList);//参数加入集合
+                cameraParMap.insert("format",formatList);
+                if(resolutionList.size()>=2)
+                {
+                    cameraChoiseParMap.insert("resolution",resolutionList.at(1));//选中参数集合默认加入第一个参数
+                }
+                else
+                {
+                    cameraChoiseParMap.insert("resolution","");
+                }
+                cameraChoiseParMap.insert("format",QString::number(0));
+
+
+            }
+        }
 
         nCurrentDeviceType = d.devType;//当前设备类型，0=拍摄仪，1=扫描仪
         nCurrentDeviceIndex = d.devIndex;//当前设备下标
-        getDevicePar(d.devType,d.devIndex);//获取设备参数，并显示在UI
 
         break;
     }
+    showImgEditParUI();//图像算法UI
+
 }
 
 //下拉框选项改变
@@ -1185,12 +1306,12 @@ void ScanManagerWindow::getImgEditPar()
     //单图裁剪单选按钮
     if(singleCutrbBtn->isChecked())
     {
-        GlobalHelper::writeSettingValue("imgEdit","isCut","0");
+        GlobalHelper::writeSettingValue("imgEdit","isCut","1");
     }
     //不裁剪单选按钮
     if(noCutrbBtn->isChecked())
     {
-        GlobalHelper::writeSettingValue("imgEdit","isCut","1");
+        GlobalHelper::writeSettingValue("imgEdit","isCut","0");
     }
     //多图裁剪单选按钮
     if(mulCutrbBtn->isChecked())
@@ -1214,6 +1335,7 @@ void ScanManagerWindow::getImgEditPar()
     int nDocType = docTypeCBB->currentIndex();
     GlobalHelper::writeSettingValue("imgEdit","docType",QString::number(nDocType));
 
+    /*
     //去噪复选框
     if(filterDenoisingCKB->isChecked())
     {
@@ -1223,6 +1345,7 @@ void ScanManagerWindow::getImgEditPar()
     {
         GlobalHelper::writeSettingValue("imgEdit","isFilterDenoising","1");
     }
+    */
 
     //缺角修复复选框
     if(repairCKB->isChecked())
@@ -1238,7 +1361,7 @@ void ScanManagerWindow::getImgEditPar()
     GlobalHelper::writeSettingValue("imgEdit","imgFormat",imgFormatCBB->currentText());
 
     //拍摄仪
-    if(nCurrentDeviceType == 0)
+    if(nCurrentDeviceType == 1)
     {
         //色彩模式（彩色，灰度，黑白）
         GlobalHelper::writeSettingValue("imgEdit","imgType",QString::number(imgTypeCBB->currentIndex()));

@@ -42,6 +42,7 @@ private:
     DSwitchButton *noDeviceWarnSBtn;//无设备警告开关按钮
     DSwitchButton *finishBeepSBtn;//完成时提示音开关按钮
     DSwitchButton *finishExitSBtn;//完成时退出开关按钮
+    DSwitchButton *classificationSBtn;//分类显示开关按钮
 
     void initUI();
     void setParTitleLabelStyle(QLabel*,int width);//参数名称label设置样式
@@ -56,6 +57,7 @@ private slots:
     void onSBtnNoDeviceCheckedChanged(bool);//无设备警告开关改变
     void onSBtnFinishBeepCheckedChanged(bool);//完成时提示音开关改变
     void onSBtnFinishExitCheckedChanged(bool);//完成时退出开关改变
+    void onSBtnClassificationCheckedChanged(bool);//分类显示开关改变
 
 };
 

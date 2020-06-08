@@ -24,7 +24,7 @@ public:
     void initConnection();
     void writeMsg(QString msg);
 
-    static int doScanReceiveCB(uchar*data,int size,int w,int h,int nBpp,int nDPI);
+    static int doScanReceiveCB(const uchar*data,int size,int w,int h,int nBpp,int nDPI);
     static int doScanStatuCB(int nStatus);
 
 

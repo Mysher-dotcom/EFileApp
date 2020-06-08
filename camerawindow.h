@@ -42,7 +42,7 @@ public:
 
      void copyFile(QString oldFilePath, QString newFilePath);//拷贝文件
      QString getCopyFileName(QString filePath);//获取拷贝文件名，用于重名文件覆盖
-
+    void DecodeString(char* pszin,char (*pszout)[100],int& num,char mark);
 
 private:
     Ui::CameraWindow *ui;
@@ -53,6 +53,7 @@ private:
     void shot();//拍摄图像
     void addItem(QString path);//增加图像Item到列表
     static int ReceiveImage(void *data, int size,int w,int h,int nFormatType);//视频绘制回调
+    static int callBackAutoCaptureFun(long nState);
     void timerEvent(QTimerEvent *event);
 
     //变量
@@ -61,7 +62,7 @@ private:
     int formatIndex;//视频格式
     int videoWidth;//视频宽
     int videoHeight;//视频高
-    bool isCut;//是否开启裁切
+    int isCut;//0-no crop 1-autocrop 2-MultiCrop
     qreal nVideoRotateAngle;//视频旋转角度
     qreal nVideoScaleSize;//视频缩放尺寸
     QStringList fileNameList;//图像路径集合
@@ -77,7 +78,10 @@ private:
     int nShotTime;//定时拍秒
     QTimer *shotTimer;//定时拍计时器
     bool isStartShotTimer;//是否已经开始定时拍
-
+    //是否支持拍书功能
+    bool m_bIsBook;
+    //记录拍书按钮次数
+    int m_nBookCount;
     //控件
     QVBoxLayout *winVLayout;//窗口布局
     QHBoxLayout *mainVLayout;//主布局
@@ -103,6 +107,7 @@ private:
     DIconButton *rotateLeftBtn;//左旋按钮
     DIconButton *rotateRightBtn;//右旋按钮
     DIconButton *cutBtn;//裁切按钮
+    DIconButton *bookBtn;//拍书按钮
     DListView *imgListView;//图像列表
     QStandardItemModel *listViewModel;//缩略图Item数据
     QSortFilterProxyModel *listViewProxyModel;//代理数据，用于列表的筛选和排序
@@ -126,6 +131,7 @@ private slots:
     void slotRotateLeftBtnClicked();//左旋按钮
     void slotRotateRightBtnClicked();//右旋按钮
     void slotCutBtnClicked();//裁切按钮
+    void slotBookBtnClicked();//拍书
     void slotSaveBtnClicked();//保存按钮
     void slotImgListViewPressed(const QModelIndex);//图片列表点击
     void slotListDoubleClicked(const QModelIndex);//列表项双击

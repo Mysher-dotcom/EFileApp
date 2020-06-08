@@ -20,6 +20,8 @@ GlobalHelper::~GlobalHelper()
 {
 }
 
+//获取设备信息是否结束
+bool GlobalHelper::getDeviceInfoIsOver;
 
 //获取扫描存放文件夹路径
 QString GlobalHelper::getScanFolder()
@@ -90,22 +92,23 @@ void GlobalHelper::writeSettingFile()
     psettings->setValue("ADF_DUPLEX","ADF双面");
     psettings->setValue("FLAT_FRONT","平板");
     psettings->setValue("resolution","分辨率");
-    psettings->setValue("format_c","视频格式");
-    psettings->setValue("resolution_c","分辨率");
+    psettings->setValue("format","视频格式");
+    //psettings->setValue("format_c","视频格式");
+    //psettings->setValue("resolution_c","分辨率");
     psettings->endGroup();
 
-    //是否显示,0=true 1=false
+    //是否显示,1=true 0=false
     psettings->beginGroup("show");
-    psettings->setValue("mode","0");
-    psettings->setValue("source","0");
-    psettings->setValue("resolution","0");
-    psettings->setValue("preview","1");
-    psettings->setValue("threshold","1");
-    psettings->setValue("gamma-value","1");
-    psettings->setValue("tl-x","1");
-    psettings->setValue("tl-y","1");
-    psettings->setValue("br-x","1");
-    psettings->setValue("br-y","1");
+    psettings->setValue("mode","1");
+    psettings->setValue("source","1");
+    psettings->setValue("resolution","1");
+    //psettings->setValue("preview","0");
+    //psettings->setValue("threshold","0");
+    //psettings->setValue("gamma-value","0");
+    //psettings->setValue("tl-x","0");
+    //psettings->setValue("tl-y","0");
+    //psettings->setValue("br-x","0");
+    //psettings->setValue("br-y","0");
     psettings->endGroup();
 
     //设置
@@ -116,7 +119,10 @@ void GlobalHelper::writeSettingFile()
     psettings->setValue("finishbeep","0");//完成后提示音开关
     psettings->setValue("finishexit","1");//完成后关闭开关
     psettings->setValue("iconList","0");//缩略图模式
+    psettings->setValue("dzda","0");//电子档案显示模式
+    psettings->setValue("classification","1");//是否分类显示
     psettings->endGroup();
+
 
     delete  psettings;
    //QString preview,threshold,gamma-value,tl-x,tl-y,br-x,br-y;

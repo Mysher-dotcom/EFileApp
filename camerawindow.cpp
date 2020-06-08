@@ -1,6 +1,6 @@
 #include "camerawindow.h"
 #include "ui_camerawindow.h"
-#include "globalhelper.h"
+#include "helper/globalhelper.h"
 #include <QGraphicsDropShadowEffect>
 #include "camcapturesdk.h"
 #include <QDebug>
@@ -14,12 +14,12 @@
 #include <QWheelEvent>
 #include <DDialog>
 #include <QDesktopServices>
-
+#include "helper/classificationhelper.h"
+#include <QDateTime>
 
 QImage *g_image = NULL;
 QMutex MutexDataBuffLock;
 CameraWindow *g_CameraWindow = NULL;
-
 //QMatrix matrix;
 
 CameraWindow::CameraWindow(int devIndex,QMap<QString ,QString> map,QWidget *parent) :
@@ -27,17 +27,18 @@ CameraWindow::CameraWindow(int devIndex,QMap<QString ,QString> map,QWidget *pare
     ui(new Ui::CameraWindow)
 {
     ui->setupUi(this);
-
+    m_bIsBook=false;
+    m_nBookCount=0;
     g_CameraWindow = this;
     nDeviceIndex = devIndex;
     parMap = map;
     nVideoRotateAngle = 0;
     nVideoScaleSize = 1;
-    isCut = false;
+    isCut = 0;
     int nIsCutTmp = GlobalHelper::readSettingValue("imgEdit","isCut").toInt();
-    if(nIsCutTmp != 1)
+    //if(nIsCutTmp != 1)
     {
-        isCut = true;
+        isCut = nIsCutTmp;
     }
     nShotType = GlobalHelper::readSettingValue("imgEdit","shotType").toInt();//拍摄类型（0=手动，1=定时拍）
     nShotTime = GlobalHelper::readSettingValue("imgEdit","shotTime").toInt();//定时拍秒
@@ -98,6 +99,7 @@ void CameraWindow::initUI()
     rotateLeftBtn = new DIconButton(nullptr);//左旋按钮
     rotateRightBtn = new DIconButton(nullptr);//右旋按钮
     cutBtn = new DIconButton(nullptr);//裁切按钮
+    bookBtn = new DIconButton(nullptr);
     imgListView = new DListView () ;//图像列表
     saveBtn = new QPushButton();//保存按钮
 
@@ -137,11 +139,18 @@ void CameraWindow::initUI()
     cutBtn->setToolTip("裁切");
     cutBtn->setStyleSheet("background:white;border-radius:8px;");
 
+    bookBtn->setIcon(QIcon(":/img/camera/book.svg"));
+    bookBtn->setFixedSize(QSize(50, 50));
+    bookBtn->setIconSize(QSize(20,20));
+    bookBtn->setToolTip("拍书");
+    bookBtn->setStyleSheet("background:white;border-radius:8px;");
+    bookBtn->setVisible(false);
+
     //videoWidget->setMinimumSize(QSize(600,380));
     toolBarWidget->setFixedSize(QSize(430,70));//工具栏容器尺寸 430×70
     scanBtn->setText("扫描");
     scanBtn->setFixedSize(QSize(240,36));
-    saveBtn->setText("保存");
+    saveBtn->setText("打开存放位置");
     saveBtn->setFixedSize(QSize(180,36));
 
     rightWidget->setFixedWidth(220);//右侧容器固定220px宽
@@ -189,7 +198,7 @@ void CameraWindow::initUI()
     videoHLayout->addWidget(timerWidget);
 
     //图像列表
-    imgListView->setSelectionMode(QAbstractItemView::MultiSelection);
+    //imgListView->setSelectionMode(QAbstractItemView::MultiSelection);
     imgListView->setViewMode(QListView::IconMode);
     imgListView->setResizeMode(QListView::Adjust);
     listViewModel = new QStandardItemModel ();
@@ -210,6 +219,7 @@ void CameraWindow::initUI()
     toolBarHLayout->addWidget(rotateRightBtn);
     toolBarHLayout->addStretch();
     toolBarHLayout->addWidget(cutBtn);
+    toolBarHLayout->addWidget(bookBtn);
     leftBottomVLayout->addWidget(toolBarWidget,0,Qt::AlignBottom | Qt::AlignHCenter);
     leftBottomVLayout->addWidget(scanBtn,0,Qt::AlignBottom | Qt::AlignHCenter);
     //previewImageFrame = new QFrame () ;
@@ -265,6 +275,7 @@ void CameraWindow::initConnection()
     connect(rotateLeftBtn, SIGNAL(clicked()), this, SLOT(slotRotateLeftBtnClicked()));//左旋按钮
     connect(rotateRightBtn, SIGNAL(clicked()), this, SLOT(slotRotateRightBtnClicked()));//右旋按钮
     connect(cutBtn, SIGNAL(clicked()), this, SLOT(slotCutBtnClicked()));//裁切按钮
+    connect(bookBtn, SIGNAL(clicked()), this, SLOT(slotBookBtnClicked()));//裁切按钮
     connect(saveBtn,SIGNAL(clicked()),this,SLOT(slotSaveBtnClicked()));//保存按钮
     connect(imgListView,SIGNAL(pressed(const QModelIndex)),this,SLOT(slotImgListViewPressed(const QModelIndex)));//图像列表点击事件
     connect(imgListView,SIGNAL(doubleClicked(const QModelIndex)),this,SLOT(slotListDoubleClicked(const QModelIndex)));//列表项双击
@@ -281,7 +292,7 @@ void CameraWindow::addItem(QString path)
     pItem->setData(QVariant::fromValue(itemData),Qt::UserRole+1);
     listViewModel->appendRow(pItem);
     fileNameList<<path;
-    imgListView->scrollToBottom();//自动滚动到最下面
+    //imgListView->scrollToBottom();//自动滚动到最下面
 }
 
 //初始化SDK
@@ -293,11 +304,11 @@ void CameraWindow::initSDK()
     {
         qDebug()<<"camera's par key:"<<it.key()<<",value:"<<it.value();
 
-        if(it.key() == "format_c")
+        if(it.key() == "format")
         {
             formatIndex = it.value().toInt();
         }
-        if(it.key() == "resolution_c")
+        if(it.key() == "resolution")
         {
             QStringList resolutionList = it.value().split("x");
             if(resolutionList.count() >= 2)
@@ -323,6 +334,7 @@ void CameraWindow::initSDK()
     Cam_SetCameraResolution(nDeviceIndex,videoWidth,videoHeight);
     qDebug()<<"formatIndex:"<<formatIndex<<",videoWidth:"<<videoWidth<<",videoHeight:"<<videoHeight;
     Cam_CameraCaptureStart(nDeviceIndex,ReceiveImage);
+    //Cam_AutoCamptureStart(nDeviceIndex,callBackAutoCaptureFun);
     Cam_SetAutoCrop(isCut);
 
 }
@@ -443,6 +455,34 @@ void CameraWindow::paintEvent(QPaintEvent *event)
              isStartShotTimer = true;
          }
     }
+    if(m_bIsBook)
+    {
+
+        QColor clol(255,165,0,120);
+        QPen penR(clol);//定义画笔
+        QBrush brush;   //画刷。填充几何图形的调色板，由颜色和填充风格组成
+        brush.setColor(QColor(255,165,0,120));
+        brush.setStyle(Qt::SolidPattern);
+        painterDraw.setPen(penR);
+        painterDraw.setBrush(brush);
+        painterDraw.drawRect(280,50,40,285);
+
+        //QColor green(0,0xFF,0);//设置颜色
+        //QPen pen(green);//定义画笔
+        QVector<qreal> dashes;
+        qreal space = 2;
+        dashes << 2<< space << 2 <<space;
+        penR.setDashPattern(dashes);
+        penR.setWidth(5);//
+        painterDraw.setPen(penR);
+        QLineF line(300, 50.0, 300.0, 335.0);
+        painterDraw.drawLine(line);
+
+        //QPen pen; //画笔。绘制图形边线，由颜色、宽度、线风格等参数组成
+        //pen.setColor(QColor(255,0,0,255));
+
+
+    }
 }
 
 //窗口关闭,停止视频
@@ -450,17 +490,6 @@ void CameraWindow::closeEvent(QCloseEvent *event)
 {
     emit signalWindowClosed();//窗口关闭信号
     Cam_CameraCaptureStop();
-    if(nShotType == 1)
-    {
-        if(shotTimer != NULL)
-        {
-             if(shotTimer->isActive() == true)
-             {
-                 shotTimer->stop();
-                 shotTimer = NULL;
-             }
-        }
-    }
 }
 
 //扫描按钮槽
@@ -468,7 +497,7 @@ void CameraWindow::slotScanBtnClicked()
 {
     if(scanBtn->text() == "停止" && nShotType == 1 )
     {
-        if(shotTimer != NULL && shotTimer->isActive() == true)
+        if(shotTimer->isActive() == true)
         {
             shotTimer->stop();
             shotTimer = NULL;
@@ -492,12 +521,15 @@ void CameraWindow::slotScanBtnClicked()
 
     shot();//拍摄图像
 }
+int CameraWindow::callBackAutoCaptureFun(long nState)
+{
 
+}
 //拍摄图像
 void CameraWindow::shot()
 {
     //图像文件夹路径
-    QString imgFolderPath = GlobalHelper::getScanTempFoler();
+    QString imgFolderPath = GlobalHelper::getScanFolder() + "/";//GlobalHelper::getScanTempFoler();
     char *folderPath;
     QByteArray qba = imgFolderPath.toLatin1();
     folderPath = qba.data();
@@ -506,8 +538,9 @@ void CameraWindow::shot()
     int imgIndex = GlobalHelper::readSettingValue("set","imgPreNameIndex").toInt();
     imgIndex++;
     QString strImgIndex = QString("%1").arg(imgIndex,6,10,QLatin1Char('0'));//编号补齐6位，如：000001
+    QString strImgIndexDate = QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz");//日期编号
     char *cStrImgIndex;
-    QByteArray qbaIndex = strImgIndex.toLatin1();
+    QByteArray qbaIndex = strImgIndexDate.toLatin1();//strImgIndex.toLatin1();
     cStrImgIndex = qbaIndex.data();
     GlobalHelper::writeSettingValue("set","imgPreNameIndex",QString::number(imgIndex));//扫描文件的名称编号
 
@@ -523,7 +556,7 @@ void CameraWindow::shot()
 
     //图像存储路径
     char path[256]={0};
-    char part_path[256]={0};
+    char part_path[2560]={0};
     sprintf (path, "%s%s.%s", folderPath,cStrImgIndex,imgSuffix);
     strcpy (part_path, path);
     qDebug()<<"camera存图路径:"<<part_path;
@@ -537,13 +570,8 @@ void CameraWindow::shot()
     int nR = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_r").toInt();
     int nG = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_g").toInt();
     int nB = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_b").toInt();
-    if(sImgSuffix.contains("jpg") == false)
-    {
-         nR = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_b").toInt();
-         nB = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_r").toInt();
-    }
-
     QString szWaterContent = GlobalHelper::readSettingValue("imgEdit","waterMarkText");
+
     //文档类型(0=原始文档，1=文档优化，2=彩色优化，3=红印文档优化，4=反色，5=滤红)
     int nDocType = GlobalHelper::readSettingValue("imgEdit","docType").toInt();
     bool bIsTextEn = false;//文档优化
@@ -573,7 +601,7 @@ void CameraWindow::shot()
     bool bNoise = false;//去噪
     if(GlobalHelper::readSettingValue("imgEdit","isFilterDenoising").toInt() == 0)
     {
-        bNoise = true;
+       // bNoise = true;
     }
     bool bFillBorder = false;//缺角修复
     if(GlobalHelper::readSettingValue("imgEdit","isRepair").toInt() == 0)
@@ -586,7 +614,14 @@ void CameraWindow::shot()
 
     ImageParam imgparam;
     memset(&imgparam,0,sizeof(imgparam));
-    imgparam.bIsAutoCrop = isCut;//自动裁切（调用多图裁切的算法）
+   // imgparam.bIsAutoCrop = isCut;//自动裁切（调用多图裁切的算法）
+   if(m_bIsBook)
+    {
+         imgparam.nCropType = 3;
+    }
+    else {
+         imgparam.nCropType = isCut;
+    }
     imgparam.nRotate = nVideoRotateAngle;//旋转角度
     imgparam.nColorType = nImgColorType; //颜色类型（彩色、灰度、黑白）
     imgparam.bIsWater = bIsWater;//水印
@@ -603,10 +638,94 @@ void CameraWindow::shot()
     imgparam.bColorDropOut = bColorDropOut;//滤红
     imgparam.bNoise = bNoise;//去噪
     imgparam.bFillBorder = bFillBorder;//缺角修复
+    //imgparam.bIsBook = m_bIsBook;
 
-    Cam_CameraCaptureFile(0,part_path,imgparam);
 
-    addItem(part_path);
+     Cam_CameraCaptureFile(0,part_path,imgparam);
+    if(imgparam.nCropType==2||imgparam.nCropType == 3)
+    {
+        char szout[20][100] = {0};
+        int nNum(0);
+        char c = ';';
+        DecodeString(part_path,szout,nNum,c);
+        barcodeInfoList infos;
+        for (int var = 0; var < nNum; ++var)
+        {
+
+            addItem(szout[var]);
+
+            /*
+            if(strcmp(imgSuffix,"jpg")==NULL)
+            {
+                unsigned char *des_buff=NULL;
+                JPEGInfo jpgInfo;
+                int desW=0,desH=0;
+                Cam_readBufFromJpeg(szout[var],&des_buff,jpgInfo,desW,desH);
+
+                Cam_BarcodeRecognizeBuffer((char*)des_buff,jpgInfo.width,jpgInfo.height,3,infos);
+                qDebug("barcode is %s\n",infos.infos[0].cbarcodeRet);
+            }
+            else {
+                QImage* img2 = new QImage(szout[var]);
+                unsigned char *data = img2->bits ();
+                long lWidth=img2->width(),lHeight=img2->height();
+                //barcodeInfoList infos;
+                Cam_BarcodeRecognizeBuffer((char*)data,lWidth,lHeight,3,infos);
+                qDebug("barcode is %s\n",infos.infos[0].cbarcodeRet);
+            }
+            */
+        }
+    }
+    else
+    {
+        addItem(part_path);
+        /*
+        if(strcmp(imgSuffix,"jpg")==NULL)
+        {
+            unsigned char *des_buff=NULL;
+            JPEGInfo jpgInfo;
+            int desW=0,desH=0;
+            Cam_readBufFromJpeg(part_path,&des_buff,jpgInfo,desW,desH);
+            barcodeInfoList infos;
+            Cam_BarcodeRecognizeBuffer((char*)des_buff,jpgInfo.width,jpgInfo.height,3,infos);
+        }
+        else
+{
+            QImage* img2 = new QImage(part_path);
+            unsigned char *data = img2->bits ();
+            long lWidth=img2->width(),lHeight=img2->height();
+            barcodeInfoList infos;
+            Cam_BarcodeRecognizeBuffer((char*)data,lWidth,lHeight,3,infos);
+        }
+        */
+    }
+    saveBtn->setEnabled(true);//启用保存按钮
+}
+void CameraWindow::DecodeString(char* pszin,char (*pszout)[100],int& num,char mark)
+{
+    int nStart(0),nEnd(0),nNum(0),nIndex(0);
+
+    int nLength = strlen(pszin);
+
+    if (nLength > 0)
+    {
+        for (;nEnd < nLength;nEnd++)
+        {
+            if(*(pszin + nEnd) == mark)
+            {
+                for (;nStart < nEnd;nStart++)
+                {
+                    pszout[nNum][nIndex++] = *(pszin + nStart);
+                }
+                pszout[nNum][nIndex] = '\0';
+                nIndex = 0;
+                nNum++;
+                nEnd++;
+                nStart = nEnd;
+            }
+        }
+    }
+    num = nNum;
 }
 
 //1:1按钮
@@ -668,10 +787,21 @@ void CameraWindow::slotCutBtnClicked()
     }
     Cam_SetAutoCrop(isCut);
 }
+void CameraWindow::slotBookBtnClicked()
+{
+    m_nBookCount++;
+    if(m_nBookCount%2==0){
+        m_bIsBook = false;
+    }
+    else {
+        m_bIsBook = true;
+    }
 
+}
 //保存按钮槽
 void CameraWindow::slotSaveBtnClicked()
 {
+    /*
     QModelIndexList selectItems = imgListView->selectionModel()->selectedIndexes();
     //目标文件夹不存在就创建
     QDir newFolder;
@@ -679,16 +809,19 @@ void CameraWindow::slotSaveBtnClicked()
     {
         newFolder.mkpath(GlobalHelper::getScanFolder());
     }
+    ClassificationHelper::captureFilePath.clear();
     foreach(QModelIndex mIndex,selectItems)
     {
         QString oldFilePath = fileNameList.value(mIndex.row());
         QFileInfo *fi = new QFileInfo(oldFilePath);
         QString newFilePath = GlobalHelper::getScanFolder()+"/"+fi->fileName();
         copyFile(oldFilePath,newFilePath);
+        ClassificationHelper::captureFilePath<<newFilePath;//加入到主窗的文件列表中
         delete fi;
     }
-
     this->close();
+    */
+    QDesktopServices::openUrl(QUrl(GlobalHelper::getScanFolder()));
 }
 
 //拷贝文件
@@ -772,11 +905,11 @@ void CameraWindow::slotImgListViewPressed(const QModelIndex selectIndex)
     QModelIndexList selectItems = imgListView->selectionModel()->selectedIndexes();
     if(selectItems.count() > 0)
     {
-        saveBtn->setEnabled(true);//启用保存按钮
+       // saveBtn->setEnabled(true);//启用保存按钮
     }
     else
     {
-        saveBtn->setEnabled(false);//禁用保存按钮
+       // saveBtn->setEnabled(false);//禁用保存按钮
     }
 }
 

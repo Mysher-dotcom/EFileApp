@@ -17,7 +17,7 @@ public:
     static DoScanThread *g_doScanThread;
 
     void closeThread();
-    static int doScanReceiveCB(uchar*data,int size,int w,int h,int nBpp,int nDPI);
+    static int doScanReceiveCB(const uchar*data,int size,int w,int h,int nBpp,int nDPI);
     static int doScanStatuCB(int nStatus);
 
 private:

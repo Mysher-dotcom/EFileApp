@@ -8,7 +8,7 @@
 #include <QPixmap>
 #include <QMimeDatabase>
 #include "camcapturesdk.h"
-#include "globalhelper.h"
+#include "helper/globalhelper.h"
 
 //图像列表item样式重构
 PicItemDelegate::PicItemDelegate(QObject *parent) : QStyledItemDelegate (parent)

@@ -1,11 +1,11 @@
 #include "doscanthread.h"
-#include "globalhelper.h"
+#include "helper/globalhelper.h"
 #include <QDebug>
 #include <QThread>
 #include "camscansdk.h"
 #include "cmimage.h"
 #include "MImage.h"
-#include "errortype.h"
+#include "errortypescanner.h"
 #include <DDialog>
 #include <QIcon>
 #include <QDateTime>
@@ -28,11 +28,10 @@ void DoScanThread::closeThread()
 }
 
 //扫描过程中存图回调
-int DoScanThread::doScanReceiveCB(uchar*data,int size,int w,int h,int nBpp,int nDPI)
+int DoScanThread::doScanReceiveCB(const uchar*data,int size,int w,int h,int nBpp,int nDPI)
 {
-    qDebug("DoScanThread::doScanReceiveCB start\n");
     emit g_doScanThread->signalScanSaveImage((char*)data,w,h,NULL,size,nDPI);
-    qDebug("DoScanThread::doScanReceiveCB end\n");
+
     return 0;
 }
 
@@ -55,7 +54,7 @@ int DoScanThread::doScanStatuCB(int nStatus)
     }
     else
     {
-        msg="未知错误";
+        msg="未知错误,"+nStatus;
     }
 
     emit g_doScanThread->signalScanError(msg);
@@ -84,9 +83,8 @@ void DoScanThread::startScanSlot()
    int devIndex = 0;//str.toInt();
    Scan(devIndex,doScanReceiveCB,doScanStatuCB);//扫描
 
-   qDebug("scan finish\n");
-
-   emit g_doScanThread->signalScanOver();//扫描结束
+   //qDebug()<<"scan finish";
+    emit g_doScanThread->signalScanOver();//扫描结束
 }
 
 //新增图像

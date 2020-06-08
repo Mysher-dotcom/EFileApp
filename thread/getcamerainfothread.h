@@ -10,7 +10,7 @@ class GetCameraInfoThread: public QObject
 {
         Q_OBJECT
 public:
-    GetCameraInfoThread(int devIndex,QObject *parent = nullptr);
+    GetCameraInfoThread(QStringList devIndexList,QObject *parent = nullptr);
 
     /*
      * 设备参数键值对集合
@@ -27,12 +27,15 @@ public:
      */
     QMap<int ,QMap<QString ,QStringList>> cameraParMap;
 
+
+    QStringList _devIndexList;
+
 signals:
     //信号
-    void signalCameraError(QString);//拍摄仪发生错误
     void signalNoCamera();//无设备信息
     void signalCameraInfo(QVariant, const QString &);//设备信息信息(信号槽不可以传复杂类型的参数，需要转化成QVariant作为参数)
     void signalCameraParInfo(QVariant,const QString &);//设备的参数信息
+    void signalParOver();//设备参数停止线程
 
 public slots:
     //槽

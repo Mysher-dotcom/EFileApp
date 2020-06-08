@@ -10,7 +10,7 @@ class GetScannerInfoThread: public QObject
 {
     Q_OBJECT
 public:
-    explicit GetScannerInfoThread(int devIndex,QObject *parent = nullptr);
+    explicit GetScannerInfoThread(QStringList devIndexList,QObject *parent = nullptr);
 
     void closeThread();//停止线程
 
@@ -30,19 +30,19 @@ public:
      */
     QMap<int ,QMap<QString ,QStringList>> devParMap;
 
+    QStringList _devIndexList;
+
 private:
     volatile bool isStop;
 
 
 signals:
     //信号
-    void signalNoScanner();//无设备信号
-
-    //设备信息信号(信号槽不可以传复杂类型的参数，需要转化成QVariant作为参数)
-    void signalScannerInfo(QVariant, const QString &);
-
-    //设备的参数信号
-    void signalScannerParInfo(QVariant,const QString &);
+    void signalNoScanner();//无设备信号    
+    void signalScannerInfo(QVariant, const QString &);//设备信息信号(信号槽不可以传复杂类型的参数，需要转化成QVariant作为参数)
+    void signalScannerParInfo(QVariant,const QString &);//设备的参数信号
+    void signalOver();//停止线程
+    void signalParOver();//设备参数停止线程
 
 public slots:
     //槽

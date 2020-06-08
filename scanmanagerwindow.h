@@ -44,7 +44,7 @@ private:
 
     //函数
     void initUI();//初始化界面
-    void showDeviceListUI();//显示设备列表UI
+    void showDeviceListUI();//显示设备列表控件UI
     void openScannerThread();//开启SANE线程
     void closeScannerThread();//关闭SANE线程
     void openCameraThread();//开启拍摄仪线程
@@ -143,6 +143,7 @@ private:
     DRadioButton *fontWaterrbBtn;//文字水印单选按钮
     DTextEdit *fontWaterText;//文字水印文本
     DIconButton *colorBtn;//文字水印颜色选择按钮
+    DRadioButton *imageWaterBtn;//图片水印单选按钮
     DComboBox *docTypeCBB;//文档类型下拉框(0=原始文档，1=文档优化，2=彩色优化，3=红印文档优化，4=反色，5=滤红)
     DCheckBox *filterDenoisingCKB;//去噪复选框
     DCheckBox *repairCKB;//缺角修复复选框
@@ -151,6 +152,7 @@ private:
     DRadioButton *shotTypeManualrbBtn;//手动拍摄单选按钮
     DRadioButton *shotTypeTimerrbBtn;//定时拍摄单选按钮
     DComboBox *shotTypeTimerCBB;//定时拍摄时间下拉框
+    DRadioButton *shotTypeAutoCaptureBtn;//自动拍摄单选按钮
 
 signals:
     //信号
@@ -159,7 +161,7 @@ private slots:
     //槽
     void slotScanButtonClicked();//扫描按钮点击
     void slotFinishThread();//SANE线程停止触发
-    void slotDevListPressed(const QModelIndex index);//设备列表点击事件
+    void slotDevListPressed(const QModelIndex index);//设备列表点击事件,获取指定设备的参数
     void slotComboBoxCurrentIndexChanged(const int index);//下拉框选项改变
     void slotColorButtonClicked();//颜色按钮点击
     void slotNoScannerUI();//无设备UI
@@ -184,7 +186,8 @@ private slots:
     void slotNoCameraUI();//无拍摄仪UI
     void slotCameraInfoUI(QVariant qv, const QString &str);//拍摄仪信息
     void slotCameraParInfoUI(QVariant qv,  const QString &str);//拍摄仪参数信息
-    void slotCameraError(QString);//拍摄仪发生错误
+
+    void slotGetDeviceList();//获取设备列表并显示到UI
 
 };
 

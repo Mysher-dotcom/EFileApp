@@ -11,7 +11,7 @@
 #include <QStandardPaths>
 #include <QCoreApplication>
 #include <QDebug>
-#include <globalhelper.h>
+#include <helper/globalhelper.h>
 #include <DDialog>
 #include <QThread>
 #include <QList>
@@ -21,10 +21,11 @@
 #include "listview/picitemdelegate.h"
 #include "mainwindow.h"
 #include <DSpinner>
-#include "globalhelper.h"
+#include "helper/globalhelper.h"
 #include <QDateTime>
 #include <QDesktopServices>
 #include <QMutex>
+#include "helper/classificationhelper.h"
 
 ScanWindow::ScanWindow(QMap<int ,QString> map,QWidget *parent) :
     DMainWindow(parent),
@@ -135,15 +136,7 @@ void ScanWindow::slotFinishThread()
         saveExit(true);
     }
 
-    if(listViewIsShow == false)
-    {
-        successScanUI();
-        showImageList();
-        listViewIsShow = true;
-    }
-    changeScanBtnStyle(false);//修改扫描按钮样式，true=扫描中样式，false=普通样式
-    //closeThread();//发生错误，结束扫描线程
-    //changeScanBtnStyle(false);//按钮变成普通样式
+    changeScanBtnStyle(false);
 }
 
 //成功扫描UI，出现图像列表和底部扫描按钮
@@ -235,6 +228,7 @@ void ScanWindow::saveExit(bool isSaveAll)
     {
         newFolder.mkpath(GlobalHelper::getScanFolder());
     }
+    ClassificationHelper::captureFilePath.clear();
     //不保存所有，只保存选中的图像
     if(isSaveAll == false)
     {
@@ -245,6 +239,7 @@ void ScanWindow::saveExit(bool isSaveAll)
             QFileInfo *fi = new QFileInfo(oldFilePath);
             QString newFilePath = GlobalHelper::getScanFolder()+"/"+fi->fileName();
             copyFile(oldFilePath,newFilePath);
+            ClassificationHelper::captureFilePath<<newFilePath;//加入到主窗的文件列表中
             delete fi;
         }
     }
@@ -256,6 +251,7 @@ void ScanWindow::saveExit(bool isSaveAll)
             QFileInfo *fi = new QFileInfo(oldFilePath);
             QString newFilePath = GlobalHelper::getScanFolder()+"/"+fi->fileName();
             copyFile(oldFilePath,newFilePath);
+            ClassificationHelper::captureFilePath<<newFilePath;//加入到主窗的文件列表中
             delete fi;
         }
     }
@@ -404,7 +400,6 @@ void ScanWindow::addItem(QString path)
         showImageList();
         listViewIsShow = true;
     }
-    qDebug("ScanWindow::addItem 1\n");
     QStandardItem *pItem = new QStandardItem ();
     PicListItemData itemData;
     itemData.picPath =path;
@@ -413,9 +408,7 @@ void ScanWindow::addItem(QString path)
     pItem->setData(QVariant::fromValue(itemData),Qt::UserRole+1);
     pModel->appendRow(pItem);
     fileNames << path;
-    //changeScanBtnStyle(false);
     imgList->scrollToBottom();//自动滚动到最下面
-    qDebug("ScanWindow::addItem 2\n");
 
 }
 
@@ -427,7 +420,7 @@ void ScanWindow::changeScanBtnStyle(bool isScanning)
         scanBtn->setStyleSheet("background:transparent;border:none;");
         scanBtnSpinner->show();
         scanBtnSpinner->start();
-        scanBtnText->setText("   扫描中...");
+        scanBtnText->setText("扫描中...");
     }
     else
     {
@@ -463,6 +456,14 @@ void ScanWindow::slotScanError(QString msg)
     dialog->addButton("确定",true);
     dialog->exec();
 
+    if(listViewIsShow == false)
+    {
+        successScanUI();
+        showImageList();
+        listViewIsShow = true;
+    }
+    changeScanBtnStyle(false);//修改扫描按钮样式，true=扫描中样式，false=普通样式
+    closeThread();//发生错误，结束扫描线程
 }
 
 
@@ -471,9 +472,8 @@ CJpeg m_jpg_scan;//CJPEG对象
 
 void ScanWindow::slotScanSaveImage(char* data,int w,int h,char* part_path1,int nSize,int nDPI)
 {
-    qDebug("ScanWindow::slotScanSaveImage start\n");
     //图像文件夹路径
-    QString imgFolderPath = GlobalHelper::getScanTempFoler();
+    QString imgFolderPath =  GlobalHelper::getScanFolder() + "/";//GlobalHelper::getScanTempFoler();
     char *folderPath;
     QByteArray qba = imgFolderPath.toLatin1();
     folderPath = qba.data();
@@ -482,8 +482,9 @@ void ScanWindow::slotScanSaveImage(char* data,int w,int h,char* part_path1,int n
     int imgIndex = GlobalHelper::readSettingValue("set","imgPreNameIndex").toInt();
     imgIndex++;
     QString strImgIndex = QString("%1").arg(imgIndex,6,10,QLatin1Char('0'));
+    QString strImgIndexDate = QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz");//日期编号
     char *cStrImgIndex;
-    QByteArray qbaIndex = strImgIndex.toLatin1();
+    QByteArray qbaIndex = strImgIndexDate.toLatin1();//strImgIndex.toLatin1();
     cStrImgIndex = qbaIndex.data();
     GlobalHelper::writeSettingValue("set","imgPreNameIndex",QString::number(imgIndex));//扫描文件的名称编号
 
@@ -602,10 +603,10 @@ void ScanWindow::slotScanSaveImage(char* data,int w,int h,char* part_path1,int n
     }
 
     //去噪
-    int nIsNoise = GlobalHelper::readSettingValue("imgEdit","isFilterDenoising").toInt();
-    if(nIsNoise == 0)
+   // int nIsNoise = GlobalHelper::readSettingValue("imgEdit","isFilterDenoising").toInt();
+   // if(nIsNoise == 0)
     {
-        mcvNoise(srcCut,0);
+   //     mcvNoise(srcCut,0);
     }
 
     //黑白图，二值化
@@ -620,7 +621,8 @@ void ScanWindow::slotScanSaveImage(char* data,int w,int h,char* part_path1,int n
            srcCut = NULL;
        }
     }
-    else {
+    else
+    {
         srcThreshold = mcvClone(srcCut);
         if(srcCut)
         {
@@ -645,10 +647,8 @@ void ScanWindow::slotScanSaveImage(char* data,int w,int h,char* part_path1,int n
         long color_g = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_g").toLong();
         long color_b = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_b").toLong();
         //src = mcvWaterMark2(src,cWaterMarkText,"./simhei.ttf",color_r,color_g,color_b,0,0);
-        QString str = QCoreApplication::applicationDirPath();
-        QString strFontPath = QString("%1/%2").arg(str).arg("simhei.ttf");
         //水印颜色 R B颠倒，字号给0为自适应
-        srcWater = mcvWaterMark2(srcThreshold,cWaterMarkText,strFontPath.toLocal8Bit().data(),0,color_b,color_g,color_r,0,0);
+        srcWater = mcvWaterMark2(srcThreshold,cWaterMarkText,"./simhei.ttf",0,color_b,color_g,color_r,0,0);
         if(srcThreshold)
         {
             mcvReleaseImage1(srcThreshold);
@@ -702,9 +702,8 @@ void ScanWindow::slotScanSaveImage(char* data,int w,int h,char* part_path1,int n
     srcWater = NULL;
 
     addItem(part_path);
-    qDebug("addItem end\n");
-}
 
+}
 char* ScanWindow::substrend(char * str, int n)
  {
      char * substr = (char*) malloc (n+1);
