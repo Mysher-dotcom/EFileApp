@@ -12,12 +12,12 @@ int main(int argc, char *argv[])
 
     a.setAttribute(Qt::AA_UseHighDpiPixmaps);
     a.loadTranslator();
-    a.setOrganizationName("viisan");
-    a.setApplicationVersion(DApplication::buildVersion("1.0.0"));
-    a.setApplicationAcknowledgementPage("http://www.viisan.com");
+    a.setOrganizationName("scaner");
+    a.setApplicationVersion(DApplication::buildVersion("5.1.0.2"));
+   // a.setApplicationAcknowledgementPage("http://www.viisan.com");
     a.setProductIcon(QIcon(":/img/logo/logo-16.svg"));
-    a.setProductName("Viisan Scan Manager");
-    a.setApplicationName("Viisan Scan Manager"); //只有在这儿修改窗口标题才有效
+    a.setProductName("scaner");
+    a.setApplicationName("scaner"); //只有在这儿修改窗口标题才有效
 
     MainWindow w;
     w.show();
