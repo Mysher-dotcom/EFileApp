@@ -1,0 +1,2 @@
+# Camera list
+ATTRS{idVendor}=="2e5a", MODE="666"

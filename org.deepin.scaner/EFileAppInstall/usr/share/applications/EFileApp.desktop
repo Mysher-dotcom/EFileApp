@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=5.1.0.2
+Name=扫描管理
+Comment=scaner
+Exec=/opt/scaner/bin/EFileApp.sh
+Icon=/opt/scaner/bin/logo.svg
+Terminal=false
+StartupNotify=true
+Type=Application
+Categories=Utility;Application

@@ -1,0 +1,37 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/title/scan.svg</file>
+        <file>img/title/picEdit.svg</file>
+        <file>img/title/font.svg</file>
+        <file>img/title/iconLayout.svg</file>
+        <file>img/title/listLayout.svg</file>
+        <file>img/title/output.svg</file>
+        <file>img/cameraIcon.svg</file>
+        <file>img/scannerIcon.svg</file>
+        <file>img/scanningIcon.svg</file>
+        <file>img/dialogWarnIcon.svg</file>
+        <file>img/itemSelected.svg</file>
+        <file>img/logo/logo-256.svg</file>
+        <file>img/logo/logo-16.svg</file>
+        <file>img/logo/logo-24.svg</file>
+        <file>img/logo/logo-32.svg</file>
+        <file>img/logo/logo-48.svg</file>
+        <file>img/logo/logo-64.svg</file>
+        <file>img/logo/logo-96.svg</file>
+        <file>img/logo/logo-128.svg</file>
+        <file>img/logo/logo-512.svg</file>
+        <file>img/itemSelected_dark.svg</file>
+        <file>img/watermarkColor.svg</file>
+        <file>img/camera/cut.svg</file>
+        <file>img/camera/rotateleft.svg</file>
+        <file>img/camera/rotateright.svg</file>
+        <file>img/camera/zoomin.svg</file>
+        <file>img/camera/zoomout.svg</file>
+        <file>img/camera/1t1.svg</file>
+        <file>sound/finishSound.wav</file>
+        <file>img/camera/shottimer.svg</file>
+        <file>img/camera/book.svg</file>
+        <file>img/upload.svg</file>
+        <file>img/treeIcon.svg</file>
+    </qresource>
+</RCC>
