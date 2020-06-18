@@ -98,39 +98,27 @@ RESOURCES += \
 #INCLUDEPATH 指向需要包含的头文件目录
 #LIBS 指向需要包含的具体库文件
 #-------------------------------------------------
-
-#扫描仪
-
-
-#INCLUDEPATH += $$PWD/../../target_EFile/include/zbar
-#INCLUDEPATH += $$PWD/../../target_EFile/include
-
-
-#LIBS += -L$$PWD/../../target_EFile/lib/libusb-1.0 -lusb-1.0
-#LIBS += -L$$PWD/../../target_EFile/lib -lzbar
-#LIBS += -L$$PWD/../../target_EFile/lib/hdf -lhpdf
 #加载opencv
-INCLUDEPATH += $$PWD/./amd64/include/opencv2411 \
-               $$PWD/./amd64/include//opencv2411/opencv \
-               $$PWD/./amd64/include//opencv2411/opencv2
+INCLUDEPATH += /usr/include/viisan.sdktools/opencv2411 \
+               /usr/include/viisan.sdktools/opencv2411/opencv \
+               /usr/include/viisan.sdktools/opencv2411/opencv2
 
-LIBS += $$PWD/amd64/lib/opencv2411/libopencv_highgui.so \
-        $$PWD/amd64/lib/opencv2411/libopencv_flann.so \
-        $$PWD/amd64/lib/opencv2411/libopencv_features2d.so \
-        $$PWD/amd64/lib/opencv2411/libopencv_core.so \
-        $$PWD/amd64/lib/opencv2411/libopencv_calib3d.so \
-        $$PWD/amd64/lib/opencv2411/libopencv_imgproc.so \
-        $$PWD/amd64/lib/opencv2411/libopencv_photo.so
-INCLUDEPATH += $$PWD/amd64/include/hpdf
-LIBS += -L$$PWD/amd64/lib/hpdf -lhpdf
-
-INCLUDEPATH += $$PWD/amd64/include/jpeg
-LIBS += -L$$PWD/amd64/lib/jpeg  -ljpeg
+LIBS += /usr/lib/viisan.sdktools/opencv2411/libopencv_highgui.so \
+        /usr/lib/viisan.sdktools/opencv2411/libopencv_core.so \
+        /usr/lib/viisan.sdktools/opencv2411/libopencv_flann.so \
+        /usr/lib/viisan.sdktools/opencv2411/libopencv_features2d.so \
+        /usr/lib/viisan.sdktools/opencv2411/libopencv_calib3d.so \
+        /usr/lib/viisan.sdktools/opencv2411/libopencv_imgproc.so \
+        /usr/lib/viisan.sdktools/opencv2411/libopencv_photo.so
+INCLUDEPATH += /usr/include/viisan.sdktools/hpdf
+LIBS += -L/usr/lib/viisan.sdktools/hpdf -lhpdf
+INCLUDEPATH +=/usr/include/viisan.sdktools/jpeg
+LIBS += -L/usr/lib/viisan.sdktools/jpeg  -ljpeg
 #拍摄仪
-INCLUDEPATH += $$PWD/amd64/include/CamScanSDK
-LIBS += -L$$PWD/amd64/lib/CamScanSDK -lCamScanSDK #此目录下所有包含CamScanSDK命名的so文件
-INCLUDEPATH += $$PWD/amd64/include/CmImage
-LIBS += -L$$PWD/amd64/lib/CmImage -lCmImage
-INCLUDEPATH += $$PWD/amd64/include/CamCaptureSDK
-LIBS += -L$$PWD/amd64/lib/CamCaptureSDK -lCamCaptureSDK
+INCLUDEPATH += /usr/include/viisan.cmscan/CamScanSDK
+LIBS += -L/usr/lib/viisan.cmscan/CamScanSDK -lCamScanSDK #此目录下所有包含CamScanSDK命名的so文件
+INCLUDEPATH += /usr/include/viisan.cmscan/CmImage
+LIBS += -L/usr/lib/viisan.cmscan/CmImage -lCmImage
+INCLUDEPATH += /usr/include/viisan.cmscan/CamCaptureSDK
+LIBS += -L/usr/lib/viisan.cmscan/CamCaptureSDK -lCamCaptureSDK
 RC_FILE += logo.rc
