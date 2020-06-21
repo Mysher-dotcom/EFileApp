@@ -19,7 +19,7 @@ TEMPLATE = app
 # deprecated API in order to know how to port your code away from it.
 
 DEFINES += QT_DEPRECATED_WARNINGS
-DESTDIR = $$PWD/../EFileAppInstall/opt/scaner/bin
+DESTDIR = $$PWD/../../target_EFile
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -36,7 +36,7 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         scanmanagerwindow.cpp \
-        #sanehelper/sanehelper.cpp \
+        sanehelper/sanehelper.cpp \
         scanwindow.cpp \
         helper/globalhelper.cpp \
         listview/picitemdelegate.cpp \
@@ -58,7 +58,7 @@ SOURCES += \
 HEADERS += \
         mainwindow.h \
         scanmanagerwindow.h \
-        #sanehelper/sanehelper.h \
+        sanehelper/sanehelper.h \
         scanwindow.h \
         helper/globalhelper.h \
         listview/listviewitemdata.h \
@@ -98,27 +98,38 @@ RESOURCES += \
 #INCLUDEPATH 指向需要包含的头文件目录
 #LIBS 指向需要包含的具体库文件
 #-------------------------------------------------
-#加载opencv
-INCLUDEPATH += /usr/include/viisan.sdktools/opencv2411 \
-               /usr/include/viisan.sdktools/opencv2411/opencv \
-               /usr/include/viisan.sdktools/opencv2411/opencv2
+#LIBS += /lib64/libsane.so.1 #中标麒麟+龙芯 sane路径
+LIBS += /usr/lib/x86_64-linux-gnu/libsane.so.1 #x86+uos sane路径
+#LIBS += /usr/lib/aarch64-linux-gnu/libsane.so.1 #arm+uos sane路径
 
-LIBS += /usr/lib/viisan.sdktools/opencv2411/libopencv_highgui.so \
-        /usr/lib/viisan.sdktools/opencv2411/libopencv_core.so \
-        /usr/lib/viisan.sdktools/opencv2411/libopencv_flann.so \
-        /usr/lib/viisan.sdktools/opencv2411/libopencv_features2d.so \
-        /usr/lib/viisan.sdktools/opencv2411/libopencv_calib3d.so \
-        /usr/lib/viisan.sdktools/opencv2411/libopencv_imgproc.so \
-        /usr/lib/viisan.sdktools/opencv2411/libopencv_photo.so
-INCLUDEPATH += /usr/include/viisan.sdktools/hpdf
-LIBS += -L/usr/lib/viisan.sdktools/hpdf -lhpdf
-INCLUDEPATH +=/usr/include/viisan.sdktools/jpeg
-LIBS += -L/usr/lib/viisan.sdktools/jpeg  -ljpeg
+#扫描仪
+INCLUDEPATH += $$PWD/../../CamScanSDK
+INCLUDEPATH += $$PWD/../../target_EFile/include/jpeg
+INCLUDEPATH += $$PWD/../../target_EFile/include/zbar
+INCLUDEPATH += $$PWD/../../target_EFile/include
+INCLUDEPATH += $$PWD/../../target_EFile/include/hdf
+LIBS += -L$$PWD/../../target_EFile -lCamScanSDK #此目录下所有包含CamScanSDK命名的so文件
+LIBS += -L$$PWD/../../target_EFile/lib/jpeg  -ljpeg
+LIBS += -L$$PWD/../../target_EFile/lib/libusb-1.0 -lusb-1.0
+LIBS += -L$$PWD/../../target_EFile/lib -lzbar
+LIBS += -L$$PWD/../../target_EFile/lib/hdf -lhpdf
+
 #拍摄仪
-INCLUDEPATH += /usr/include/viisan.cmscan/CamScanSDK
-LIBS += -L/usr/lib/viisan.cmscan/CamScanSDK -lCamScanSDK #此目录下所有包含CamScanSDK命名的so文件
-INCLUDEPATH += /usr/include/viisan.cmscan/CmImage
-LIBS += -L/usr/lib/viisan.cmscan/CmImage -lCmImage
-INCLUDEPATH += /usr/include/viisan.cmscan/CamCaptureSDK
-LIBS += -L/usr/lib/viisan.cmscan/CamCaptureSDK -lCamCaptureSDK
+INCLUDEPATH += $$PWD/../../CmImage
+INCLUDEPATH += $$PWD/../../CamCaptureSDK
+LIBS += -L$$PWD/../../target_EFile -lCmImage
+LIBS += -L$$$PWD/../../target_EFile  -lCamCaptureSDK
+
+#加载opencv
+INCLUDEPATH += $$PWD/../../target_EFile/include\
+               $$PWD/../../target_EFile/include/opencv \
+               $$PWD/../../target_EFile/include/opencv2
+LIBS += -L$$PWD/../../target_EFile/lib -lopencv_highgui \
+        -L$$PWD/../../target_EFile/lib -lopencv_core \
+        -L$$PWD/../../target_EFile/lib -lopencv_flann \
+        -L$$PWD/../../target_EFile/lib -lopencv_features2d \
+        -L$$PWD/../../target_EFile/lib -lopencv_calib3d \
+        -L$$PWD/../../target_EFile/lib -lopencv_imgproc \
+        -L$$PWD/../../target_EFile/lib -lopencv_photo
+
 RC_FILE += logo.rc

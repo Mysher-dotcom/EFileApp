@@ -9,7 +9,7 @@
 #include "dtextedit.h"
 #include "dbuttonbox.h"
 #include <QDesktopWidget>
-//#include "sanehelper/sanehelper.h"
+#include "sanehelper/sanehelper.h"
 #include <DDialog>
 #include <QFile>
 #include <qdir.h>
