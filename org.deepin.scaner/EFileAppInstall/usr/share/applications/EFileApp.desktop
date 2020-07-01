@@ -1,5 +1,5 @@
 [Desktop Entry]
-Version=5.1.0.2
+Version=5.1.0.3
 Name=扫描管理
 Comment=scaner
 Exec=/opt/scaner/bin/EFileApp.sh

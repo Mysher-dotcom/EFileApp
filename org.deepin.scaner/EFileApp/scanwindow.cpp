@@ -143,6 +143,7 @@ void ScanWindow::slotFinishThread()
     {
         MainWindow *mainW = (MainWindow*)this->parent()->parent();
         mainW->refreshData();
+        this->close();
     }
     changeScanBtnStyle(false);
 }
@@ -454,20 +455,8 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     MImage * src = mcvCreateImageFromArray(width,height,channel,data,false);
     qDebug("1\n");
 
-
     delete data;
-    data = NULL;
-
-    uchar* dst1 = mcvGetImageData(src);
-    JPEGInfo jpgInfo;
-    memset(&jpgInfo,0,sizeof(jpgInfo));
-    jpgInfo.xResolution.b = 1000;
-    jpgInfo.xResolution.a = nDPI*jpgInfo.xResolution.b;
-    jpgInfo.yResolution.b = 1000;
-    jpgInfo.yResolution.a =nDPI*jpgInfo.yResolution.b;
-    jpgInfo.compression = 50;
-    long lret = m_jpg_scan.saveImageToJpeg(dst1,src->width,src->height,src->channel * 8,"/tmp/or.jpg",jpgInfo);
-    //dst1 = NULL;
+    data = NULL;  
 
     //图像处理顺序：裁切-文档优化-黑白图-打水印
     //是否裁切
@@ -621,20 +610,6 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
             srcThreshold = NULL;
         }
     }
-/*
-    //CJPEG存图
-    MutexBuffLock.lock();
-    uchar* dst = mcvGetImageData(srcWater);
-    JPEGInfo jpgInfo;
-    memset(&jpgInfo,0,sizeof(jpgInfo));
-    jpgInfo.xResolution.b = 1000;
-    jpgInfo.xResolution.a = nDPI*jpgInfo.xResolution.b;
-    jpgInfo.yResolution.b = 1000;*8
-    jpgInfo.yResolution.a =nDPI*jpgInfo.yResolution.b;
-    jpgInfo.compression = 50;
-    long lret1 = m_jpg_scan.saveImageToJpeg(dst,srcWater->width,srcWater->height,srcWater->channel*8,part_path,jpgInfo);
-    MutexBuffLock.unlock();
-*/
     char* tmp = substrend(part_path,2);
        if(strcmp(tmp,"jpg")==NULL)
        {
@@ -648,6 +623,7 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
             jpgInfo.yResolution.b = 1000;
             jpgInfo.yResolution.a =nDPI*jpgInfo.yResolution.b;
             jpgInfo.compression = 50;
+            qDebug("saveImageToJpeg width is %d,height is %d,channel is %d\n",srcWater->width,srcWater->height,srcWater->channel * 8);
             long lret = m_jpg_scan.saveImageToJpeg(dst,srcWater->width,srcWater->height,srcWater->channel * 8,part_path,jpgInfo);
             dst = NULL;
        }

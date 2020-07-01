@@ -75,7 +75,7 @@ QString GlobalHelper::getSettingFilePath()
     QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
     QString docPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
     QString appPath = QCoreApplication::applicationDirPath();
-    return appPath + "/setting.ini";
+    return docPath + "/EFile_config/setting.ini";
 }
 
 //写配置文件,初始值
@@ -132,15 +132,8 @@ void GlobalHelper::writeSettingFile()
     psettings->endGroup();
 
     //设置
-    QString docPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-    QString tmpFolder = docPath + "/scaner";
-    QDir newFolder;
-    if(newFolder.exists(tmpFolder) == false)
-    {
-        newFolder.mkpath(tmpFolder);
-    }
     psettings->beginGroup("set");
-    psettings->setValue("savepath",docPath);//存储路径
+    psettings->setValue("savepath","/tmp/viisan/");//存储路径
     psettings->setValue("fileover","0");//文件覆盖警告开关
     psettings->setValue("nodevice","1");//无设备警告开关
     psettings->setValue("finishbeep","0");//完成后提示音开关
