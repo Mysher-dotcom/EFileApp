@@ -230,7 +230,7 @@ void MainWindow::initConnection()
 void MainWindow::refreshData(bool isTreeClick,QString folderPath)
 {
     QString folderPathTmp = GlobalHelper::getScanFolder();
-    int isDZDA = GlobalHelper::readSettingValue("set","dzda").toInt();
+    int isDZDA = 1;//GlobalHelper::readSettingValue("set","dzda").toInt();
     if(isDZDA == 0)//是否支持分类
     {
         int isClassification = GlobalHelper::readSettingValue("set","classification").toInt();//是否显示分类

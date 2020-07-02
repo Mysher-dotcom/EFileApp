@@ -19,7 +19,7 @@ TEMPLATE = app
 # deprecated API in order to know how to port your code away from it.
 
 DEFINES += QT_DEPRECATED_WARNINGS
-DESTDIR = $$PWD/../../target_EFile
+#DESTDIR = $$PWD/../../target_EFile
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -99,37 +99,37 @@ RESOURCES += \
 #LIBS 指向需要包含的具体库文件
 #-------------------------------------------------
 #LIBS += /lib64/libsane.so.1 #中标麒麟+龙芯 sane路径
-LIBS += /usr/lib/x86_64-linux-gnu/libsane.so.1 #x86+uos sane路径
+#LIBS += /usr/lib/x86_64-linux-gnu/libsane.so.1 #x86+uos sane路径
 #LIBS += /usr/lib/aarch64-linux-gnu/libsane.so.1 #arm+uos sane路径
+LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/lib/sane/libsane.so.1
 
 #扫描仪
-INCLUDEPATH += $$PWD/../../CamScanSDK
-INCLUDEPATH += $$PWD/../../target_EFile/include/jpeg
-INCLUDEPATH += $$PWD/../../target_EFile/include/zbar
-INCLUDEPATH += $$PWD/../../target_EFile/include
-INCLUDEPATH += $$PWD/../../target_EFile/include/hdf
-LIBS += -L$$PWD/../../target_EFile -lCamScanSDK #此目录下所有包含CamScanSDK命名的so文件
-LIBS += -L$$PWD/../../target_EFile/lib/jpeg  -ljpeg
-LIBS += -L$$PWD/../../target_EFile/lib/libusb-1.0 -lusb-1.0
-LIBS += -L$$PWD/../../target_EFile/lib -lzbar
-LIBS += -L$$PWD/../../target_EFile/lib/hdf -lhpdf
+
+INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/jpeg
+INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/hdf
+LIBS += -L/opt/apps/org.deepin.scaner/files/scaner/bin/lib/jpeg  -ljpeg
+LIBS += -L/opt/apps/org.deepin.scaner/files/scaner/bin/lib/hdf -lhpdf
 
 #拍摄仪
-INCLUDEPATH += $$PWD/../../CmImage
-INCLUDEPATH += $$PWD/../../CamCaptureSDK
-LIBS += -L$$PWD/../../target_EFile -lCmImage
-LIBS += -L$$$PWD/../../target_EFile  -lCamCaptureSDK
+INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/CamScanSDK
+INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/CmImage
+INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/CamCaptureSDK
+LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/libCamScanSDK.so.1 #此目录下所有包含CamScanSDK命名的so文件
+LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/libCmImage.so.1
+LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/libCamCaptureSDK.so.1
 
 #加载opencv
-INCLUDEPATH += $$PWD/../../target_EFile/include\
-               $$PWD/../../target_EFile/include/opencv \
-               $$PWD/../../target_EFile/include/opencv2
-LIBS += -L$$PWD/../../target_EFile/lib -lopencv_highgui \
-        -L$$PWD/../../target_EFile/lib -lopencv_core \
-        -L$$PWD/../../target_EFile/lib -lopencv_flann \
-        -L$$PWD/../../target_EFile/lib -lopencv_features2d \
-        -L$$PWD/../../target_EFile/lib -lopencv_calib3d \
-        -L$$PWD/../../target_EFile/lib -lopencv_imgproc \
-        -L$$PWD/../../target_EFile/lib -lopencv_photo
+INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include \
+               /opt/apps/org.deepin.scaner/files/scaner/bin/include/opencv \
+               /opt/apps/org.deepin.scaner/files/scaner/bin/include/opencv2
+
+LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_highgui.so \
+        /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_core.so \
+        /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_flann.so \
+        /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_features2d.so \
+        /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_calib3d.so \
+        /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_imgproc.so \
+        /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_photo.so
+
 
 RC_FILE += logo.rc
