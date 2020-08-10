@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     a.setAttribute(Qt::AA_UseHighDpiPixmaps);
     a.loadTranslator();
     a.setOrganizationName("扫描管理");
-    a.setApplicationVersion(DApplication::buildVersion("5.1.0.3-1"));
+    a.setApplicationVersion(DApplication::buildVersion("5.1.0.3-2"));
    // a.setApplicationAcknowledgementPage("http://www.viisan.com");
     a.setProductIcon(QIcon(":/img/logo/logo-16.svg"));
     a.setProductName("扫描管理");
