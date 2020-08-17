@@ -6,6 +6,9 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QFile>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QEventLoop>
 
 class UploadFileThread: public QObject
 {

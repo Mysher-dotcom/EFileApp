@@ -137,6 +137,8 @@ void MainWindow::initUI()
     outputHLayout->addWidget(lbl);
     outputHLayout->addStretch();
     pbtnOutput->setLayout(outputHLayout);
+    pbtnOutput->setVisible(false);//隐藏
+
 
     //搜索框
     pSearchEdit = new DSearchEdit (this->titlebar()) ;
@@ -230,7 +232,7 @@ void MainWindow::initConnection()
 void MainWindow::refreshData(bool isTreeClick,QString folderPath)
 {
     QString folderPathTmp = GlobalHelper::getScanFolder();
-    int isDZDA = 1;//GlobalHelper::readSettingValue("set","dzda").toInt();
+    int isDZDA = GlobalHelper::readSettingValue("set","dzda").toInt();
     if(isDZDA == 0)//是否支持分类
     {
         int isClassification = GlobalHelper::readSettingValue("set","classification").toInt();//是否显示分类
@@ -907,6 +909,7 @@ void MainWindow::showFileListUI()
     listViewMenu->addAction(QStringLiteral("编辑"), this, SLOT(slotTableViewMenuEditFile()));
     listViewMenu->addAction(QStringLiteral("导出"), this, SLOT(slotTableViewMenuOutputFile()));
     listViewMenu->addSeparator();
+    listViewMenu->addAction(QStringLiteral("在文件管理器中显示"), this, SLOT(slotTableViewMenuOpenFolder()));
     listViewMenu->addAction(QStringLiteral("合并PDF"), this, SLOT(slotTableViewMenuOutputPDFFile()));
     //listViewMenu->addAction(QStringLiteral("打印"), this, SLOT(slotTableViewMenuPrintFile()));
     listViewMenu->addAction(QStringLiteral("添加到“邮件”"), this, SLOT(slotTableViewMenuEmailFile()));
@@ -921,6 +924,7 @@ void MainWindow::showFileListUI()
     //列表项双击
     connect(fileListView,SIGNAL(doubleClicked(const QModelIndex)),this,SLOT(slotListDoubleClicked(const QModelIndex)));
     winStackedLayout->addWidget(fileListView);
+
 }
 
 //显示文件信息列表
@@ -963,6 +967,7 @@ void MainWindow::showFileTableUI()
     tableViewMenu->addAction(QStringLiteral("编辑"), this, SLOT(slotTableViewMenuEditFile()));
     tableViewMenu->addAction(QStringLiteral("导出"), this, SLOT(slotTableViewMenuOutputFile()));
     tableViewMenu->addSeparator();
+    tableViewMenu->addAction(QStringLiteral("在文件管理器中显示"), this, SLOT(slotTableViewMenuOpenFolder()));
     tableViewMenu->addAction(QStringLiteral("合并PDF"), this, SLOT(slotTableViewMenuOutputPDFFile()));
     //tableViewMenu->addAction(QStringLiteral("打印"), this, SLOT(slotTableViewMenuPrintFile()));
     tableViewMenu->addAction(QStringLiteral("添加到“邮件”"), this, SLOT(slotTableViewMenuEmailFile()));
@@ -1031,7 +1036,7 @@ void MainWindow::addItem(QString path)
     // 获取系统图标、文件类型、最后修改时间
     QFileIconProvider provider;
     QIcon icon = provider.icon(*fi);//系统图标
-    QDateTime updateTime=fi->metadataChangeTime();//最后修改时间
+    QString updateTime=fi->metadataChangeTime().toString("yyyy-MM-dd hh:mm:ss");//最后修改时间
     QString strType = provider.type(*fi);//文件类型
 
     int rowCount = tableViewModel->rowCount();//fileTableView->model()->rowCount() ;//获取列表行数
@@ -1039,7 +1044,7 @@ void MainWindow::addItem(QString path)
     QStandardItem *pTableItem = new QStandardItem ();
     pTableItem->setData(fi->fileName(),Qt::UserRole+2);//存储文件名用于检索
     tableViewModel->setItem(rowCount, 0, new QStandardItem(icon,fi->fileName()));//图标+文件名
-    tableViewModel->setItem(rowCount, 1, new QStandardItem(updateTime.toString()));//最后修改时间
+    tableViewModel->setItem(rowCount, 1, new QStandardItem(updateTime));//最后修改时间
     tableViewModel->setItem(rowCount, 2, new QStandardItem(strType));//文件类型
     tableViewModel->setItem(rowCount, 3, new QStandardItem(readableFilesize(fi->size())));//文件尺寸
 
@@ -1338,6 +1343,12 @@ void MainWindow::slotTableViewMenuOutputFile()
     }
 }
 
+//在文件管理器中打开
+void MainWindow::slotTableViewMenuOpenFolder()
+{
+    QDesktopServices::openUrl(QUrl(GlobalHelper::getScanFolder()));
+}
+
 //右键合并PDF
 void MainWindow::slotTableViewMenuOutputPDFFile()
 {
@@ -1445,7 +1456,11 @@ void MainWindow::slotTableViewMenuDelFile()
     {
         for(int i=0;i<list.size();i++)
         {
-            QFile::remove(list.at(i));
+            QFileInfo fileInfo(list.at(i));
+            if(fileInfo.exists())
+            {
+                QFile::remove(list.at(i));
+            }
         }
         refreshData();
     }

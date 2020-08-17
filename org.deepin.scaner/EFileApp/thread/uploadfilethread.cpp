@@ -3,9 +3,6 @@
 #include <QNetworkAccessManager>
 #include <QFile>
 #include "helper/webhelper.h"
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QEventLoop>
 
 UploadFileThread::UploadFileThread(QObject *parent) : QObject(parent)
 {
@@ -56,6 +53,17 @@ void UploadFileThread::startUpload()
         QEventLoop eventLoop;
         connect(&m_httpNAM, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
         eventLoop.exec();
+
+        QByteArray response;
+        if(uploadFileReply->error() == QNetworkReply::NoError)
+        {
+            response = uploadFileReply->readAll();
+            qDebug() << " ok:"<<response ;
+        }
+        else
+        {
+            qDebug() << " no:"<<response ;
+        }
 
     }
     emit signalOver();

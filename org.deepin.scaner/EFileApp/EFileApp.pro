@@ -19,7 +19,7 @@ TEMPLATE = app
 # deprecated API in order to know how to port your code away from it.
 
 DEFINES += QT_DEPRECATED_WARNINGS
-#DESTDIR = $$PWD/../../target_EFile
+DESTDIR = $$PWD/../../target_EFile
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -130,6 +130,7 @@ LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_highgui.so \
         /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_calib3d.so \
         /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_imgproc.so \
         /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_photo.so
+
 
 
 RC_FILE += logo.rc

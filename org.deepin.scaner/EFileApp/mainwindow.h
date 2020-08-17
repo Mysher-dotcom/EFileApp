@@ -140,6 +140,7 @@ private slots:
     void slotTableViewMenuOpenFile();//右键打开
     void slotTableViewMenuEditFile();//右键编辑
     void slotTableViewMenuOutputFile();//右键导出
+    void slotTableViewMenuOpenFolder();//在文件管理器中打开
     void slotTableViewMenuOutputPDFFile();//右键合并PDF
     void slotTableViewMenuPrintFile();//右键打印
     void slotTableViewMenuEmailFile();//右键邮件

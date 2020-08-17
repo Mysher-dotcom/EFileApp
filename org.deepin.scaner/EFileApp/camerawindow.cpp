@@ -658,7 +658,6 @@ void CameraWindow::shot()
     imgparam.bFillBorder = bFillBorder;//缺角修复
     //imgparam.bIsBook = m_bIsBook;
 
-
      Cam_CameraCaptureFile(0,part_path,imgparam);
     if(imgparam.nCropType==2||imgparam.nCropType == 3)
     {
