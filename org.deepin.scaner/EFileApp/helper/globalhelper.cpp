@@ -133,7 +133,7 @@ void GlobalHelper::writeSettingFile()
 
     //设置
     psettings->beginGroup("set");
-    psettings->setValue("savepath","/tmp/viisan/");//存储路径
+    psettings->setValue("savepath","/tmp/scanner/");//存储路径
     psettings->setValue("fileover","0");//文件覆盖警告开关
     psettings->setValue("nodevice","1");//无设备警告开关
     psettings->setValue("finishbeep","0");//完成后提示音开关

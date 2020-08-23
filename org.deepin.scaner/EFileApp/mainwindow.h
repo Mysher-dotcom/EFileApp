@@ -27,6 +27,10 @@
 #include "thread/getscannerinfothread.h"
 #include "thread/getcamerainfothread.h"
 #include "Jpeg.h"
+#include "thread/mergepdfthread.h"
+#include "progressbarwindow.h"
+#include <QGridLayout>
+
 DWIDGET_USE_NAMESPACE
 
 namespace Ui {
@@ -88,8 +92,12 @@ private:
 
     CJpeg m_jpg;//CJPEG对象
 
+    MergePDFThread *mergeThread;//合并PDF
+    QThread *_mergeThread;//合并PDF线程
+
 
     //控件
+    ProgressBarWindow *progressBarWindow;//进度条窗口
     ScanManagerWindow *smWindow;//扫描管理窗口
     DIconButton *pbtnScan;//扫描按钮
     DIconButton *pbtnPicEdit ;//图片编辑按钮
@@ -161,6 +169,9 @@ private slots:
     void slotCloseScannerThread();//关闭SANE线程    
     void slotNoScanner();//无扫描仪设备
     void slotDeviceParOver();//设备参数停止线程
+    void slotSingleFileMergeOver(QString filePath,int fileIndex);//单个文件执行合并PDF结束
+    void slotMergeOver();//合并PDF结束
+    void slotGetProgressBarCloseSignal();//获取进度条窗口关闭信号
 
 };
 

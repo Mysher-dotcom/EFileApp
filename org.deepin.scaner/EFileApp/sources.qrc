@@ -33,5 +33,6 @@
         <file>img/camera/book.svg</file>
         <file>img/upload.svg</file>
         <file>img/treeIcon.svg</file>
+        <file>img/title/scan_new.svg</file>
     </qresource>
 </RCC>

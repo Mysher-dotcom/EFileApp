@@ -72,12 +72,14 @@ private:
     void getImgEditPar();//获取图像处理参数
     void showImgFormatAndTypeUI(bool isCamera = false,bool isLicense=true);//图像格式和颜色模式UI
     void showShotTypeUI(bool isLicense=true);//拍摄方式UI
+    void setUILastSetting();//设置UI的LastSetting
 
 
     //变量
     int nCurrentDeviceType;//当前设备类型，0=拍摄仪，1=扫描仪
     int nCurrentDeviceIndex;//当前设备下标
     bool isShowDeviceList;//是否已经显示设备列表
+    QString currentDeviceModel;//当前设备型号,如Canon dr-c230
 
     /* 扫描仪参数键值对集合
      * int=参数的下标

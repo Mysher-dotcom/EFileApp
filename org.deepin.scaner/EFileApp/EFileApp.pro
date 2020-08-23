@@ -19,7 +19,7 @@ TEMPLATE = app
 # deprecated API in order to know how to port your code away from it.
 
 DEFINES += QT_DEPRECATED_WARNINGS
-DESTDIR = $$PWD/../../target_EFile
+DESTDIR =/opt/apps/org.deepin.scaner/files/scaner/bin #$$PWD/../../target_EFile
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -53,7 +53,9 @@ SOURCES += \
         thread/recognizethread.cpp \
         helper/webhelper.cpp \
     helper/deviceinfohelper.cpp\
-    hpdfoperation.cpp
+    hpdfoperation.cpp \
+    thread/mergepdfthread.cpp \
+    progressbarwindow.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -76,7 +78,9 @@ HEADERS += \
         thread/recognizethread.h \
         helper/webhelper.h \
     helper/deviceinfohelper.h\
-    hpdfoperation.h
+    hpdfoperation.h \
+    thread/mergepdfthread.h \
+    progressbarwindow.h
 
 FORMS += \
         mainwindow.ui \
@@ -84,7 +88,8 @@ FORMS += \
         scanwindow.ui \
         setwindow.ui \
         testctrlwindow.ui \
-        camerawindow.ui
+        camerawindow.ui \
+    progressbarwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

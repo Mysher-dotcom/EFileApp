@@ -321,6 +321,16 @@ void ScanManagerWindow::showDeviceParUI(QString titleName,QString parName,QStrin
     pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
     parHLayout->addWidget(pnameLbl);
 
+    bool isContainsGroup = DeviceInfoHelper::isContainsGroup(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset");
+    QString recordedParValue = "";
+    int valueIndex = 0;
+    //设置选中项
+    if(isContainsGroup == true)
+    {
+        recordedParValue = DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),
+                                                              "imgset",parName);
+    }
+    qDebug()<<"参数："<<parName<<"，上一次选中："<<recordedParValue<<",参数值："<<parValue;
     DTextEdit *ptypeTxt;//参数类型控件 文本框
     DComboBox *ptypeCbb;//参数类型控件 下拉框
     if(parType == 0)
@@ -331,20 +341,57 @@ void ScanManagerWindow::showDeviceParUI(QString titleName,QString parName,QStrin
     else
     {
         ptypeCbb = new DComboBox ();
-        ptypeCbb->setObjectName(parIndex);//一定要设置名称，否则无法获取到具体的控件,以参数下标命名
-        for(QString pvalue : parValue)
+        if(parIndex.toInt() < 0)//小于0,表示是摄像头的参数
         {
-            if(pvalue.isNull() || pvalue.isEmpty()) continue;
-            QString tmpParValue = GlobalHelper::readSettingValue("lan",pvalue);
+            ptypeCbb->setObjectName(parName);//一定要设置名称，否则无法获取到具体的控件,以参数下标命名
+        }
+        else
+        {
+            ptypeCbb->setObjectName(parIndex);//一定要设置名称，否则无法获取到具体的控件,以参数下标命名
+        }
+        //for(QString pvalue : parValue)
+        for(int i = 0;i < parValue.size();i++)
+        {
+            if(parValue.at(i).isNull() || parValue.at(i).isEmpty()) continue;
+            QString tmpParValue = GlobalHelper::readSettingValue("lan",parValue.at(i));
             if(tmpParValue.isNull() || tmpParValue.isEmpty())
             {
-                tmpParValue = pvalue;
+                tmpParValue = parValue.at(i);
             }
             ptypeCbb->addItem(tmpParValue);
+
+            qDebug()<<"对比："<<parValue.at(i)<<","<<recordedParValue;
+            if(parValue.at(i) == recordedParValue)
+            {
+                valueIndex = i;
+            }
         }
         parHLayout->addWidget(ptypeCbb);
         parHLayout->setStretchFactor(ptypeCbb,1);//设置下拉框的拉伸系数，达到铺满布局效果
 
+        //设置上一次选中参数
+        if(!recordedParValue.isEmpty())
+        {
+            qDebug()<<parName<<"上一次选中参数,"<<recordedParValue<<",下拉框中的下标："<<valueIndex;
+           ptypeCbb->setCurrentIndex(valueIndex);
+            //设置参数集合
+            if(parIndex.toInt() < 0)//小于0,表示是摄像头的参数
+            {
+
+            }
+            else
+            {
+                //选中参数集合是否包含此参数名
+                if(scannerChoiseParMap.contains(recordedParValue.toInt()))
+                {
+                    scannerChoiseParMap[parIndex.toInt()] = recordedParValue;//修改值
+                }
+                else
+                {
+                    scannerChoiseParMap.insert(parIndex.toInt(),recordedParValue);//加入值
+                }
+            }
+        }
         //连接信号槽
         connect(ptypeCbb,SIGNAL(currentIndexChanged(const int)),this,SLOT(slotComboBoxCurrentIndexChanged(const int)));
     }
@@ -749,6 +796,11 @@ void ScanManagerWindow::slotDevListPressed(const QModelIndex)
     {
         QVariant devData = (QVariant)(mIndex.data(Qt::UserRole+1));
         DeviceItemData d = devData.value<DeviceItemData>();
+
+        currentDeviceModel = d.devModel;
+        bool isContainsGroup = DeviceInfoHelper::isContainsGroup(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset");
+        qDebug()<<currentDeviceModel<<"是否包含imgset，"<<isContainsGroup;
+
         QString iniFilePath = DeviceInfoHelper::getDeviceInfoFilePath(d.devModel);
         qDebug()<<"device par ini file:"<<iniFilePath;
         QFileInfo file(iniFilePath);
@@ -774,7 +826,6 @@ void ScanManagerWindow::slotDevListPressed(const QModelIndex)
                     }
                 }
 
-
                 for(int i=0;i<parList.size();i++)
                 {
                     QString parName = parList.at(i);
@@ -792,7 +843,7 @@ void ScanManagerWindow::slotDevListPressed(const QModelIndex)
                         scannerParMap.insert(parIndex.toInt(),parValueList);//参数加入集合
                         if(parValueList.size()>0)
                         {
-                           scannerChoiseParMap.insert(parIndex.toInt(),parValueList.at(0));//选中参数集合默认加入第一个参数
+                            //scannerChoiseParMap.insert(parIndex.toInt(),parValueList.at(0));//选中参数集合默认加入第一个参数
                         }
                     }
                 }
@@ -812,8 +863,8 @@ void ScanManagerWindow::slotDevListPressed(const QModelIndex)
                 QStringList formatList = format.split(";");
                 formatList.removeAll(QString(""));//清除空字符项
 
-                showDeviceParUI("扫描设置","resolution","1",1,resolutionList,false,false);//UI显示参数
-                showDeviceParUI("","format","1",1,formatList,false,false);//UI显示参数
+                showDeviceParUI("扫描设置","resolution","-1",1,resolutionList,false,false);//UI显示参数
+                showDeviceParUI("","format","-1",1,formatList,false,false);//UI显示参数
 
                 cameraParMap.insert("resolution",resolutionList);//参数加入集合
                 cameraParMap.insert("format",formatList);
@@ -841,10 +892,21 @@ void ScanManagerWindow::slotDevListPressed(const QModelIndex)
         nCurrentDeviceType = d.devType;//当前设备类型，0=拍摄仪，1=扫描仪
         nCurrentDeviceIndex = d.devIndex;//当前设备下标
 
+        //记录默认设备
+        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceListInfoFilePath(),
+                                     "default",
+                                     "name",
+                                     d.devModel);
+        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceListInfoFilePath(),
+                                     "default",
+                                     "config",
+                                     DeviceInfoHelper::getDeviceInfoFilePath(d.devModel));
+
         break;
     }
    // showImgEditParUI();//图像算法UI
 
+    setUILastSetting();//设置lastsetting
 }
 
 //下拉框选项改变
@@ -890,7 +952,7 @@ void ScanManagerWindow::slotComboBoxCurrentIndexChanged(const int index)
         //选中参数集合是否包含此参数名
         if(cameraChoiseParMap.contains(cb->objectName()))
         {
-            if(cb->objectName() == "format_c")//format记录选中的下标
+            if(cb->objectName() == "format")//format记录选中的下标
             {
                 cameraChoiseParMap[cb->objectName()] = QString::number(index);//修改值
             }
@@ -901,7 +963,7 @@ void ScanManagerWindow::slotComboBoxCurrentIndexChanged(const int index)
         }
         else
         {
-            if(cb->objectName() == "format_c")//format记录选中的下标
+            if(cb->objectName() == "format")//format记录选中的下标
             {
                 cameraChoiseParMap.insert(keyName,QString::number(index));//加入值
             }
@@ -911,6 +973,30 @@ void ScanManagerWindow::slotComboBoxCurrentIndexChanged(const int index)
             }
         }
     }
+
+    //修改配置文件中的参数
+    //找到参数名
+    QString parName="";
+    QStringList keys = DeviceInfoHelper::getAllKeys(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"baseorderindex");
+    for(int i=0;i<keys.size();i++)
+    {
+        QString key = keys[i];
+        QString value = DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"baseorderindex",key);
+        qDebug()<<"key："<<key<<",value:"<<value;
+        if(keyName == value)
+        {
+            parName = key;
+            break;
+        }
+    }
+    QString parValue = valueList.at(index);//参数值
+    if(parName.isEmpty())
+    {
+        parName = keyName;
+    }
+    qDebug()<<"切换参数名："<<parName<<",参数值:"<<parValue;
+    DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset",parName,parValue);
+
 }
 
 //颜色按钮点击
@@ -931,6 +1017,13 @@ void ScanManagerWindow::slotColorButtonClicked()
     GlobalHelper::writeSettingValue("imgEdit","waterMarkColor_g",QString::number(cgreen));
     GlobalHelper::writeSettingValue("imgEdit","waterMarkColor_b",QString::number(cblue));
     GlobalHelper::writeSettingValue("imgEdit","waterMarkColor_a",QString::number(calpha));
+
+
+    DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","waterMarkColor_r",QString::number(cred));
+    DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","waterMarkColor_g",QString::number(cgreen));
+    DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","waterMarkColor_b",QString::number(cblue));
+    DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","waterMarkColor_a",QString::number(calpha));
+
 }
 
 //获取图像处理参数
@@ -940,33 +1033,40 @@ void ScanManagerWindow::getImgEditPar()
     if(singleCutrbBtn->isChecked())
     {
         GlobalHelper::writeSettingValue("imgEdit","isCut","1");
+        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isCut","1");
     }
     //不裁剪单选按钮
     if(noCutrbBtn->isChecked())
     {
         GlobalHelper::writeSettingValue("imgEdit","isCut","0");
+        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isCut","0");
     }
     //多图裁剪单选按钮
     if(mulCutrbBtn->isChecked())
     {
         GlobalHelper::writeSettingValue("imgEdit","isCut","2");
+        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isCut","2");
     }
     //无水印单选按钮
     if(noWaterrbBtn->isChecked())
     {
         GlobalHelper::writeSettingValue("imgEdit","isWaterMark","1");
+        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isWaterMark","1");
     }
     //文字水印单选按钮
     if(fontWaterrbBtn->isChecked())
     {
         GlobalHelper::writeSettingValue("imgEdit","isWaterMark","0");
+        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isWaterMark","0");
     }
     //水印文本
     GlobalHelper::writeSettingValue("imgEdit","waterMarkText",fontWaterText->toPlainText());
+    DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","waterMarkText",fontWaterText->toPlainText());
 
     //文档类型下拉框(0=原始文档，1=文档优化，2=彩色优化，3=红印文档优化，4=反色，5=滤红)
     int nDocType = docTypeCBB->currentIndex();
     GlobalHelper::writeSettingValue("imgEdit","docType",QString::number(nDocType));
+    DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","docType",QString::number(nDocType));
 
     /*
     //去噪复选框
@@ -984,34 +1084,97 @@ void ScanManagerWindow::getImgEditPar()
     if(repairCKB->isChecked())
     {
         GlobalHelper::writeSettingValue("imgEdit","isRepair","0");
+        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isRepair","0");
     }
     else
     {
         GlobalHelper::writeSettingValue("imgEdit","isRepair","1");
+        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isRepair","1");
     }
 
     //文件类型
     GlobalHelper::writeSettingValue("imgEdit","imgFormat",imgFormatCBB->currentText());
+    DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","imgFormat",imgFormatCBB->currentText());
 
     //拍摄仪
     if(nCurrentDeviceType == 1)
     {
         //色彩模式（彩色，灰度，黑白）
         GlobalHelper::writeSettingValue("imgEdit","imgType",QString::number(imgTypeCBB->currentIndex()));
+        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","imgType",QString::number(imgTypeCBB->currentIndex()));
 
         //手动拍摄单选按钮
         if(shotTypeManualrbBtn->isChecked())
         {
             GlobalHelper::writeSettingValue("imgEdit","shotType","0");
+            DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","shotType","0");
         }
 
         //定时拍摄单选按钮
         if(shotTypeTimerrbBtn->isChecked())
         {
             GlobalHelper::writeSettingValue("imgEdit","shotType","1");
-            //定时拍摄时间下拉框
-            GlobalHelper::writeSettingValue("imgEdit","shotTime",shotTypeTimerCBB->currentText());
-        }
+            GlobalHelper::writeSettingValue("imgEdit","shotTime",shotTypeTimerCBB->currentText());//定时拍摄时间下拉框
+            DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","shotType","1");
+            DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","shotTime",shotTypeTimerCBB->currentText());
+         }
+    }
+
+}
+
+//设置UI的LastSetting
+void ScanManagerWindow::setUILastSetting()
+{
+    //裁切
+    QString isCut = DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isCut");
+    if(isCut.toInt() == 0)
+        noCutrbBtn->setChecked(true);
+    else if(isCut.toInt() == 2)
+        mulCutrbBtn->setChecked(true);
+    else
+        singleCutrbBtn->setChecked(true);
+
+    //水印
+    QString isWaterMark = DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isWaterMark");
+    if(isWaterMark.toInt() == 1)
+        noWaterrbBtn->setChecked(true);
+    else
+        fontWaterrbBtn->setChecked(true);
+
+    //水印文本
+    QString waterMarkText = DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","waterMarkText");
+    fontWaterText->setText(waterMarkText);
+
+    //文档类型下拉框(0=原始文档，1=文档优化，2=彩色优化，3=红印文档优化，4=反色，5=滤红)
+    QString nDocType = DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","docType");
+    docTypeCBB->setCurrentIndex(nDocType.toInt());
+
+    //缺角修复
+    QString isRepair = DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isRepair");
+    if(isRepair.toInt() == 0)
+        repairCKB->setChecked(true);
+    else
+        repairCKB->setChecked(false);
+
+    //文件类型
+    QString imgFormat = DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","imgFormat");
+    imgFormatCBB->setCurrentText(imgFormat);
+
+    //拍摄仪
+    if(nCurrentDeviceType == 1)
+    {
+        //色彩模式（彩色，灰度，黑白）
+        QString nImgType = DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","imgType");
+        imgTypeCBB->setCurrentIndex(nImgType.toInt());
+
+        QString shotType = DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","shotType");
+        if(shotType.toInt() == 1)
+            shotTypeTimerrbBtn->setChecked(true);//定时拍摄单选按钮
+        else
+            shotTypeManualrbBtn->setChecked(true);//手动拍摄单选按钮
+
+        QString shotTime = DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","shotTime");
+        shotTypeTimerCBB->setCurrentText(shotTime);//定时拍摄时间下拉框
     }
 
 }

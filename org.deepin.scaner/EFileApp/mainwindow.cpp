@@ -66,9 +66,12 @@ MainWindow::MainWindow(QWidget *parent) :
     refreshData();
     showTreeViewModel(GlobalHelper::getScanFolder() + "/bacode");
 
+    /*
+    //清空设备信息配置文件
     QString docPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/EFile_config/device";
     QDir dir(docPath);
     dir.removeRecursively();
+    */
 
     deviceCount = 0;
     scannerDeviceCount = 0;
@@ -90,21 +93,15 @@ void MainWindow::initUI()
     this->titlebar()->setIcon(QIcon(":/img/logo/logo-16.svg"));//标题栏图标
     this->setWindowTitle("扫描管理");//开始菜单栏上鼠标悬浮在窗口上显示的名称
 
-    /*
-    //主容器设置背景白色
-    ui->centralWidget->setGeometry(0, 0, 300, 100);
-    QPalette pal(ui->centralWidget->palette());
-    pal.setColor(QPalette::Background, Qt::white);
-    ui->centralWidget->setAutoFillBackground(true);
-    ui->centralWidget->setPalette(pal);
-    */
 
     //扫描按钮
     pbtnScan = new DIconButton (nullptr);
-    pbtnScan->setIcon(QIcon(":/img/title/scan.svg"));//图标
-    pbtnScan->setFixedSize(QSize(BUTTON_WIDTH, BUTTON_HEIGHT));//按钮尺寸
-    pbtnScan->setIconSize(QSize(16,16));//图标尺寸
+    pbtnScan->setIcon(QIcon(":/img/title/scan_new.svg"));//图标
+    pbtnScan->setFixedSize(QSize(50, 50));//按钮尺寸
+    pbtnScan->setIconSize(QSize(25,25));//图标尺寸
     pbtnScan->setToolTip("扫描");
+    pbtnScan->raise();//置顶
+    pbtnScan->setStyleSheet("border-radius:25px; background-color:#0081FF; ");
 
     //图片编辑按钮
     pbtnPicEdit = new DIconButton (nullptr);
@@ -138,7 +135,6 @@ void MainWindow::initUI()
     outputHLayout->addStretch();
     pbtnOutput->setLayout(outputHLayout);
     pbtnOutput->setVisible(false);//隐藏
-
 
     //搜索框
     pSearchEdit = new DSearchEdit (this->titlebar()) ;
@@ -175,7 +171,7 @@ void MainWindow::initUI()
     uploadBtn->setVisible(false);
     uploadBtn->setToolTip("上传已识别完成的档案");
 
-    this->titlebar()->addWidget(pbtnScan,Qt::AlignLeft);
+    //this->titlebar()->addWidget(pbtnScan,Qt::AlignLeft);
     this->titlebar()->addWidget(pbtnPicEdit,Qt::AlignLeft);
     this->titlebar()->addWidget(pbtnFontEdit,Qt::AlignLeft);
     this->titlebar()->addWidget(pbtnOutput,Qt::AlignLeft);
@@ -202,8 +198,14 @@ void MainWindow::initUI()
     winStackedLayout = new QStackedLayout();//右侧容器布局
     rightWidget->setLayout(winStackedLayout);
 
+    QWidget *rightAllWidget = new QWidget();
+    QGridLayout *gridLayout = new QGridLayout();
+    gridLayout->addWidget(rightWidget, 0, 0, 1, 1);
+    gridLayout->addWidget(pbtnScan, 0, 0, 1, 1,Qt::AlignBottom | Qt::AlignCenter);
+    rightAllWidget->setLayout(gridLayout);
+
     mainHLayout->addWidget(treeView);
-    mainHLayout->addWidget(rightWidget);
+    mainHLayout->addWidget(rightAllWidget);//(rightWidget);
 
     ui->centralWidget->setLayout(mainHLayout);
 
@@ -211,6 +213,14 @@ void MainWindow::initUI()
     showNoFileUI();
     showFileListUI();
     showFileTableUI();
+
+    //去除布局的间隙
+    mainHLayout->setMargin(0);
+    mainHLayout->setSpacing(0);
+    gridLayout->setMargin(10);
+    gridLayout->setSpacing(0);
+    winStackedLayout->setMargin(0);
+    winStackedLayout->setSpacing(0);
 
 }
 
@@ -1357,37 +1367,59 @@ void MainWindow::slotTableViewMenuOutputPDFFile()
     {
         return;
     }
-    char pdfPath[256]={0};
-    strncpy(pdfPath,list.at(0).toUtf8().data(),strlen(list.at(0).toUtf8().data())-3);
-    strcat(pdfPath,"pdf");
-    qDebug("pdf path is %s\n",pdfPath);
-    hpdfoperation pdfop;
-    for (int i =0;i < list.size();i++)
+
+    progressBarWindow = new ProgressBarWindow (1,list.size(),"正在合并PDF文件",this);
+    progressBarWindow->setAttribute(Qt::WA_ShowModal,true);//模态窗口
+    progressBarWindow->show();
+    progressBarWindow->move ((QApplication::desktop()->width() - progressBarWindow->width())/2,
+                            (QApplication::desktop()->height() - progressBarWindow->height())/2);
+    connect(progressBarWindow,SIGNAL(signalWindowClosed()), this,SLOT(slotGetProgressBarCloseSignal()));
+
+    mergeThread = new MergePDFThread ();
+    _mergeThread = new QThread();
+    mergeThread->moveToThread(_mergeThread);
+    mergeThread->setFileList(list);
+    connect(_mergeThread,SIGNAL(started()),mergeThread,SLOT(startMerge()));//开启线程槽函数
+    connect(_mergeThread,SIGNAL(finished()),mergeThread,SLOT(deleteLater()));//终止线程时要调用deleteLater槽函数
+    connect(mergeThread,SIGNAL(signalSingleFileMergeOver(QString ,int)), this,SLOT(slotSingleFileMergeOver(QString ,int)),Qt::QueuedConnection);
+    connect(mergeThread,SIGNAL(signalOver()), this,SLOT(slotMergeOver()));
+    _mergeThread->start();//开启多线程
+
+}
+
+//单个文件执行合并PDF结束
+void MainWindow::slotSingleFileMergeOver(QString filePath,int fileIndex)
+{
+    if(progressBarWindow != NULL)
+        progressBarWindow->setProgressBarValue(fileIndex+1);
+}
+
+//合并PDF结束
+void MainWindow::slotMergeOver()
+{
+    if(progressBarWindow != NULL)
     {
-        unsigned char* dstBuf = NULL;
-        JPEGInfo jpgInfo;
-        int dstW,dstH;
-        char jpgPath[256] = {0};
-        strcpy(jpgPath,list.at(i).toUtf8().data());
-
-        QString tt = list.at(i).right(3);
-        if(QString::compare(tt,"jpg")==0)
-        {
-            m_jpg.readBufFromJpeg(jpgPath,&dstBuf,jpgInfo,dstW,dstH);
-            pdfop.rgb2pdf(dstBuf,jpgInfo.width,jpgInfo.height,pdfPath,0,list.size());
-
-        }
-        else
-        {
-            char strPath[256]={0};
-            strcpy(strPath,list.at(i).toUtf8().data());
-            QImage* img2 = new QImage(strPath);
-            dstBuf = img2->bits ();
-            pdfop.rgb2pdf(dstBuf,img2->width(),img2->height(),pdfPath,0,i+1);
-        }
+        progressBarWindow->close();
+        progressBarWindow = NULL;
     }
+
+    qDebug()<<tr("1合并线程停止,线程状态：")<<_mergeThread->isRunning();
+    if(_mergeThread->isRunning())
+    {
+        _mergeThread->quit();//退出事件循环
+        _mergeThread->wait();//释放线程槽函数资源
+    }
+
+    qDebug()<<tr("合并线程停止,线程状态：")<<_mergeThread->isRunning();
     refreshData();
 }
+
+//获取进度条窗口关闭信号
+void MainWindow::slotGetProgressBarCloseSignal()
+{
+    slotMergeOver();
+}
+
 
 //右键打印
 void MainWindow::slotTableViewMenuPrintFile()

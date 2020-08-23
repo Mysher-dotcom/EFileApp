@@ -32,6 +32,8 @@ public:
     static QList<DeviceInfoData> getDeviceListInfo();//获取设备列表信息
     static void writeValue(QString filePath,QString groupName,QString keyName,QString keyValue);//设置配置文件中指定的组名的键值
     static QString readValue(QString filePath,QString groupName,QString keyName);//读取配置文件中指定的节点键值
+    static bool isContainsGroup(QString filePath,QString gourpName);//是否包含组名
+    static QStringList getAllKeys(QString filePath,QString gourpName);//获取所有key
 
 };
 

@@ -93,3 +93,29 @@ QString DeviceInfoHelper::readValue(QString filePath,QString groupName,QString k
     QString qvar = setting.value(QString("%1/%2").arg(groupName).arg(keyName)).toString();
     return qvar;
 }
+
+//是否包含组名
+bool DeviceInfoHelper::isContainsGroup(QString filePath,QString gourpName)
+{
+    QSettings setting(filePath,QSettings::IniFormat);
+    setting.setIniCodec(QTextCodec::codecForName("GB2312"));
+    QStringList allGroup = setting.childGroups(); //从配置文件中读全部的Group
+    for(int i=0;i<allGroup.length();i++)
+    {
+        if(allGroup[i] == gourpName)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+//获取所有key
+QStringList DeviceInfoHelper::getAllKeys(QString filePath,QString gourpName)
+{
+    QSettings setting(filePath,QSettings::IniFormat);
+    setting.setIniCodec(QTextCodec::codecForName("GB2312"));
+    setting.beginGroup(gourpName);
+    return setting.allKeys();
+}
+
