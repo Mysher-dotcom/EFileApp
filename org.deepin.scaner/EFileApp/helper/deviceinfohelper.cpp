@@ -110,6 +110,15 @@ bool DeviceInfoHelper::isContainsGroup(QString filePath,QString gourpName)
     return false;
 }
 
+//获取组数量
+int DeviceInfoHelper::getGroupCount(QString filePath)
+{
+    QSettings setting(filePath,QSettings::IniFormat);
+    setting.setIniCodec(QTextCodec::codecForName("GB2312"));
+    QStringList allGroup = setting.childGroups(); //从配置文件中读全部的Group
+    return allGroup.size();
+}
+
 //获取所有key
 QStringList DeviceInfoHelper::getAllKeys(QString filePath,QString gourpName)
 {
@@ -118,4 +127,48 @@ QStringList DeviceInfoHelper::getAllKeys(QString filePath,QString gourpName)
     setting.beginGroup(gourpName);
     return setting.allKeys();
 }
+
+//获取组名根据设备名称（Uniscan F40D）
+QString DeviceInfoHelper::getGroupNameByDeviceName(QString filePath,QString deviceName)
+{
+    QString groupName = "";
+    QSettings setting(filePath,QSettings::IniFormat);
+    setting.setIniCodec(QTextCodec::codecForName("GB2312"));
+    QStringList allGroup = setting.childGroups(); //从配置文件中读全部的Group
+    for(int i=0;i<allGroup.length();i++)
+    {
+        QStringList keys = DeviceInfoHelper::getAllKeys(filePath,allGroup[i]);
+        for(int j=0;j<keys.size();j++)
+        {
+            QString key = keys[j];
+            QString value = DeviceInfoHelper::readValue(filePath,allGroup[i],"model");
+            if(value == deviceName)
+            {
+                groupName = allGroup[i];
+                break;
+            }
+        }
+
+        if(groupName.isEmpty() == false) break;
+    }
+    return groupName;
+}
+
+//设置所有设备为未连接状态
+void DeviceInfoHelper::setAllDeviceIsNoCollec()
+{
+    QString filePath = getDeviceListInfoFilePath();
+    QSettings setting(filePath,QSettings::IniFormat);
+    setting.setIniCodec(QTextCodec::codecForName("GB2312"));
+    QStringList allGroup = setting.childGroups(); //从配置文件中读全部的Group
+    for(int i=0;i<allGroup.length();i++)
+    {
+         DeviceInfoHelper::writeValue(filePath,allGroup[i],"status","2");
+    }
+}
+
+
+
+
+
 

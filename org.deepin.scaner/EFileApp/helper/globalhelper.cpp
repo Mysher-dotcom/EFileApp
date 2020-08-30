@@ -181,9 +181,13 @@ void GlobalHelper::writeSettingValue(QString groupName, QString keyName, QString
 /*
  * 设置Widget背景色
  */
-void GlobalHelper::setWidgetBackgroundColor(QWidget *parwidget,QColor color)
+void GlobalHelper::setWidgetBackgroundColor(QWidget *parwidget,QColor color,bool isFixedHeight)
 {
-    parwidget->setFixedHeight(48);
+    if(isFixedHeight == true)
+    {
+        parwidget->setFixedHeight(48);
+    }
+
     //参数行容器设置背景
     parwidget->setGeometry(0, 0, 300, 100);
     QPalette pal(parwidget->palette());

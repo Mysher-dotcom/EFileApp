@@ -34,5 +34,9 @@
         <file>img/upload.svg</file>
         <file>img/treeIcon.svg</file>
         <file>img/title/scan_new.svg</file>
+        <file>img/addDevice_dark.svg</file>
+        <file>img/addDevice.svg</file>
+        <file>img/back.svg</file>
+        <file>img/refresh_device.svg</file>
     </qresource>
 </RCC>

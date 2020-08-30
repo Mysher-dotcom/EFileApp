@@ -83,6 +83,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    //DeviceInfoHelper::setAllDeviceIsNoCollec();//设置所有设备为未连接状态
+}
+
 //初始化界面
 void MainWindow::initUI()
 {
@@ -147,7 +152,6 @@ void MainWindow::initUI()
     pbtnIconLayout->setStyleSheet("background:transparent;");
     pbtnIconLayout->setIconSize(QSize(12,12));
     pbtnIconLayout->setCheckable(true);//开启可选中模式状态
-    //pbtnIconLayout->setChecked(true);
 
     //列表模式按钮
     pbtnListLayout = new DIconButton (nullptr);
@@ -433,11 +437,8 @@ void MainWindow::showTreeViewModel(QString folderPath,QStandardItem* item)
         {
             item->appendRow(treeParentNode);
         }
-
         showTreeViewModel(folderPath+"/"+*iter,treeParentNode);
-
     }
-
 }
 
 //树节点单击
@@ -537,6 +538,8 @@ void MainWindow::slotUploadOver()
 //开启拍摄仪线程
 void MainWindow::openCameraThread()
 {
+    DeviceInfoHelper::setAllDeviceIsNoCollec();//设置所有设备为未连接状态
+
     QStringList list;
     //参数可以是任何值，线程对象的参数用于获取指定设备的参数，在获取设备信息中用不到
     getCameraInfoThread = new GetCameraInfoThread (list);
@@ -570,13 +573,20 @@ void MainWindow::slotCameraInfo(QVariant qv, const QString &str)
         qDebug()<<"Camera线程回传的设备信息数据,key:"<<itCameraInfo.key()<<",value:"<<itCameraInfo.value();
         if(tmpQSList.size() >= 5)
         {
-            DeviceInfoHelper::writeValue(devListFilePath,"device"+tmpQSList.at(3),"type","1");//类型，0=扫描仪，1=拍摄仪
-            DeviceInfoHelper::writeValue(devListFilePath,"device"+tmpQSList.at(3),"index",tmpQSList.at(3));//设备下标
-            DeviceInfoHelper::writeValue(devListFilePath,"device"+tmpQSList.at(3),"name",tmpQSList.at(0));//设备名称
-            DeviceInfoHelper::writeValue(devListFilePath,"device"+tmpQSList.at(3),"model",tmpQSList.at(1));//设备类型
-            DeviceInfoHelper::writeValue(devListFilePath,"device"+tmpQSList.at(3),"status",tmpQSList.at(2));//设备状态，0=空闲
-            DeviceInfoHelper::writeValue(devListFilePath,"device"+tmpQSList.at(3),"config", DeviceInfoHelper::getDeviceInfoFilePath(tmpQSList.at(1)));//设备具体配置文件路径
-            DeviceInfoHelper::writeValue(devListFilePath,"device"+tmpQSList.at(3),"license",tmpQSList.at(4));//设备是否授权
+            QString devGroupName = DeviceInfoHelper::getGroupNameByDeviceName(devListFilePath,tmpQSList.at(1));
+            qDebug()<<tmpQSList.at(1)<<" 设备组名："<<devGroupName;
+            if(devGroupName.isEmpty() == true)
+            {
+                devGroupName = "device"+tmpQSList.at(3);
+            }
+
+            DeviceInfoHelper::writeValue(devListFilePath,devGroupName,"type","1");//类型，0=扫描仪，1=拍摄仪
+            DeviceInfoHelper::writeValue(devListFilePath,devGroupName,"index",tmpQSList.at(3));//设备下标
+            DeviceInfoHelper::writeValue(devListFilePath,devGroupName,"name",tmpQSList.at(0));//设备名称
+            DeviceInfoHelper::writeValue(devListFilePath,devGroupName,"model",tmpQSList.at(1));//设备类型
+            DeviceInfoHelper::writeValue(devListFilePath,devGroupName,"status",tmpQSList.at(2));//设备状态，0=空闲
+            DeviceInfoHelper::writeValue(devListFilePath,devGroupName,"config", DeviceInfoHelper::getDeviceInfoFilePath(tmpQSList.at(1)));//设备具体配置文件路径
+            DeviceInfoHelper::writeValue(devListFilePath,devGroupName,"license",tmpQSList.at(4));//设备是否授权
             deviceCount++;
         }
     }
@@ -643,9 +653,17 @@ void MainWindow::slotScannerInfo(QVariant qv, const QString &str)
         qDebug()<<"sane线程回传的设备信息数据,key:"<<itInfo.key()<<",value:"<<itInfo.value();
         if(tmpQSList.size()>=4)
         {
-            int groupNameIndex = tmpQSList.at(3).toInt() ;
-            groupNameIndex = groupNameIndex + deviceCount;
-            QString groupName = QString("device%1").arg(QString::number(groupNameIndex));
+            QString groupName = DeviceInfoHelper::getGroupNameByDeviceName(devListFilePath,tmpQSList.at(1));
+            qDebug()<<tmpQSList.at(1)<<" 设备组名："<<groupName;
+            if(groupName.isEmpty() == true)
+            {
+                int groupNameIndex = DeviceInfoHelper::getGroupCount(devListFilePath) ;
+                groupName = "device"+groupNameIndex;
+            }
+
+            //int groupNameIndex = tmpQSList.at(3).toInt() ;
+            //groupNameIndex = groupNameIndex + deviceCount;
+            //QString groupName = QString("device%1").arg(QString::number(groupNameIndex));
             DeviceInfoHelper::writeValue(devListFilePath,groupName,"type","0");//类型，0=扫描仪，1=拍摄仪
             DeviceInfoHelper::writeValue(devListFilePath,groupName,"index",tmpQSList.at(3));//设备下标
             DeviceInfoHelper::writeValue(devListFilePath,groupName,"name",tmpQSList.at(0));//设备名称
@@ -1225,6 +1243,8 @@ void MainWindow::slotScanButtonClicked()
                     (QApplication::desktop()->height() - smWindow->height())/2);
 
     connect(this, SIGNAL(signalThreadOver()), smWindow, SLOT(slotGetDeviceList()));
+    connect(smWindow, SIGNAL(signalSearchDevice()), this, SLOT(openCameraThread()));
+
 
 }
 

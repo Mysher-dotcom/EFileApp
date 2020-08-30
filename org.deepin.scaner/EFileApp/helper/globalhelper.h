@@ -47,7 +47,7 @@ public:
    /*
     * 设置Widget背景色
     */
-   static void setWidgetBackgroundColor(QWidget *widget,QColor color);
+   static void setWidgetBackgroundColor(QWidget *widget,QColor color,bool isFixedHeight=true);
 
    //播放声音
    static void playSound(QString soundPath);

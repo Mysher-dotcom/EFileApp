@@ -33,7 +33,10 @@ public:
     static void writeValue(QString filePath,QString groupName,QString keyName,QString keyValue);//设置配置文件中指定的组名的键值
     static QString readValue(QString filePath,QString groupName,QString keyName);//读取配置文件中指定的节点键值
     static bool isContainsGroup(QString filePath,QString gourpName);//是否包含组名
+    static int getGroupCount(QString filePath);//获取组数量
     static QStringList getAllKeys(QString filePath,QString gourpName);//获取所有key
+    static QString getGroupNameByDeviceName(QString filePath,QString deviceName);//获取组名根据设备名称（Uniscan F40D）
+    static void setAllDeviceIsNoCollec();//设置所有设备为未连接状态
 
 };
 

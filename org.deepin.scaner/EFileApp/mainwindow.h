@@ -47,6 +47,7 @@ public:
 
     void refreshData(bool isTreeClick = false, QString folderPath = nullptr);//更新文件列表
     void resizeEvent(QResizeEvent *event);//窗口尺寸改变
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::MainWindow *ui;
@@ -70,7 +71,7 @@ private:
     void showTreeViewModel(QString folderPath,QStandardItem* item = NULL);//展示Tree节点
     void showMaskWidgetUI();//遮罩窗口
     void uploadFile(QStringList list);//上传文件
-    void openCameraThread();//开启拍摄仪线程
+    //void openCameraThread();//开启拍摄仪线程
     void openScannerThread();//开启SANE线程
     void getDevicePar();//获取设备参数
 
@@ -131,10 +132,11 @@ private:
 
 signals:
     //信号
-    void signalThreadOver();//線程結束信号
+    void signalThreadOver();//线程結束信号
 
 private slots:
     //槽
+    void openCameraThread();//开启拍摄仪线程
     void slotScanButtonClicked();//扫描按钮
     void slotPicEditButtonClicked();//图片编辑按钮
     void slotFontEditButtonClicked();//文字编辑按钮

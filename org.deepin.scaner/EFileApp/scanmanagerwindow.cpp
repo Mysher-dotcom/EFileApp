@@ -27,6 +27,10 @@
 #include "MImage.h"
 #include <QDateTime>
 #include "helper/deviceinfohelper.h"
+#include <QFileDialog>
+#include <QDesktopServices>
+#include <QDragEnterEvent>//用于拖拽
+#include <QMimeData>//用于拖拽
 
 
 ScanManagerWindow::ScanManagerWindow(QWidget *parent) :
@@ -35,8 +39,8 @@ ScanManagerWindow::ScanManagerWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    isShowDeviceList = false;
     initUI();
+    this->setAcceptDrops(true);//整个窗口支持拖拽，暂时
 
     //线程执行中，不加载设备列表
     if( GlobalHelper::getDeviceInfoIsOver == true)
@@ -47,6 +51,7 @@ ScanManagerWindow::ScanManagerWindow(QWidget *parent) :
     else
     {
         qDebug()<<"后台正在加载设备参数，等待...";
+        mainSLayout->setCurrentIndex(1);
     }
 
 }
@@ -55,6 +60,30 @@ ScanManagerWindow::ScanManagerWindow(QWidget *parent) :
 ScanManagerWindow::~ScanManagerWindow()
 {
     delete ui;
+}
+
+//筛选拖拽事件
+void ScanManagerWindow::dragEnterEvent(QDragEnterEvent *e)
+{
+    e->acceptProposedAction();//放行，执行dropEvent()
+}
+
+//处理拖拽事件
+void ScanManagerWindow::dropEvent(QDropEvent *e)
+{
+    QList<QUrl> urls = e->mimeData()->urls();
+    if(!urls.isEmpty())
+    {
+        QString filePath = urls.first().toLocalFile();
+        QFileInfo fi(filePath);
+        if(fi.exists())
+        {
+            localDriverFilePath = filePath;
+            localDriverTipLabel->setText("本地驱动:"+fi.fileName());
+            localDriverTipLabel->setToolTip("本地驱动路径:"+localDriverFilePath);
+            installBtn->setEnabled(true);
+        }
+    }
 }
 
 //初始化界面
@@ -69,110 +98,493 @@ void ScanManagerWindow::initUI()
     this->titlebar()->setIcon(QIcon(":/img/logo/logo-16.svg"));//标题栏图标
     this->setWindowTitle("设备管理");//开始菜单栏上鼠标悬浮在窗口上显示的名称
 
-    //******窗口布局设置******
-    //布局关系：窗口的容器Widget -> 主布局Layout -> 容器Widget -> 容器布局Layout -> 控件
-    mainLayout = new QHBoxLayout();//主布局
-    lWidget=new QWidget();//左侧容器
-    rWidget=new QWidget();//右侧容器
-    rtWidget=new QWidget ();//右侧-上部容器
-    rbWidget=new QWidget ();//右侧-下部容器
-    lWidget->setFixedWidth(300);//左侧容器固定宽度300px
-    rbWidget->setFixedHeight(60);//右侧-下部容器固定高度60px
-    lVLayout = new QVBoxLayout () ;//左侧容器布局
-    rVLayout = new QVBoxLayout () ;//右侧容器布局
-    rtVLayout = new QVBoxLayout () ;//右侧-上部容器布局
-    rbHLayout = new QHBoxLayout () ;//右侧-下部容器布局
-    lTipWidget=new QWidget();//左侧提示容器
-    lTipHLayout= new QHBoxLayout ();//左侧提示布局
+    mainSLayout = new QStackedLayout();//窗口布局
+    ui->centralwidget->setLayout(mainSLayout);
 
-    //右侧-上部容器布局的内容间隙1px
-    rtVLayout->setSpacing(1);
-
-    //左侧容器设置背景白色
-    lWidget->setGeometry(0, 0, 300, 100);
-    QPalette pal(lWidget->palette());
-    pal.setColor(QPalette::Background, Qt::white);
-    lWidget->setAutoFillBackground(true);
-    lWidget->setPalette(pal);
+    initNODeviceUI();//加载无设备UI
+    initCheckingDeviceUI();//加载检测设备中UI
+    initDeviceInfoUI();//加载设备信息UI
+    initInstallDeviceUI();//加载安装设备UI
 
 
-    //右侧容器设置背景白色
-    rWidget->setGeometry(0, 0, 300, 100);
-    QPalette palr(rWidget->palette());
-    palr.setColor(QPalette::Background, Qt::white);
-    rWidget->setAutoFillBackground(true);
-    rWidget->setPalette(palr);
+}
 
-    //控件
-    QLabel *ltLbl=new QLabel ();
-    ltLbl->setText("扫描仪设备");
-    ltLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+//加载无设备UI
+void ScanManagerWindow::initNODeviceUI()
+{
+    //左侧
+    QLabel *leftTopLbl=new QLabel ();
+    leftTopLbl->setText("扫描仪设备");
+    leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+
+    QLabel *leftLbl=new QLabel ();
+    leftLbl->setText("未找到扫描设备");
+    leftLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
+
+    //新增设备按钮-无设备UI里
+    addDeviceBtn2 = new DIconButton(nullptr);
+    addDeviceBtn2->setIcon(QIcon(":/img/addDevice.svg"));//图标
+    addDeviceBtn2->setFixedSize(QSize(48, 48));//按钮尺寸
+    addDeviceBtn2->setIconSize(QSize(48,48));//图标尺寸
+    addDeviceBtn2->raise();//置顶
+    addDeviceBtn2->setStyleSheet("background:transparent;");
+    connect(addDeviceBtn2, SIGNAL(clicked()), this, SLOT(slotAddDeviceButtonClicked2()));
+
+    QWidget *leftTopWidget = new QWidget();
+    QVBoxLayout *leftTopLayout = new QVBoxLayout();
+    leftTopWidget->setLayout(leftTopLayout);
+    leftTopLayout->addWidget(leftTopLbl,0,Qt::AlignTop);
+    leftTopLayout->addWidget(leftLbl,1,Qt::AlignHCenter);
+
+    QWidget *leftBottomWidget = new QWidget();
+    QGridLayout *leftGridLayout = new QGridLayout();
+    leftGridLayout->addWidget(leftTopWidget, 0, 0, 1, 1);
+    leftGridLayout->addWidget(addDeviceBtn2, 0, 0, 1, 1,Qt::AlignBottom | Qt::AlignCenter);
+    leftBottomWidget->setLayout(leftGridLayout);
+
+
+    //右侧
+    QLabel *rightTopLbl=new QLabel();//右上空白占位提示信息
+
+    QLabel *rightLbl=new QLabel ();
+    rightLbl->setText("没有找到连接到您计算机的扫描设备");
+    rightLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
+
+    //控件加入布局中
+    QHBoxLayout *mainLayout = new QHBoxLayout();
+    QVBoxLayout *leftLayout = new QVBoxLayout();
+    QVBoxLayout *rightLayout = new QVBoxLayout();
+    QWidget *mainWidget = new QWidget();
+    QWidget *leftWidget = new QWidget();
+    QWidget *rightWidget = new QWidget();
+    leftWidget->setFixedWidth(300);//左侧容器固定宽度300px
+    GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,255),false);//左侧容器设置背景白色
+    GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,255),false);//右侧容器设置背景白色
+    mainLayout->addWidget(leftWidget);
+    mainLayout->addWidget(rightWidget);
+    mainWidget->setLayout(mainLayout);
+    leftWidget->setLayout(leftLayout);
+    rightWidget->setLayout(rightLayout);
+    //leftLayout->addWidget(leftTopLbl,0,Qt::AlignTop);
+    //leftLayout->addWidget(leftLbl,1,Qt::AlignHCenter);
+    leftLayout->addWidget(leftBottomWidget);
+    rightLayout->addWidget(rightTopLbl);//右侧-上部加一个空白的label，用于和左侧的“扫描仪设备”提示保持一致，否则右侧的提示信息比左侧提示信息下移一些
+    rightLayout->addWidget(rightLbl,1,Qt::AlignCenter);
+
+    mainSLayout->addWidget(mainWidget);
+
+}
+
+//加载检测设备中UI
+void ScanManagerWindow::initCheckingDeviceUI()
+{
+    //左侧
+    QLabel *leftTopLbl=new QLabel ();
+    leftTopLbl->setText("扫描仪设备");
+    leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+
     lSpinner = new DSpinner();//左侧提示动画
     lSpinner->setFixedSize(QSize(28,28));
     lSpinner->show();
     lSpinner->start();
-    lLbl=new QLabel ();
-    lLbl->setText("正在检测扫描设备...");
-    lLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
-    rtipWidget=new QWidget ();
-    rtipWidget->setFixedSize(QSize(450,80));
-    rtipLayout = new QVBoxLayout ();
-    rtNLbl=new QLabel();//右上空白占位提示信息
-    rtLbl=new QLabel ();
-    rtLbl->setText("正在检测");
-    rtLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
-    rbLbl=new QLabel ();
-    rbLbl->setText("若长时间没有反应，请更换USB接口，重启设备或电脑尝试。");
-    rbLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:14px");
-    rtipLayout->addWidget(rtLbl,1,Qt::AlignCenter);
-    rtipLayout->addWidget(rbLbl,1,Qt::AlignCenter);
-    rtipWidget->setLayout(rtipLayout);
+    QLabel *leftLbl=new QLabel ();
+    leftLbl->setText("正在检测扫描设备...");
+    leftLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
 
-    scanBtn=new QPushButton ();//扫描按钮
-    scanBtn->setText("开始");
-    scanBtn->setFixedSize(QSize(240,36));
+    //右侧
+    QLabel *rightTopLbl=new QLabel();//右上空白占位提示信息
 
-    //左侧提示
-    lTipHLayout->addWidget(lSpinner,0,Qt::AlignCenter);//左侧提示动画
-    lTipHLayout->addWidget(lLbl,1,Qt::AlignCenter);//左侧提示文字
-    lTipWidget->setLayout(lTipHLayout);
+    QLabel *rightLbl=new QLabel ();
+    rightLbl->setText("正在检测");
+    rightLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
+    QLabel *rightLbl2=new QLabel ();
+    rightLbl2->setText("若长时间没有反应，请更换USB接口，重启设备或电脑尝试。");
+    rightLbl2->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:14px");
 
     //控件加入布局中
-    lVLayout->addWidget(ltLbl,0,Qt::AlignTop);//左侧顶部文本
-    lVLayout->addWidget(lTipWidget,1,Qt::AlignHCenter);//左侧
-    rtVLayout->addWidget(rtNLbl);//右侧-上部加一个空白的label，用于和左侧的“扫描仪设备”提示保持一致，否则右侧的提示信息比左侧提示信息下移一些
-    rtVLayout->addWidget(rtipWidget,1,Qt::AlignCenter);//右侧-上部
-    rbHLayout->addWidget(scanBtn);//右侧-下部
+    QHBoxLayout *mainLayout = new QHBoxLayout();
+    QVBoxLayout *leftLayout = new QVBoxLayout();
+    QVBoxLayout *rightLayout = new QVBoxLayout();
+    QWidget *mainWidget = new QWidget();
+    QWidget *leftWidget = new QWidget();
+    QWidget *rightWidget = new QWidget();
+    leftWidget->setFixedWidth(300);//左侧容器固定宽度300px
+    GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,255),false);//左侧容器设置背景白色
+    GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,255),false);//右侧容器设置背景白色
+    mainLayout->addWidget(leftWidget);
+    mainLayout->addWidget(rightWidget);
+    mainWidget->setLayout(mainLayout);
+    leftWidget->setLayout(leftLayout);
+    rightWidget->setLayout(rightLayout);
 
-    //容器加入布局
-    lWidget->setLayout(lVLayout);//左侧
-    rWidget->setLayout(rVLayout);//右侧
-    rtWidget->setLayout(rtVLayout);//右侧-上部
-    rbWidget->setLayout(rbHLayout);//右侧-下部
+    QHBoxLayout *leftLayout2 = new QHBoxLayout();
+    QVBoxLayout *rightLayout2 = new QVBoxLayout();
+    QWidget *leftWidget2 = new QWidget();
+    QWidget *rightWidget2 = new QWidget();
+    leftWidget2->setLayout(leftLayout2);
+    rightWidget2->setLayout(rightLayout2);
+    leftLayout2->addWidget(lSpinner);
+    leftLayout2->addWidget(leftLbl);
+    rightLayout2->addWidget(rightLbl,0,Qt::AlignHCenter);
+    rightLayout2->addWidget(rightLbl2,1,Qt::AlignHCenter);
 
-    //滚动条，右侧上部，参数可能过多，需要滚动条
-    DScrollArea *rtScrollArea = new DScrollArea (this);
-    rtScrollArea->setWidget(rtWidget);
-    rtScrollArea->setWidgetResizable(true);
+    leftLayout->addWidget(leftTopLbl,0,Qt::AlignTop);
+    leftLayout->addWidget(leftWidget2,1,Qt::AlignHCenter);
+    rightLayout->addWidget(rightTopLbl);//右侧-上部加一个空白的label，用于和左侧的“扫描仪设备”提示保持一致，否则右侧的提示信息比左侧提示信息下移一些
+    rightLayout->addWidget(rightWidget2,1,Qt::AlignCenter);
 
-    //右侧布局加入右侧-上部容器 右侧-下部容器
-    rVLayout->addWidget(rtScrollArea);//(rtWidget);//
-    //rVLayout->addWidget(rbWidget);//窗口初始化SANE时，不加入右侧下部的容器
+    mainSLayout->addWidget(mainWidget);
+}
 
-    //主布局加入容器
-    mainLayout->addWidget(lWidget);
-    mainLayout->addWidget(rWidget);
+//加载设备信息UI
+void ScanManagerWindow::initDeviceInfoUI()
+{
+    //***左侧
+    QLabel *leftTopLbl=new QLabel ();
+    leftTopLbl->setText("扫描仪设备");
+    leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
 
-    //窗口加入主布局
-    ui->centralwidget->setLayout(mainLayout);
+    refreshDeviceBtn = new DIconButton (nullptr);//刷新设备
+    refreshDeviceBtn->setIcon(QIcon(":/img/refresh_device.svg"));
+    refreshDeviceBtn->setFixedSize(QSize(30, 30));
+    refreshDeviceBtn->setIconSize(QSize(20,20));
+    refreshDeviceBtn->setToolTip("刷新设备");
+    connect(refreshDeviceBtn, SIGNAL(clicked()), this, SLOT(slotRefreshDevice()));
 
-    //扫描按钮信号槽
+    QWidget *leftTopWidget = new QWidget();
+    QHBoxLayout *leftTopLayout = new QHBoxLayout();
+    leftTopWidget->setLayout(leftTopLayout);
+    leftTopLayout->addWidget(leftTopLbl,0,Qt::AlignLeft);
+    leftTopLayout->addWidget(refreshDeviceBtn,0,Qt::AlignRight);
+
+
+    //设备列表容器
+    devListView = new DListView();
+    devListView->setSelectionMode(QAbstractItemView::SingleSelection);
+    devListView->setEditTriggers(QAbstractItemView::NoEditTriggers);//双击Item屏蔽可编辑
+    devListView->setMovement(QListView::Static);//禁止拖拽Item
+    devListView->setViewMode(QListView::IconMode);
+    devListView->setResizeMode(QListView::Adjust);
+    pModel = new QStandardItemModel ();
+    DeviceItemDelegate *pItemDelegate=new DeviceItemDelegate (this);
+    devListView->setItemDelegate(pItemDelegate);
+    proxyModel = new QSortFilterProxyModel (devListView);
+    proxyModel->setSourceModel(pModel);
+    devListView->setModel(proxyModel);
+    connect(devListView,SIGNAL(pressed(const QModelIndex)),this,SLOT(slotDevListPressed(const QModelIndex)));//设备列表点击信号槽
+
+    //新增设备按钮
+    addDeviceBtn = new DIconButton(nullptr);
+    addDeviceBtn->setIcon(QIcon(":/img/addDevice.svg"));//图标
+    addDeviceBtn->setFixedSize(QSize(48, 48));//按钮尺寸
+    addDeviceBtn->setIconSize(QSize(48,48));//图标尺寸
+    addDeviceBtn->raise();//置顶
+    addDeviceBtn->setStyleSheet("background:transparent;");
+    connect(addDeviceBtn, SIGNAL(clicked()), this, SLOT(slotAddDeviceButtonClicked()));
+
+    QWidget *leftBottomWidget = new QWidget();
+    QGridLayout *gridLayout = new QGridLayout();
+    gridLayout->addWidget(devListView, 0, 0, 1, 1);
+    gridLayout->addWidget(addDeviceBtn, 0, 0, 1, 1,Qt::AlignBottom | Qt::AlignCenter);
+    leftBottomWidget->setLayout(gridLayout);
+
+    //***右侧
+    //扫描按钮
+    scanBtn=new QPushButton ();
+    scanBtn->setText("开始");
+    scanBtn->setFixedSize(QSize(240,36));
     connect(scanBtn, SIGNAL(clicked()), this, SLOT(slotScanButtonClicked()));
 
-    //去除右侧容器布局的外间隙
-    rVLayout->setMargin(0);
-    rVLayout->setSpacing(0);
+    //控件加入布局中
+    QHBoxLayout *mainLayout = new QHBoxLayout();//主布局
+    QVBoxLayout *leftLayout = new QVBoxLayout();//左布局
+    QVBoxLayout *rightLayout = new QVBoxLayout();//右布局
+    rtVLayout = new QVBoxLayout();//参数布局
+    rbHLayout = new QHBoxLayout();//扫描按钮布局
+    QWidget *mainWidget = new QWidget();//主容器
+    QWidget *leftWidget = new QWidget();//左容器
+    QWidget *rightWidget = new QWidget();//右容器
+    QWidget *rightTopWidget = new QWidget();//右容器-参数容器
+    QWidget *rightBottomWidget = new QWidget();//右容器-扫描按钮容器
 
+    //滚动条，右侧参数容器，参数可能过多，需要滚动条
+    DScrollArea *rtScrollArea = new DScrollArea (this);
+    rtScrollArea->setWidgetResizable(true);
+
+    leftWidget->setFixedWidth(300);//左侧容器固定宽度300px
+    GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,255),false);//左侧容器设置背景白色
+    GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,255),false);//右侧容器设置背景白色
+    //容器设置布局
+    mainWidget->setLayout(mainLayout);
+    leftWidget->setLayout(leftLayout);
+    rightWidget->setLayout(rightLayout);
+    rightTopWidget->setLayout(rtVLayout);
+    rightBottomWidget->setLayout(rbHLayout);
+    //布局加入子控件
+    mainLayout->addWidget(leftWidget);
+    mainLayout->addWidget(rightWidget);
+    leftLayout->addWidget(leftTopWidget,0,Qt::AlignTop);
+    leftLayout->addWidget(leftBottomWidget);
+    rightLayout->addWidget(rtScrollArea);
+    rightLayout->addWidget(rightBottomWidget,0,Qt::AlignBottom);
+    rtScrollArea->setWidget(rightTopWidget);
+    rbHLayout->addWidget(scanBtn,0,Qt::AlignCenter);
+
+    mainSLayout->addWidget(mainWidget);
+
+    //去除布局的间隙
+    gridLayout->setMargin(0);
+    gridLayout->setSpacing(0);
+    rightLayout->setMargin(0);
+    rightLayout->setSpacing(0);
+
+}
+
+//加载安装设备UI
+void ScanManagerWindow::initInstallDeviceUI()
+{
+    //标题栏返回按钮
+    backBtn = new DIconButton(nullptr);
+    backBtn->setIcon(QIcon(":/img/back.svg"));//图标
+    backBtn->setFixedSize(QSize(36, 36));//按钮尺寸
+    backBtn->setIconSize(QSize(15,15));//图标尺寸
+    backBtn->setToolTip("返回");
+    this->titlebar()->addWidget(backBtn,Qt::AlignLeft);
+    backBtn->setVisible(false);
+    connect(backBtn, SIGNAL(clicked()), this, SLOT(slotBackBtnClicked()));
+
+    //***左侧
+    QLabel *leftTopLbl=new QLabel ();
+    leftTopLbl->setText("选择驱动来源");
+    leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+    //在线安装按钮
+    installOnlineBtn = new QPushButton ();
+    installOnlineBtn->setFixedSize(QSize(288, 38));
+    installOnlineBtn->setText("在线安装驱动");
+    installOnlineBtn->setCheckable(true);//开启可选中模式状态
+    installOnlineBtn->setDown(true);
+    connect(installOnlineBtn, SIGNAL(clicked()), this, SLOT(slotInstallOnlineBtnClicked()));
+    //本地安装按钮
+    installLocalBtn = new QPushButton ();
+    installLocalBtn->setFixedSize(QSize(288, 38));
+    installLocalBtn->setText("手动安装驱动");
+    installLocalBtn->setCheckable(true);//开启可选中模式状态
+    connect(installLocalBtn, SIGNAL(clicked()), this, SLOT(slotInstallLocalBtnClicked()));
+    //产生互斥效果
+    QButtonGroup *g=new QButtonGroup ();
+    g->setExclusive(true);
+    g->addButton(installOnlineBtn);
+    g->addButton(installLocalBtn);
+
+    //***右侧
+    installTitleLabel = new QLabel();//标题栏
+    installTitleLabel->setText("选择驱动");
+    installTitleLabel->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+    installSLayout = new QStackedLayout();//安装控件区域
+    QWidget *installWidget = new QWidget();
+    //installWidget->setStyleSheet("background:rgba(247,247,247,255);border-radius: 10px;");
+    installWidget->setLayout(installSLayout);
+    vendorCBB = new DComboBox();//厂商
+    vendorCBB->addItem("暂无");
+    modelCBB = new DComboBox();//型号
+    modelCBB->addItem("暂无");
+    driverCBB = new DComboBox();//驱动
+    driverCBB->addItem("未识别到相关驱动，请手动安装");
+
+    //在线安装区域
+    QWidget *onlineParWidget = new QWidget();
+    QVBoxLayout *onlineParLayout = new QVBoxLayout();
+    onlineParWidget->setLayout(onlineParLayout);
+    for(int i=0;i<3;i++)
+    {
+        QWidget *parWidget = new QWidget ();//每一个参数行的容器
+        parWidget->setFixedHeight(48);
+        GlobalHelper::setWidgetBackgroundColor(parWidget,QColor(249,249,249,255),false);//容器设置背景
+        QHBoxLayout *parHLayout = new QHBoxLayout ();//每一个参数行的布局
+        QLabel  *pnameLbl= new QLabel ();//参数名称
+        pnameLbl->setFixedWidth(80);
+        pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+        parHLayout->addWidget(pnameLbl);
+        if(i == 0)
+        {
+            parHLayout->addWidget(vendorCBB);
+            pnameLbl->setText("厂商");
+            parHLayout->setStretchFactor(vendorCBB,1);//设置下拉框的拉伸系数，达到铺满布局效果
+            connect(vendorCBB,SIGNAL(currentIndexChanged(const int)),this,SLOT(slotComboBoxCurrentIndexChanged(const int)));
+            parWidget->setLayout(parHLayout);//参数行的容器加入布局
+        }
+        else if(i == 1)
+        {
+            parHLayout->addWidget(modelCBB);
+            pnameLbl->setText("型号");
+            parHLayout->setStretchFactor(modelCBB,1);
+            connect(modelCBB,SIGNAL(currentIndexChanged(const int)),this,SLOT(slotComboBoxCurrentIndexChanged(const int)));
+            parWidget->setLayout(parHLayout);
+        }
+        else if(i == 2)
+        {
+            parHLayout->addWidget(driverCBB);
+            pnameLbl->setText("驱动");
+            parHLayout->setStretchFactor(driverCBB,1);
+            connect(driverCBB,SIGNAL(currentIndexChanged(const int)),this,SLOT(slotComboBoxCurrentIndexChanged(const int)));
+            parWidget->setLayout(parHLayout);
+        }
+        onlineParLayout->addWidget(parWidget);
+    }
+    onlineParLayout->addStretch(0);
+    installSLayout->addWidget(onlineParWidget);//在线安装区域加入右侧区域[0]
+
+    //本地安装区域
+    localParWidget = new QWidget();
+    localParWidget->setAcceptDrops(true);//支持接收拖拽事件
+    QVBoxLayout *localParLayout = new QVBoxLayout();
+    localParWidget->setLayout(localParLayout);
+    //localParWidget->setStyleSheet("border-radius: 10px;");
+    GlobalHelper::setWidgetBackgroundColor(localParWidget,QColor(247,247,247,255),false);
+
+    localDriverTipLabel = new QLabel();//导入本地驱动文本提示
+    localDriverTipLabel->setText("请拖放本地驱动文件到此处\n                        或");
+    localDriverTipLabel->setStyleSheet("font-family:SourceHanSansSC,sourceHanSansSC;;color:rgba(180,180,180,1);font-size:12px");
+    importDriverBtn = new QPushButton();//导入本地驱动按钮
+    importDriverBtn->setFixedSize(QSize(140, 36));
+    importDriverBtn->setText("导入本地驱动");
+    connect(importDriverBtn, SIGNAL(clicked()), this, SLOT(slotImportDriverBtnClicked()));
+    localParLayout->addStretch();
+    localParLayout->addWidget(localDriverTipLabel,0,Qt::AlignCenter);
+    localParLayout->addWidget(importDriverBtn,0,Qt::AlignCenter);
+    localParLayout->addStretch();
+    installSLayout->addWidget(localParWidget);//本地安装区域加入右侧区域[1]
+
+    //安装按钮
+    installBtn = new QPushButton();
+    installBtn->setFixedSize(QSize(300, 36));
+    installBtn->setText("安装驱动");
+    connect(installBtn, SIGNAL(clicked()), this, SLOT(slotInstallBtnClicked()));
+
+    //控件加入布局中
+    QHBoxLayout *mainLayout = new QHBoxLayout();
+    QVBoxLayout *leftLayout = new QVBoxLayout();
+    QVBoxLayout *rightLayout = new QVBoxLayout();
+    QWidget *mainWidget = new QWidget();
+    QWidget *leftWidget = new QWidget();
+    QWidget *rightWidget = new QWidget();
+    leftWidget->setFixedWidth(300);//左侧容器固定宽度300px
+    GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,255),false);//左侧容器设置背景白色
+    GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,255),false);//右侧容器设置背景白色
+    mainWidget->setLayout(mainLayout);
+    leftWidget->setLayout(leftLayout);
+    rightWidget->setLayout(rightLayout);
+    mainLayout->addWidget(leftWidget);
+    mainLayout->addWidget(rightWidget);
+    leftLayout->addWidget(leftTopLbl,0,Qt::AlignTop);
+    leftLayout->addWidget(installOnlineBtn,0,Qt::AlignTop);
+    leftLayout->addWidget(installLocalBtn,0,Qt::AlignTop);
+    leftLayout->addStretch(0);
+    rightLayout->addWidget(installTitleLabel,0,Qt::AlignTop);//右侧-上部加标题
+    rightLayout->addWidget(installWidget);
+    rightLayout->addWidget(installBtn,0,Qt::AlignCenter | Qt::AlignBottom);
+    rightLayout->setSpacing(10);//设置内部控件之间的间距10,（重要）中间区域会随着窗口大小自适应
+
+
+    mainSLayout->addWidget(mainWidget);
+
+}
+
+
+//新增设备按钮点击
+void ScanManagerWindow::slotAddDeviceButtonClicked()
+{
+    emitAdder = 1;
+    mainSLayout->setCurrentIndex(3);//显示安装设备UI
+    backBtn->setVisible(true);
+}
+
+//新增设备按钮-无设备UI里
+void ScanManagerWindow::slotAddDeviceButtonClicked2()
+{
+    emitAdder = 0;
+    mainSLayout->setCurrentIndex(3);//显示安装设备UI
+    backBtn->setVisible(true);
+}
+
+//返回按钮点击
+void ScanManagerWindow::slotBackBtnClicked()
+{
+    backBtn->setVisible(false);
+    if(emitAdder == 0)
+    {
+         mainSLayout->setCurrentIndex(0);//无设备UI
+    }
+    else
+    {
+        mainSLayout->setCurrentIndex(2);//显示设备信息UI
+    }
+}
+
+//在线安装按钮
+void ScanManagerWindow::slotInstallOnlineBtnClicked()
+{
+    installOnlineBtn->setDown(true);
+    installLocalBtn->setDown(false);
+    installSLayout->setCurrentIndex(0);
+    installTitleLabel->setText("选择驱动");
+    installBtn->setEnabled(false);//在线安装禁用安装按钮，暂时没有此功能
+}
+
+//本地安装按钮
+void ScanManagerWindow::slotInstallLocalBtnClicked()
+{
+    installOnlineBtn->setDown(false);
+    installLocalBtn->setDown(true);
+    installSLayout->setCurrentIndex(1);
+    installTitleLabel->setText("选择本地驱动");
+    if(localDriverFilePath.isEmpty())//本地驱动不为空
+    {
+        installBtn->setEnabled(false);
+    }
+    else
+    {
+        installBtn->setEnabled(true);
+    }
+}
+
+//导入本地驱动按钮
+void ScanManagerWindow::slotImportDriverBtnClicked()
+{
+    QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    QString filePath = QFileDialog::getOpenFileName(NULL,
+                                                    "请选择驱动",
+                                                    desktopPath,
+                                                    tr("Driver(*.deb);;All files(*.*)"),
+                                                    Q_NULLPTR,
+                                                    QFileDialog::DontResolveSymlinks);
+    QFileInfo fi(filePath);
+    if(fi.exists())
+    {
+        localDriverFilePath = filePath;
+        localDriverTipLabel->setText("本地驱动:"+fi.fileName());
+        localDriverTipLabel->setToolTip("本地驱动路径:"+localDriverFilePath);
+        installBtn->setEnabled(true);
+    }
+
+}
+
+//安装驱动
+void ScanManagerWindow::slotInstallBtnClicked()
+{
+    QFileInfo fi(localDriverFilePath);
+    if(fi.exists())
+    {
+        //驱动，以系统默认方式打开
+         QDesktopServices::openUrl(QUrl::fromLocalFile(localDriverFilePath));
+    }
+}
+
+//更新设备列表
+void ScanManagerWindow::slotRefreshDevice()
+{
+    mainSLayout->setCurrentIndex(1);
+    emit signalSearchDevice();//发送搜索设备信号
 }
 
 //获取设备列表并显示到UI
@@ -186,14 +598,17 @@ void ScanManagerWindow::slotGetDeviceList()
         return;
     }
 
-    showDeviceListUI();
+    pModel->clear();//清空原有设备项
+    mainSLayout->setCurrentIndex(2); //显示设备信息UI
+    backBtn->setVisible(false);//返回按钮隐藏
+
     for(int i=0;i<devList.length();i++)
     {
         QString strStatus = "未连接";
-        if(devList.at(i).status == 0)
-        {
-            strStatus = "空闲";
-        }
+        if(devList.at(i).status == 0) strStatus = "空闲";
+        else if(devList.at(i).status == 1) strStatus = "占用";
+        else if(devList.at(i).status == 2) strStatus = "未连接";
+
         /*
          * 新增设备Item
          * type=设备类型(0=拍摄仪，1=扫描仪)
@@ -214,46 +629,7 @@ void ScanManagerWindow::slotGetDeviceList()
     QModelIndex index = proxyModel->index(0,0);
     devListView->setCurrentIndex(index);
     slotDevListPressed(index);
-    rVLayout->addWidget(rbWidget);//加入右侧下部的容器,开始按钮
 
-    if(isShowDeviceList == false)
-    {
-        //清理提示信息控件
-        rtVLayout->removeWidget(rtNLbl);//移除右上空白占位提示信息label
-        delete rtNLbl;
-        rtVLayout->removeWidget(rtipWidget);//移除右侧-上部提示信息label
-        delete rtipWidget;
-    }
-
-}
-
-//显示设备列表控件UI
-void ScanManagerWindow::showDeviceListUI()
-{
-    if(isShowDeviceList == true)
-    {
-        return;
-    }
-    //窗口的左侧布局加入设备列表容器
-    devListView = new DListView();
-    devListView->setSelectionMode(QAbstractItemView::SingleSelection);
-    devListView->setEditTriggers(QAbstractItemView::NoEditTriggers);//双击Item屏蔽可编辑
-    devListView->setMovement(QListView::Static);//禁止拖拽Item
-    devListView->setViewMode(QListView::IconMode);
-    devListView->setResizeMode(QListView::Adjust);
-    pModel = new QStandardItemModel ();
-    DeviceItemDelegate *pItemDelegate=new DeviceItemDelegate (this);
-    devListView->setItemDelegate(pItemDelegate);
-    proxyModel = new QSortFilterProxyModel (devListView);
-    proxyModel->setSourceModel(pModel);
-    devListView->setModel(proxyModel);
-    lVLayout->addWidget(devListView);
-    lVLayout->removeWidget(lTipWidget);//移除提示信息文字和动画
-    delete lTipWidget;//移除控件，一定要delete，不然还会显示在UI上
-    //设备列表点击信号槽
-    connect(devListView,SIGNAL(pressed(const QModelIndex)),this,SLOT(slotDevListPressed(const QModelIndex)));
-
-    isShowDeviceList = true;
 }
 
 /*
@@ -299,13 +675,12 @@ void ScanManagerWindow::showDeviceParUI(QString titleName,QString parName,QStrin
         lbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
         if(isAddTitleTopMargin == true)
         {
-            //用一个空白的label，达到上边距距离
-            QLabel *tmplbl=new QLabel();
+            QLabel *tmplbl=new QLabel(); //用一个空白的label，达到上边距距离
             rtVLayout->addWidget(tmplbl,0,Qt::AlignTop);
         }
         rtVLayout->addWidget(lbl,0,Qt::AlignTop);
     }
-    QWidget *parWidget = new QWidget (rtWidget);//每一个参数行的容器
+    QWidget *parWidget = new QWidget ();//每一个参数行的容器
     parWidget->setFixedHeight(48);
     //容器设置背景
     parWidget->setGeometry(0, 0, 300, 100);
@@ -408,7 +783,7 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     lblCut->setText("裁剪");
     lblCut->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
 
-    QWidget *parWidgetNoCut = new QWidget (rtWidget);//每一个参数行的容器
+    QWidget *parWidgetNoCut = new QWidget ();//每一个参数行的容器
     parWidgetNoCut->setFixedHeight(48);
     GlobalHelper::setWidgetBackgroundColor(parWidgetNoCut,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayoutNoCut = new QHBoxLayout ();
@@ -418,7 +793,7 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     parHLayoutNoCut->addWidget(noCutrbBtn);
     parWidgetNoCut->setLayout(parHLayoutNoCut);//不裁切参数行的容器加入布局
 
-    QWidget *parWidgetSingleCut = new QWidget (rtWidget);
+    QWidget *parWidgetSingleCut = new QWidget ();
     parWidgetSingleCut->setFixedHeight(48);
     GlobalHelper::setWidgetBackgroundColor(parWidgetSingleCut,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayoutSingleCut = new QHBoxLayout ();
@@ -427,7 +802,7 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     parHLayoutSingleCut->addWidget(singleCutrbBtn);
     parWidgetSingleCut->setLayout(parHLayoutSingleCut);
 
-    QWidget *parWidgetMulCut = new QWidget (rtWidget);
+    QWidget *parWidgetMulCut = new QWidget ();
     parWidgetMulCut->setFixedHeight(48);
     GlobalHelper::setWidgetBackgroundColor(parWidgetMulCut,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayoutMulCut = new QHBoxLayout ();
@@ -447,7 +822,7 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     QLabel *lblWM = new QLabel ();
     lblWM->setText("水印设置");
     lblWM->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
-    QWidget *parWidgetNoWM = new QWidget (rtWidget);
+    QWidget *parWidgetNoWM = new QWidget ();
     parWidgetNoWM->setFixedHeight(48);
     GlobalHelper::setWidgetBackgroundColor(parWidgetNoWM,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayoutNoWM = new QHBoxLayout ();
@@ -457,7 +832,7 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     parHLayoutNoWM->addWidget(noWaterrbBtn);
     parWidgetNoWM->setLayout(parHLayoutNoWM);
 
-    QWidget *parWidgetFontWM = new QWidget (rtWidget);
+    QWidget *parWidgetFontWM = new QWidget ();
     parWidgetFontWM->setFixedHeight(48);
     GlobalHelper::setWidgetBackgroundColor(parWidgetFontWM,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayoutFontWM = new QHBoxLayout ();
@@ -504,7 +879,7 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     QLabel *lblIE = new QLabel ();
     lblIE->setText("图像处理");
     lblIE->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
-    QWidget *parWidgetBB = new QWidget (rtWidget);
+    QWidget *parWidgetBB = new QWidget ();
     parWidgetBB->setFixedHeight(48);
     GlobalHelper::setWidgetBackgroundColor(parWidgetBB,QColor(249,249,249,255));//容器设置背景
 
@@ -537,7 +912,7 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     parWidgetFD->setLayout(parHLayoutFD);
     */
 
-    QWidget *parWidgetRepair = new QWidget (rtWidget);
+    QWidget *parWidgetRepair = new QWidget ();
     parWidgetRepair->setFixedHeight(48);
     GlobalHelper::setWidgetBackgroundColor(parWidgetRepair,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayoutRepair = new QHBoxLayout ();
@@ -597,7 +972,7 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
 //图像格式和颜色模式UI
 void ScanManagerWindow::showImgFormatAndTypeUI(bool isCamera,bool isLicense)
 {
-    QWidget *parWidgetBB = new QWidget (rtWidget);
+    QWidget *parWidgetBB = new QWidget ();
     parWidgetBB->setFixedHeight(48);
     GlobalHelper::setWidgetBackgroundColor(parWidgetBB,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayoutBB = new QHBoxLayout ();
@@ -619,7 +994,7 @@ void ScanManagerWindow::showImgFormatAndTypeUI(bool isCamera,bool isLicense)
 
     if(isCamera)
     {
-        QWidget *parWidgetBB2 = new QWidget (rtWidget);
+        QWidget *parWidgetBB2 = new QWidget ();
         parWidgetBB2->setFixedHeight(48);
         GlobalHelper::setWidgetBackgroundColor(parWidgetBB2,QColor(249,249,249,255));//容器设置背景
         QHBoxLayout *parHLayoutBB2 = new QHBoxLayout ();
@@ -658,7 +1033,7 @@ void ScanManagerWindow::showShotTypeUI(bool isLicense)
     lblIE->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
     rtVLayout->addWidget(lblIE,0,Qt::AlignTop);
 
-    QWidget *parWidgetBB = new QWidget (rtWidget);
+    QWidget *parWidgetBB = new QWidget ();
     parWidgetBB->setFixedHeight(48);
     GlobalHelper::setWidgetBackgroundColor(parWidgetBB,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayoutBB = new QHBoxLayout ();
@@ -669,7 +1044,7 @@ void ScanManagerWindow::showShotTypeUI(bool isLicense)
     parWidgetBB->setLayout(parHLayoutBB);
     rtVLayout->addWidget(parWidgetBB,0,Qt::AlignTop);
 
-    QWidget *parWidgetBB2 = new QWidget (rtWidget);
+    QWidget *parWidgetBB2 = new QWidget ();
     parWidgetBB2->setFixedHeight(48);
     GlobalHelper::setWidgetBackgroundColor(parWidgetBB2,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayoutBB2 = new QHBoxLayout ();
@@ -727,13 +1102,7 @@ void ScanManagerWindow::showShotTypeUI(bool isLicense)
 //无设备UI
 void ScanManagerWindow::slotNoScannerUI()
 {
-    lLbl->setText("未找到扫描设备");
-    rtLbl->setText("没有找到连接到您计算机的扫描设备");
-    rtipLayout->removeWidget(rbLbl);//移除提示信息label
-    delete rbLbl;//移除控件，一定要delete，不然还会显示在UI上
-    lSpinner->stop();
-    rtipLayout->removeWidget(lSpinner);//移除提示信息动画
-    delete lSpinner;
+    mainSLayout->setCurrentIndex(0);
 }
 
 //开始按钮
@@ -889,6 +1258,8 @@ void ScanManagerWindow::slotDevListPressed(const QModelIndex)
             }
         }
 
+
+
         nCurrentDeviceType = d.devType;//当前设备类型，0=拍摄仪，1=扫描仪
         nCurrentDeviceIndex = d.devIndex;//当前设备下标
 
@@ -904,7 +1275,6 @@ void ScanManagerWindow::slotDevListPressed(const QModelIndex)
 
         break;
     }
-   // showImgEditParUI();//图像算法UI
 
     setUILastSetting();//设置lastsetting
 }
