@@ -41,7 +41,7 @@ public:
     ~ScanManagerWindow();
     void dragEnterEvent(QDragEnterEvent *e);//筛选拖拽事件
     void dropEvent(QDropEvent *e);//处理拖拽事件
-
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::ScanManagerWindow *ui;
@@ -75,6 +75,8 @@ private:
 
 
     //***变量
+    QLocale locale;//获取系统信息，判断语言是否要翻译
+    bool isScanClose;//是否为点击扫描按钮关闭窗口,窗口关闭时不用再次记录参数
     int nCurrentDeviceType;//当前设备类型，0=拍摄仪，1=扫描仪
     int nCurrentDeviceIndex;//当前设备下标
     QString currentDeviceModel;//当前设备型号,如Canon dr-c230
@@ -122,6 +124,7 @@ private:
     DComboBox *modelCBB;//型号
     DComboBox *driverCBB;//驱动
     QLabel *localDriverTipLabel;//导入本地驱动文本提示
+    QLabel *localDriverTipLabel2;//导入本地驱动文本提示2
     QPushButton *importDriverBtn;//导入本地驱动按钮
     QPushButton *installBtn;//安装按钮
 

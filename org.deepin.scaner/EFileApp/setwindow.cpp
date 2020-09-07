@@ -43,7 +43,7 @@ void SetWindow::initUI()
     this->titlebar()->setMenuVisible(false);//菜单按钮隐藏
     this->setWindowFlags(this->windowFlags()&~Qt::WindowMinMaxButtonsHint);//最小化、最大化按钮隐藏
     this->setFixedSize(this->width(),this->height());//禁止拖动改变窗口尺寸
-    this->setWindowTitle("设置");//开始菜单栏上鼠标悬浮在窗口上显示的名称
+    this->setWindowTitle(tr("Scan Assistant"));//开始菜单栏上鼠标悬浮在窗口上显示的名称
 
     //*窗口控件设置*
     QVBoxLayout *winLayout=new QVBoxLayout();//窗口的布局，最外层
@@ -57,7 +57,7 @@ void SetWindow::initUI()
     QVBoxLayout *mainVLayout=new QVBoxLayout ();//主容器布局
 
     QLabel *lbl = new QLabel ();
-    lbl->setText("扫描管理设置");
+    lbl->setText(tr("General Settings"));//扫描管理设置
     lbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
     mainVLayout->addWidget(lbl,0,Qt::AlignTop);
 
@@ -65,7 +65,7 @@ void SetWindow::initUI()
     GlobalHelper::setWidgetBackgroundColor(parWidget,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayout = new QHBoxLayout ();
     QLabel  *parTitleLbl= new QLabel ();
-    parTitleLbl->setText("缓存位置");
+    parTitleLbl->setText(tr("Location"));//缓存位置
     setParTitleLabelStyle(parTitleLbl,80);
     parHLayout->addWidget(parTitleLbl);
     savePathText = new DTextEdit ();
@@ -80,7 +80,7 @@ void SetWindow::initUI()
     GlobalHelper::setWidgetBackgroundColor(parWidget2,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayout2 = new QHBoxLayout ();
     QLabel *parTitleLbl2= new QLabel ();
-    parTitleLbl2->setText("覆盖时警告");
+    parTitleLbl2->setText(tr("Notify me when overwriting"));//覆盖时警告
     setParTitleLabelStyle(parTitleLbl2,140);
     parHLayout2->addWidget(parTitleLbl2);
     parHLayout2->addStretch();
@@ -92,7 +92,7 @@ void SetWindow::initUI()
     GlobalHelper::setWidgetBackgroundColor(parWidget3,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayout3 = new QHBoxLayout ();
     QLabel *parTitleLbl3= new QLabel ();
-    parTitleLbl3->setText("无扫描仪时警告");
+    parTitleLbl3->setText(tr("Notify me when no scanners found"));//无扫描仪时警告
     setParTitleLabelStyle(parTitleLbl3,140);
     parHLayout3->addWidget(parTitleLbl3);
     parHLayout3->addStretch();
@@ -104,7 +104,7 @@ void SetWindow::initUI()
     GlobalHelper::setWidgetBackgroundColor(parWidget4,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayout4 = new QHBoxLayout ();
     QLabel *parTitleLbl4= new QLabel ();
-    parTitleLbl4->setText("完成后提示音");
+    parTitleLbl4->setText(tr("Play a sound when completed"));//完成后提示音
     setParTitleLabelStyle(parTitleLbl4,140);
     parHLayout4->addWidget(parTitleLbl4);
     parHLayout4->addStretch();
@@ -116,7 +116,7 @@ void SetWindow::initUI()
     GlobalHelper::setWidgetBackgroundColor(parWidget5,QColor(249,249,249,255));//容器设置背景
     QHBoxLayout *parHLayout5 = new QHBoxLayout ();
     QLabel *parTitleLbl5= new QLabel ();
-    parTitleLbl5->setText("完成后退出");
+    parTitleLbl5->setText(tr("Exit when completed"));//完成后退出
     setParTitleLabelStyle(parTitleLbl5,140);
     parHLayout5->addWidget(parTitleLbl5);
     parHLayout5->addStretch();
@@ -225,7 +225,7 @@ void SetWindow::onBtnColorClicked()
 void SetWindow::onBtnSelectSavePathClicked()
 {
     QString oldFolder = savePathText->toPlainText() ;
-    QString folder = DFileDialog::getExistingDirectory(this,"请选择缓存位置");
+    QString folder = DFileDialog::getExistingDirectory(this,tr("Select a location"));
     if(folder.isNull() || folder.isEmpty())
     {
         folder = oldFolder;

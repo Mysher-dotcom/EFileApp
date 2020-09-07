@@ -26,6 +26,7 @@
 #include <QDesktopServices>
 #include <QMutex>
 #include "helper/classificationhelper.h"
+#include "helper/deviceinfohelper.h"
 
 ScanWindow::ScanWindow(int devIndex,QMap<int ,QString> map,QWidget *parent) :
     DMainWindow(parent),
@@ -66,7 +67,7 @@ void ScanWindow::initUI()
     this->titlebar()->setMenuVisible(false);//隐藏标题栏
     setWindowIcon(QIcon(":/img/logo/logo-16.svg"));// 状态栏图标
     this->titlebar()->setIcon(QIcon(":/img/logo/logo-16.svg"));//标题栏图标
-    this->setWindowTitle("扫描");//开始菜单栏上鼠标悬浮在窗口上显示的名称
+    this->setWindowTitle(tr("Scan Assistant"));//开始菜单栏上鼠标悬浮在窗口上显示的名称
 
     //******窗口布局设置******
     //布局关系：窗口的容器Widget -> 主布局Layout -> 容器Widget -> 容器布局Layout -> 控件
@@ -79,7 +80,7 @@ void ScanWindow::initUI()
     pScanningIconTip->setFixedSize(QSize(28,28));
     pScanningIconTip->show();
     pScanningIconTip->start();
-    pScanningFontTip->setText("正在扫描...");
+    pScanningFontTip->setText(tr("Scanning..."));
     pScanningFontTip->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
     pVLayout->addStretch();
     pVLayout->addWidget(pScanningIconTip,0,Qt::AlignHCenter);
@@ -133,7 +134,7 @@ void ScanWindow::closeThread()
 //线程停止触发
 void ScanWindow::slotFinishThread()
 {
-    qDebug()<<tr("关闭扫描线程,线程状态：")<<subThread->isRunning();
+    qDebug()<<"关闭扫描线程,线程状态："<<subThread->isRunning();
 
     GlobalHelper::playSound("");//播放音效
 
@@ -170,7 +171,7 @@ void ScanWindow::successScanUI()
     scanBtnSpinner = new DSpinner ();
     scanBtnSpinner->setFixedSize(QSize(28,36));
     scanBtnText = new DLabel ();
-    scanBtnText->setText("扫描");
+    scanBtnText->setText(tr("Scan"));//扫描
     scanBtnText->setFixedHeight(36);
     btnLayout->addStretch();
     btnLayout->addWidget(scanBtnSpinner);
@@ -235,9 +236,9 @@ void ScanWindow::copyFile(QString oldFilePath, QString newFilePath)
                 QFileInfo *fi = new QFileInfo(oldFilePath);
                 DDialog *dialog = new DDialog ();
                 dialog->setIcon(QIcon(":/img/dialogWarnIcon.svg"));
-                dialog->setMessage(fi->fileName()+" 文件已存在，您要覆盖文件吗？");
-                dialog->addButton("取消",false,DDialog::ButtonType::ButtonNormal);
-                dialog->addButton("覆盖",true,DDialog::ButtonType::ButtonWarning);
+                dialog->setMessage(fi->fileName()+tr("The file already exists. Do you want to replace it?"));
+                dialog->addButton(tr("Cancel"),false,DDialog::ButtonType::ButtonNormal);
+                dialog->addButton(tr("Replace"),true,DDialog::ButtonType::ButtonWarning);
                 if(dialog->exec()==DDialog::Accepted)//用户点击了覆盖按钮
                 {
                     newFile.remove();//删除已存在的文件
@@ -281,11 +282,11 @@ QString ScanWindow::getCopyFileName(QString filePath)
     {
        if(index == 0)
        {
-           filePath = GlobalHelper::getScanFolder()+"/"+fileName+"(副本)."+fileSuffix;
+           filePath = GlobalHelper::getScanFolder()+"/"+fileName+"("+tr("copy")+")."+fileSuffix;
        }
        else
        {
-           filePath = GlobalHelper::getScanFolder()+"/"+fileName+"(副本"+QString::number(index)+")."+fileSuffix;
+           filePath = GlobalHelper::getScanFolder()+"/"+fileName+"("+tr("copy")+QString::number(index)+")."+fileSuffix;
        }
        qDebug()<<filePath;
        newFile.setFileName(filePath);
@@ -365,14 +366,14 @@ void ScanWindow::changeScanBtnStyle(bool isScanning)
     }
     if(isScanning == true)
     {
-        scanBtnText->setText("扫描中...");
+        scanBtnText->setText(tr("Scanning..."));
         scanBtn->setStyleSheet("background:transparent;border:none;");
         scanBtnSpinner->show();
         scanBtnSpinner->start();
     }
     else
     {
-        scanBtnText->setText("扫描");
+        scanBtnText->setText(tr("Scan"));
         scanBtn->setStyleSheet("");
         scanBtnSpinner->hide();
         scanBtnSpinner->stop();
@@ -384,9 +385,9 @@ void ScanWindow::slotScanError(QString msg)
 {
     DDialog *dialog = new DDialog ();
     dialog->setIcon(QIcon(":/img/dialogWarnIcon.svg"));
-    dialog->setTitle("扫描失败!");
+    dialog->setTitle(tr("Scan failed"));
     dialog->setMessage(msg);
-    dialog->addButton("确定",true);
+    dialog->addButton(tr("Confirm"),true);
     dialog->exec();
 
     if(listViewIsShow == false)
@@ -404,7 +405,6 @@ QMutex MutexBuffLock;
 CJpeg m_jpg_scan;//CJPEG对象
 int ScanWindow::WriteFile(unsigned char* srcData,int len,FILE * destfb)
 {
-
     int write_length = 0;
     write_length = fwrite(srcData,sizeof(char),len,destfb);
     usleep(100);
@@ -412,8 +412,11 @@ int ScanWindow::WriteFile(unsigned char* srcData,int len,FILE * destfb)
 }
 void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int nDPI)
 {
+    QString defaultDeviceModelFilePath =  DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceListInfoFilePath(),
+                                             "default",
+                                             "config");
     //图像文件夹路径
-    QString imgFolderPath =  GlobalHelper::getScanFolder() + "/";//GlobalHelper::getScanTempFoler();
+    QString imgFolderPath =  GlobalHelper::getScanFolder() + "/";
     char *folderPath;
     QByteArray qba = imgFolderPath.toLatin1();
     folderPath = qba.data();
@@ -429,7 +432,8 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     GlobalHelper::writeSettingValue("set","imgPreNameIndex",QString::number(imgIndex));//扫描文件的名称编号
 
     //后缀名
-    QString sImgSuffix= GlobalHelper::readSettingValue("imgEdit","imgFormat").toLower();
+    //QString sImgSuffix= GlobalHelper::readSettingValue("imgEdit","imgFormat").toLower();
+    QString sImgSuffix= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","imgFormat").toLower();
     if(sImgSuffix.isNull() || sImgSuffix.isEmpty())
     {
         sImgSuffix = "jpg";
@@ -461,11 +465,12 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     //图像处理顺序：裁切-文档优化-黑白图-打水印
     //是否裁切
     MImage* srcCut = NULL;
-    int nIsCut = GlobalHelper::readSettingValue("imgEdit","isCut").toInt();
-    if(nIsCut==0)
+    int nIsCut= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","isCut").toInt();
+    if(nIsCut != 0)
     {
         float fAngle = 0;
         MPoint mp4[4];
+        //if(mcvDetectRect_scanner(src,fAngle,mp4,MRect(0,0,0,0)))
         if(mcvDetectRect(src,fAngle,mp4,MRect(0,0,0,0)))
         {
             MRectR rectR;
@@ -501,7 +506,8 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
         }
     }
     //文档类型下拉框(0=原始文档，1=文档优化，2=彩色优化，3=红印文档优化，4=反色，5=滤红)
-    int nDocType = GlobalHelper::readSettingValue("imgEdit","docType").toInt();
+    //int nDocType = GlobalHelper::readSettingValue("imgEdit","docType").toInt();
+    int nDocType= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","docType").toInt();
     switch (nDocType)
     {
         case 1:
@@ -536,7 +542,8 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
         }
     }
     //缺角修复
-    int nIsRepair = GlobalHelper::readSettingValue("imgEdit","isRepair").toInt();
+    //int nIsRepair = GlobalHelper::readSettingValue("imgEdit","isRepair").toInt();
+    int nIsRepair= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","isRepair").toInt();
     if(nIsRepair == 0)
     {
         mcvFillBorder(srcCut);
@@ -550,7 +557,8 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     }
     //黑白图，二值化
     MImage* srcThreshold = NULL;
-    int nIsLineart = GlobalHelper::readSettingValue("imgEdit","nIsLineart").toInt();
+    //int nIsLineart = GlobalHelper::readSettingValue("imgEdit","nIsLineart").toInt();
+    int nIsLineart= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","nIsLineart").toInt();
     if(nIsLineart==0)
     {
        srcThreshold = mcvAdaptiveThreshold(srcCut);
@@ -572,10 +580,12 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     }
     //水印
     MImage* srcWater = NULL;
-    int nIsWaterMark= GlobalHelper::readSettingValue("imgEdit","isWaterMark").toInt();
-    if(nIsWaterMark==0)
+    //int nIsWaterMark= GlobalHelper::readSettingValue("imgEdit","isWaterMark").toInt();
+    int nIsWaterMark= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","isWaterMark").toInt();
+    if(nIsWaterMark==1)
     {
-        QString strWaterMarkText = GlobalHelper::readSettingValue("imgEdit","waterMarkText");
+        //QString strWaterMarkText = GlobalHelper::readSettingValue("imgEdit","waterMarkText");
+        QString strWaterMarkText= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkText");
         if(strWaterMarkText.isEmpty())
         {
             strWaterMarkText = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss:zzz");
@@ -583,16 +593,18 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
         char *cWaterMarkText;
         QByteArray qbaWaterMarkText= strWaterMarkText.toLatin1();
         cWaterMarkText = qbaWaterMarkText.data();
-        long color_r = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_r").toLong();
-        long color_g = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_g").toLong();
-        long color_b = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_b").toLong();
+        //long color_r = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_r").toLong();
+        //long color_g = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_g").toLong();
+        //long color_b = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_b").toLong();
+        long color_r = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkColor_r").toLong();
+        long color_g = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkColor_g").toLong();
+        long color_b = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkColor_b").toLong();
         //src = mcvWaterMark2(src,cWaterMarkText,"./simhei.ttf",color_r,color_g,color_b,0,0);
         //水印颜色 R B颠倒，字号给0为自适应
         //获取路径
         QString str = QCoreApplication::applicationDirPath();
         QString strFontPath = QString("%1/%2").arg(str).arg("simhei.ttf");
         //srcWater = mcvWaterMark2(srcRotate,imgParam.szWaterContent,strFontPath.toLocal8Bit().data(),imgParam.nFont,imgParam.nB,imgParam.nG,imgParam.nR,1,0);
-
 
         srcWater = mcvWaterMark2(srcThreshold,cWaterMarkText,strFontPath.toLocal8Bit().data(),0,color_b,color_g,color_r,0,0);
         if(srcThreshold)
@@ -611,26 +623,26 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
         }
     }
     char* tmp = substrend(part_path,2);
-       if(strcmp(tmp,"jpg")==NULL)
-       {
-            free(tmp);
-            tmp = NULL;
-            uchar* dst = mcvGetImageData(srcWater);
-            JPEGInfo jpgInfo;
-            memset(&jpgInfo,0,sizeof(jpgInfo));
-            jpgInfo.xResolution.b = 1000;
-            jpgInfo.xResolution.a = nDPI*jpgInfo.xResolution.b;
-            jpgInfo.yResolution.b = 1000;
-            jpgInfo.yResolution.a =nDPI*jpgInfo.yResolution.b;
-            jpgInfo.compression = 50;
-            qDebug("saveImageToJpeg width is %d,height is %d,channel is %d\n",srcWater->width,srcWater->height,srcWater->channel * 8);
-            long lret = m_jpg_scan.saveImageToJpeg(dst,srcWater->width,srcWater->height,srcWater->channel * 8,part_path,jpgInfo);
-            dst = NULL;
-       }
-       else
-       {
-            mcvSaveImage(part_path,srcWater,200,200);
-       }
+    if(strcmp(tmp,"jpg")==NULL)
+    {
+        free(tmp);
+        tmp = NULL;
+        uchar* dst = mcvGetImageData(srcWater);
+        JPEGInfo jpgInfo;
+        memset(&jpgInfo,0,sizeof(jpgInfo));
+        jpgInfo.xResolution.b = 1000;
+        jpgInfo.xResolution.a = nDPI*jpgInfo.xResolution.b;
+        jpgInfo.yResolution.b = 1000;
+        jpgInfo.yResolution.a =nDPI*jpgInfo.yResolution.b;
+        jpgInfo.compression = 50;
+        qDebug("saveImageToJpeg width is %d,height is %d,channel is %d\n",srcWater->width,srcWater->height,srcWater->channel * 8);
+        long lret = m_jpg_scan.saveImageToJpeg(dst,srcWater->width,srcWater->height,srcWater->channel * 8,part_path,jpgInfo);
+        dst = NULL;
+    }
+    else
+    {
+        mcvSaveImage(part_path,srcWater,200,200);
+    }
     mcvReleaseImage(&srcWater);
     srcWater = NULL;
 

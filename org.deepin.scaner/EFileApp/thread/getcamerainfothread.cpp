@@ -40,7 +40,7 @@ void GetCameraInfoThread::slotStartCameraThread()
 
         //如：<0,"拍摄仪,SD544,空闲,设备下标,是否有授权">
         QStringList cameraInfo;
-        cameraInfo<<QString("%1 %2").arg("拍摄仪").arg(QString::number(i+1))<<szDevNodeName<<"0"<<QString::number(i)<<QString::number(isLicense);
+        cameraInfo<<QString("%1 %2").arg(tr("Capture")).arg(QString::number(i+1))<<szDevNodeName<<"0"<<QString::number(i)<<QString::number(isLicense);
         cameraInfoMap.insert(i,cameraInfo);//参数加入集合
 
     }

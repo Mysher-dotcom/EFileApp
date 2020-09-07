@@ -30,6 +30,7 @@ void GetScannerInfoThread::slotStartThread()
     long nResult = GetDevCount(nDevCount);//获取设备数量
     if(nResult != 0 && nDevCount <= 0)
     {
+        //ExitDev();
         emit signalNoScanner();//无设备，发送信号给主线程，主线程绘制无设备的UI，并结束线程
         return;
     }
@@ -174,7 +175,7 @@ void GetScannerInfoThread::slotGetDevicePar()
                 bool isLastPar=false;
                 if(j==0)
                 {
-                    title = "扫描设置";
+                    title = tr("General");
                 }
                 else
                 {

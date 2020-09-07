@@ -32,7 +32,7 @@ void ProgressBarWindow::initUI()
     this->titlebar()->setMenuVisible(false);//菜单按钮隐藏
     this->setWindowFlags(this->windowFlags()&~Qt::WindowMinMaxButtonsHint);//最小化、最大化按钮隐藏
     this->setFixedSize(this->width(),this->height());//禁止拖动改变窗口尺寸
-    this->setWindowTitle("请稍后. . .");//开始菜单栏上鼠标悬浮在窗口上显示的名称
+    this->setWindowTitle(tr("Combining into PDF..."));//开始菜单栏上鼠标悬浮在窗口上显示的名称
 
     //*显示的控件*
     tipLabel = new QLabel();
@@ -45,7 +45,7 @@ void ProgressBarWindow::initUI()
     progressBar->setMinimum(minimum);
     progressBar->setMaximum(maximum);
     progressBar->setValue(minimum);
-    cancelButton->setText("取消");
+    cancelButton->setText(tr("Cancel"));
     cancelButton->setFixedSize(QSize(422,40));
 
     QVBoxLayout *layout = new QVBoxLayout ();

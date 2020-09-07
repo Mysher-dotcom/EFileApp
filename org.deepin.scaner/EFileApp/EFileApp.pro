@@ -114,7 +114,6 @@ INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/jpeg
 INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/hdf
 LIBS += -L/opt/apps/org.deepin.scaner/files/scaner/bin/lib/jpeg  -ljpeg
 LIBS += -L/opt/apps/org.deepin.scaner/files/scaner/bin/lib/hdf -lhpdf
-
 #拍摄仪
 INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/CamScanSDK
 INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/CmImage
@@ -139,3 +138,8 @@ LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_highgui.so \
 
 
 RC_FILE += logo.rc
+
+TRANSLATIONS += $$PWD/translations/en_us.ts\
+                $$PWD/translations/zh_cn.ts
+
+

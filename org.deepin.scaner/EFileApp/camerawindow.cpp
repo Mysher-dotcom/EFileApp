@@ -16,6 +16,7 @@
 #include <QDesktopServices>
 #include "helper/classificationhelper.h"
 #include <QDateTime>
+#include "helper/deviceinfohelper.h"
 
 QImage *g_image = NULL;
 QMutex MutexDataBuffLock;
@@ -35,13 +36,13 @@ CameraWindow::CameraWindow(int devIndex,QMap<QString ,QString> map,QWidget *pare
     nVideoRotateAngle = 0;
     nVideoScaleSize = 1;
     isCut = 0;
-    int nIsCutTmp = GlobalHelper::readSettingValue("imgEdit","isCut").toInt();
-    //if(nIsCutTmp != 1)
-    {
-        isCut = nIsCutTmp;
-    }
-    nShotType = GlobalHelper::readSettingValue("imgEdit","shotType").toInt();//拍摄类型（0=手动，1=定时拍）
-    nShotTime = GlobalHelper::readSettingValue("imgEdit","shotTime").toInt();//定时拍秒
+    QString defaultDeviceModelFilePath =  DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceListInfoFilePath(),
+                                             "default",
+                                             "config");
+    isCut = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","isCut").toInt();
+
+    nShotType = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","shotType").toInt();//拍摄类型（0=手动，1=定时拍）
+    nShotTime = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","shotTime").toInt();//定时拍秒
 
     initUI();
     initConnection();
@@ -72,7 +73,7 @@ void CameraWindow::initUI()
     setWindowIcon(QIcon(":/img/logo/logo-16.svg"));// 状态栏图标
     this->titlebar()->setIcon(QIcon(":/img/logo/logo-16.svg"));//标题栏图标
     this->titlebar()->setMenuVisible(false);//菜单按钮隐藏
-    this->setWindowTitle("拍摄仪");//开始菜单栏上鼠标悬浮在窗口上显示的名称
+    this->setWindowTitle(tr("Scanner"));//开始菜单栏上鼠标悬浮在窗口上显示的名称
 
     //*窗口布局设置*
     winVLayout = new QVBoxLayout();//窗口布局
@@ -106,51 +107,51 @@ void CameraWindow::initUI()
     oneTOneBtn->setIcon(QIcon(":/img/camera/1t1.svg"));
     oneTOneBtn->setFixedSize(QSize(50, 50));
     oneTOneBtn->setIconSize(QSize(20,20));
-    oneTOneBtn->setToolTip("1:1显示");
+    oneTOneBtn->setToolTip(tr("1:1 Size"));
     oneTOneBtn->setStyleSheet("background:white;border-radius:8px;");
 
     zoomInBtn->setIcon(QIcon(":/img/camera/zoomin.svg"));
     zoomInBtn->setFixedSize(QSize(50, 50));
     zoomInBtn->setIconSize(QSize(20,20));
-    zoomInBtn->setToolTip("放大");
+    zoomInBtn->setToolTip(tr("Zoom in"));
     zoomInBtn->setStyleSheet("background:white;border-radius:8px;");
 
     zoomOutBtn->setIcon(QIcon(":/img/camera/zoomout.svg"));
     zoomOutBtn->setFixedSize(QSize(50, 50));
     zoomOutBtn->setIconSize(QSize(20,20));
-    zoomOutBtn->setToolTip("缩小");
+    zoomOutBtn->setToolTip(tr("Zoom out"));
     zoomOutBtn->setStyleSheet("background:white;border-radius:8px;");
 
     rotateLeftBtn->setIcon(QIcon(":/img/camera/rotateleft.svg"));
     rotateLeftBtn->setFixedSize(QSize(50, 50));
     rotateLeftBtn->setIconSize(QSize(20,20));
-    rotateLeftBtn->setToolTip("左旋");
+    rotateLeftBtn->setToolTip(tr("Rotate counterclockwise"));
     rotateLeftBtn->setStyleSheet("background:white;border-radius:8px;");
 
     rotateRightBtn->setIcon(QIcon(":/img/camera/rotateright.svg"));
     rotateRightBtn->setFixedSize(QSize(50, 50));
     rotateRightBtn->setIconSize(QSize(20,20));
-    rotateRightBtn->setToolTip("右旋");
+    rotateRightBtn->setToolTip(tr("Rotate clockwise"));
     rotateRightBtn->setStyleSheet("background:white;border-radius:8px;");
 
     cutBtn->setIcon(QIcon(":/img/camera/cut.svg"));
     cutBtn->setFixedSize(QSize(50, 50));
     cutBtn->setIconSize(QSize(20,20));
-    cutBtn->setToolTip("裁切");
+    cutBtn->setToolTip(tr("Crop"));
     cutBtn->setStyleSheet("background:white;border-radius:8px;");
 
     bookBtn->setIcon(QIcon(":/img/camera/book.svg"));
     bookBtn->setFixedSize(QSize(50, 50));
     bookBtn->setIconSize(QSize(20,20));
-    bookBtn->setToolTip("拍书");
+    bookBtn->setToolTip(tr("Book"));
     bookBtn->setStyleSheet("background:white;border-radius:8px;");
     bookBtn->setVisible(false);
 
     //videoWidget->setMinimumSize(QSize(600,380));
     toolBarWidget->setFixedSize(QSize(430,70));//工具栏容器尺寸 430×70
-    scanBtn->setText("扫描");
+    scanBtn->setText(tr("Scan"));
     scanBtn->setFixedSize(QSize(240,36));
-    saveBtn->setText("打开存放位置");
+    saveBtn->setText(tr("View Files"));
     saveBtn->setFixedSize(QSize(180,36));
 
     rightWidget->setFixedWidth(220);//右侧容器固定220px宽
@@ -185,7 +186,7 @@ void CameraWindow::initUI()
     timerIconLabel = new QLabel();//定时拍图标
     timerIconLabel->setPixmap(QPixmap(":/img/camera/shottimer.svg"));
     timerLabel = new QLabel();//定时拍秒
-    timerLabel->setText(QString(" %1 秒").arg(QString::number(nShotTime)));
+    timerLabel->setText(QString(" %1 %2").arg(QString::number(nShotTime)).arg(tr("s")));
     timerHLayout->addStretch();
     timerHLayout->addWidget(timerIconLabel);
     timerHLayout->addWidget(timerLabel);
@@ -455,7 +456,7 @@ void CameraWindow::paintEvent(QPaintEvent *event)
 
          if(nShotType == 1 && isStartShotTimer == false)
          {
-             scanBtn->setText("停止");
+             scanBtn->setText(tr("Stop"));
              timerWidget->setVisible(true);//显示定时拍
              slotStartShotTime();
              isStartShotTimer = true;
@@ -512,18 +513,18 @@ void CameraWindow::closeEvent(QCloseEvent *event)
 //扫描按钮槽
 void CameraWindow::slotScanBtnClicked()
 {
-    if(scanBtn->text() == "停止" && nShotType == 1 )
+    if(scanBtn->text() == tr("Stop") && nShotType == 1 )
     {
         if(shotTimer->isActive() == true)
         {
             shotTimer->stop();
             shotTimer = NULL;
         }
-        scanBtn->setText("扫描");
+        scanBtn->setText(tr("Scan"));
         timerWidget->setVisible(false);//隐藏定时拍
         return;
     }
-    else if(scanBtn->text() == "扫描" && nShotType == 1)
+    else if(scanBtn->text() == tr("Scan") && nShotType == 1)
     {
         if(shotTimer != NULL)
         {
@@ -531,7 +532,7 @@ void CameraWindow::slotScanBtnClicked()
             shotTimer = NULL;
         }
         slotStartShotTime();
-        scanBtn->setText("停止");
+        scanBtn->setText(tr("Stop"));
         timerWidget->setVisible(true);//显示定时拍
         return;
     }
@@ -545,9 +546,12 @@ int CameraWindow::callBackAutoCaptureFun(long nState)
 //拍摄图像
 void CameraWindow::shot()
 {
+    QString defaultDeviceModelFilePath =  DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceListInfoFilePath(),
+                                             "default",
+                                             "config");
     scanBtn->setEnabled(false);//禁用扫描按钮
     //图像文件夹路径
-    QString imgFolderPath = GlobalHelper::getScanFolder() + "/";//GlobalHelper::getScanTempFoler();
+    QString imgFolderPath = GlobalHelper::getScanFolder() + "/";
     char *folderPath;
     QByteArray qba = imgFolderPath.toLatin1();
     folderPath = qba.data();
@@ -563,7 +567,8 @@ void CameraWindow::shot()
     GlobalHelper::writeSettingValue("set","imgPreNameIndex",QString::number(imgIndex));//扫描文件的名称编号
 
     //后缀名
-    QString sImgSuffix= GlobalHelper::readSettingValue("imgEdit","imgFormat").toLower();
+    //QString sImgSuffix= GlobalHelper::readSettingValue("imgEdit","imgFormat").toLower();
+    QString sImgSuffix= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","imgFormat").toLower();
     if(sImgSuffix.isNull() || sImgSuffix.isEmpty())
     {
         sImgSuffix = "jpg";
@@ -581,17 +586,23 @@ void CameraWindow::shot()
 
     //图像处理参数
     bool bIsWater = false;//水印
-    if(GlobalHelper::readSettingValue("imgEdit","isWaterMark").toInt() == 0)
+    int nIsWaterMark= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","isWaterMark").toInt();
+    if(nIsWaterMark == 1)
     {
         bIsWater = true;
     }
-    int nR = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_r").toInt();
-    int nG = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_g").toInt();
-    int nB = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_b").toInt();
-    QString szWaterContent = GlobalHelper::readSettingValue("imgEdit","waterMarkText");
+    //int nR = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_r").toInt();
+    //int nG = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_g").toInt();
+    //int nB = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_b").toInt();
+    int nR = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkColor_r").toInt();
+    int nG = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkColor_g").toInt();
+    int nB = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkColor_b").toInt();
+    //QString szWaterContent = GlobalHelper::readSettingValue("imgEdit","waterMarkText");
+    QString szWaterContent= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkText");
 
     //文档类型(0=原始文档，1=文档优化，2=彩色优化，3=红印文档优化，4=反色，5=滤红)
-    int nDocType = GlobalHelper::readSettingValue("imgEdit","docType").toInt();
+    //int nDocType = GlobalHelper::readSettingValue("imgEdit","docType").toInt();
+    int nDocType= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","docType").toInt();
     bool bIsTextEn = false;//文档优化
     bool bColorBlance = false;//彩色优化
     bool bRedEn = false;//红印文档
@@ -617,18 +628,16 @@ void CameraWindow::shot()
     }
 
     bool bNoise = false;//去噪
-    if(GlobalHelper::readSettingValue("imgEdit","isFilterDenoising").toInt() == 0)
-    {
-       // bNoise = true;
-    }
     bool bFillBorder = false;//缺角修复
-    if(GlobalHelper::readSettingValue("imgEdit","isRepair").toInt() == 0)
+    int nIsRepair= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","isRepair").toInt();
+    if(nIsRepair == 0)
     {
         bFillBorder = true;
     }
 
     //图片的颜色模式
-    int nImgColorType = GlobalHelper::readSettingValue("imgEdit","imgType").toInt();
+    //int nImgColorType = GlobalHelper::readSettingValue("imgEdit","imgType").toInt();
+    int nImgColorType= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","docType").toInt();
 
     ImageParam imgparam;
     memset(&imgparam,0,sizeof(imgparam));
@@ -637,7 +646,8 @@ void CameraWindow::shot()
     {
          imgparam.nCropType = 3;
     }
-    else {
+    else
+    {
          imgparam.nCropType = isCut;
     }
     imgparam.nRotate = nVideoRotateAngle;//旋转角度
@@ -647,7 +657,11 @@ void CameraWindow::shot()
     imgparam.nG= nG;
     imgparam.nB= nB;
     imgparam.nFont = 0;//水印字体
-    string tmp = szWaterContent.toStdString();//水印内容
+    if(szWaterContent.isEmpty())//水印内容
+    {
+        szWaterContent = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss:zzz");
+    }
+    string tmp = szWaterContent.toStdString();
     imgparam.szWaterContent = (char*)tmp.c_str();
     imgparam.bIsTextEn = bIsTextEn;//文档优化
     imgparam.bColorBlance = bColorBlance;//彩色优化
@@ -668,53 +682,12 @@ void CameraWindow::shot()
         barcodeInfoList infos;
         for (int var = 0; var < nNum; ++var)
         {
-
             addItem(szout[var]);
-
-            /*
-            if(strcmp(imgSuffix,"jpg")==NULL)
-            {
-                unsigned char *des_buff=NULL;
-                JPEGInfo jpgInfo;
-                int desW=0,desH=0;
-                Cam_readBufFromJpeg(szout[var],&des_buff,jpgInfo,desW,desH);
-
-                Cam_BarcodeRecognizeBuffer((char*)des_buff,jpgInfo.width,jpgInfo.height,3,infos);
-                qDebug("barcode is %s\n",infos.infos[0].cbarcodeRet);
-            }
-            else {
-                QImage* img2 = new QImage(szout[var]);
-                unsigned char *data = img2->bits ();
-                long lWidth=img2->width(),lHeight=img2->height();
-                //barcodeInfoList infos;
-                Cam_BarcodeRecognizeBuffer((char*)data,lWidth,lHeight,3,infos);
-                qDebug("barcode is %s\n",infos.infos[0].cbarcodeRet);
-            }
-            */
         }
     }
     else
     {
         addItem(part_path);
-        /*
-        if(strcmp(imgSuffix,"jpg")==NULL)
-        {
-            unsigned char *des_buff=NULL;
-            JPEGInfo jpgInfo;
-            int desW=0,desH=0;
-            Cam_readBufFromJpeg(part_path,&des_buff,jpgInfo,desW,desH);
-            barcodeInfoList infos;
-            Cam_BarcodeRecognizeBuffer((char*)des_buff,jpgInfo.width,jpgInfo.height,3,infos);
-        }
-        else
-{
-            QImage* img2 = new QImage(part_path);
-            unsigned char *data = img2->bits ();
-            long lWidth=img2->width(),lHeight=img2->height();
-            barcodeInfoList infos;
-            Cam_BarcodeRecognizeBuffer((char*)data,lWidth,lHeight,3,infos);
-        }
-        */
     }
     saveBtn->setEnabled(true);//启用保存按钮
 }
@@ -857,9 +830,9 @@ void CameraWindow::copyFile(QString oldFilePath, QString newFilePath)
                 QFileInfo *fi = new QFileInfo(oldFilePath);
                 DDialog *dialog = new DDialog ();
                 dialog->setIcon(QIcon(":/img/dialogWarnIcon.svg"));
-                dialog->setMessage(fi->fileName()+" 文件已存在，您要覆盖文件吗？");
-                dialog->addButton("取消",false,DDialog::ButtonType::ButtonNormal);
-                dialog->addButton("覆盖",true,DDialog::ButtonType::ButtonWarning);
+                dialog->setMessage(fi->fileName()+tr("The file already exists. Do you want to replace it?"));
+                dialog->addButton(tr("Cancel"),false,DDialog::ButtonType::ButtonNormal);
+                dialog->addButton(tr("Replace"),true,DDialog::ButtonType::ButtonWarning);
                 if(dialog->exec()==DDialog::Accepted)//用户点击了覆盖按钮
                 {
                     newFile.remove();//删除已存在的文件
@@ -903,11 +876,11 @@ QString CameraWindow::getCopyFileName(QString filePath)
     {
        if(index == 0)
        {
-           filePath = GlobalHelper::getScanFolder()+"/"+fileName+"(副本)."+fileSuffix;
+           filePath = GlobalHelper::getScanFolder()+"/"+fileName+"("+tr("copy")+")."+fileSuffix;
        }
        else
        {
-           filePath = GlobalHelper::getScanFolder()+"/"+fileName+"(副本"+QString::number(index)+")."+fileSuffix;
+           filePath = GlobalHelper::getScanFolder()+"/"+fileName+"("+tr("copy")+QString::number(index)+")."+fileSuffix;
        }
        qDebug()<<filePath;
        newFile.setFileName(filePath);
@@ -959,7 +932,7 @@ void CameraWindow::slotShotTimerUpdate()
         shot();
         nShotTime = GlobalHelper::readSettingValue("imgEdit","shotTime").toInt();
     }
-    timerLabel->setText(QString(" %1 秒").arg(QString::number(nShotTime)));
+    timerLabel->setText(QString("%1 %2").arg(QString::number(nShotTime)).arg(tr("s")));
     nShotTime--;
 }
 

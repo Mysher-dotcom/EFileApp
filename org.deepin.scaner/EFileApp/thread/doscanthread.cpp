@@ -41,23 +41,22 @@ int DoScanThread::doScanReceiveCB(const uchar*data,int size,int w,int h,int nBpp
 int DoScanThread::doScanStatuCB(int nStatus)
 {
     qDebug()<<"扫描错误信息:"<<nStatus;
-    QString msg="未知错误";
+    QString msg=tr("Unknown error");//未知错误
     if(nStatus == STATUS_NO_DOCS)
     {
-        msg="请正确放入纸张！";
+        msg=tr("Out of paper");//请正确放入纸张！
     }
     else if(nStatus == STATUS_DEVICE_BUSY)
     {
-        msg="扫描过程中卡纸！";
+        msg=tr("Paper jam when scanning");//扫描过程中卡纸！
     }
     else if(nStatus == STATUS_JAMMED)
     {
-        msg="文档进纸器卡纸！";
+        msg=tr("Paper jam in the document feeder");//文档进纸器卡纸！
     }
     else
     {
-
-        msg="未知错误,"+nStatus;
+        msg=tr("Unknown error:")+nStatus;//未知错误,
     }
 
     emit g_doScanThread->signalScanError(msg);

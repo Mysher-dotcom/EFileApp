@@ -9,6 +9,7 @@
 #include <QMimeDatabase>
 #include "camcapturesdk.h"
 #include "helper/globalhelper.h"
+#include <QTextEdit>
 
 //图像列表item样式重构
 PicItemDelegate::PicItemDelegate(QObject *parent) : QStyledItemDelegate (parent)

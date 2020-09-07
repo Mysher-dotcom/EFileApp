@@ -44,10 +44,10 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         //绘制图标、名称、型号、状态位置区域
         QRectF iconRect=QRectF(rect.left()+10, rect.top()+15, 60, 60);
         QRectF nameRect=QRectF(rect.left()+iconRect.width()+20,rect.top()+15, 200, 20);
-        QRectF modelTitleRect = QRectF(rect.left()+iconRect.width()+20,rect.top()+nameRect.height()+20,50, 20);
-        QRectF modelRect=QRectF(rect.left()+iconRect.width()+20+36,rect.top()+nameRect.height()+20,100, 20);
-        QRectF statusTitleRect=QRectF(rect.left()+iconRect.width()+20,rect.top()+nameRect.height()+modelRect.height()+20,50, 20);
-        QRectF statusRect=QRectF(rect.left()+iconRect.width()+20+36,rect.top()+nameRect.height()+modelRect.height()+20,100, 20);
+        QRectF modelTitleRect = QRectF(rect.left()+iconRect.width()+20,rect.top()+nameRect.height()+20,60, 20);
+        QRectF modelRect=QRectF(rect.left()+iconRect.width()+20+46,rect.top()+nameRect.height()+20,100, 20);
+        QRectF statusTitleRect=QRectF(rect.left()+iconRect.width()+20,rect.top()+nameRect.height()+modelRect.height()+20,60, 20);
+        QRectF statusRect=QRectF(rect.left()+iconRect.width()+20+46,rect.top()+nameRect.height()+modelRect.height()+20,100, 20);
 
         QPen namePen = QColor(65,77,104,255);
         QPen modelTitlePen = QColor(82,106,127,255);
@@ -73,7 +73,7 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         //型号
         painter->setFont(QFont("SourceHanSansSC-Normal,SourceHanSansSC",10,300));
         painter->setPen(modelTitlePen);
-        painter->drawText(modelTitleRect,"型号：");
+        painter->drawText(modelTitleRect,tr("Model:"));//型号：
 
         painter->setFont(QFont("SourceHanSansSC-Medium,SourceHanSansSC",10,300));
         painter->setPen(modelPen);
@@ -82,7 +82,7 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         //状态
         painter->setFont(QFont("SourceHanSansSC-Normal,SourceHanSansSC",10,300));
         painter->setPen(statusTitlePen);
-        painter->drawText(statusTitleRect,"状态：");
+        painter->drawText(statusTitleRect,tr("Status:"));//状态：
 
         painter->setFont(QFont("SourceHanSansSC-Medium,SourceHanSansSC",10,300));
         painter->setPen(statusPen);
@@ -120,7 +120,7 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
             //型号
             painter->setFont(QFont("SourceHanSansSC-Normal,SourceHanSansSC",10,300));
             painter->setPen(modelTitlePen);
-            painter->drawText(modelTitleRect,"型号：");
+            painter->drawText(modelTitleRect,tr("Model:"));//型号：
 
             painter->setFont(QFont("SourceHanSansSC-Medium,SourceHanSansSC",10,300));
             painter->setPen(modelPen);
@@ -129,7 +129,7 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
             //状态
             painter->setFont(QFont("SourceHanSansSC-Normal,SourceHanSansSC",10,300));
             painter->setPen(statusTitlePen);
-            painter->drawText(statusTitleRect,"状态：");
+            painter->drawText(statusTitleRect,tr("Status:"));//状态：
 
             painter->setFont(QFont("SourceHanSansSC-Medium,SourceHanSansSC",10,300));
             painter->setPen(statusPen);

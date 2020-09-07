@@ -110,8 +110,8 @@ private:
     QHBoxLayout *mainHLayout;//主布局，分左右结构;左侧为tree，分类显示时设置宽度>0;右侧为缩略图、详细信息列表
     DTreeView *treeView;//左侧tree
     QStandardItemModel *treeViewModel;//左侧tree Item数据
-    QWidget *rightWidget;//右侧容器
     QStackedLayout *winStackedLayout;//右侧容器布局
+    QWidget *rightListBtnWidget;//右侧图像列表+扫描按钮容器
     QWidget *tipWidget;//提示容器
     QVBoxLayout *pVLayout;//提示布局
     DLabel *pNoPicTip1;//无图提示1
@@ -129,6 +129,11 @@ private:
     DSpinner *maskSpinner;//遮罩窗口进度动画
     QLabel *maskLabel;//遮罩窗口显示文本
     QPushButton *uploadBtn;//上传文件按钮
+    QWidget *renameWidget;//重命名控件
+    DTextEdit *fileNameText;//文件名文本框
+    DTextEdit *fileNameNoText;//文件名编号文本框
+    QPushButton *cancelRenameBtn;//取消重命名按钮
+    QPushButton *renameBtn;//重命名按钮
 
 signals:
     //信号
@@ -150,6 +155,7 @@ private slots:
     void slotTableViewMenuOpenFile();//右键打开
     void slotTableViewMenuEditFile();//右键编辑
     void slotTableViewMenuOutputFile();//右键导出
+    void slotTableViewMenuRenameFile();//右键重命名
     void slotTableViewMenuOpenFolder();//在文件管理器中打开
     void slotTableViewMenuOutputPDFFile();//右键合并PDF
     void slotTableViewMenuPrintFile();//右键打印
@@ -173,7 +179,10 @@ private slots:
     void slotDeviceParOver();//设备参数停止线程
     void slotSingleFileMergeOver(QString filePath,int fileIndex);//单个文件执行合并PDF结束
     void slotMergeOver();//合并PDF结束
-    void slotGetProgressBarCloseSignal();//获取进度条窗口关闭信号
+    void slotGetProgressBarCloseSignal();//获取进度条窗口关闭信号    
+    void slotCancelRenameBtnClicked();//取消重命名按钮
+    void slotRenameBtnClicked();//重命名按钮
+    void slotFileNameTextChanged();//文件名文本框
 
 };
 

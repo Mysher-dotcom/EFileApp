@@ -42,6 +42,7 @@
 #include <string>
 #include <iostream>
 #include "cmimage.h"
+
 using namespace std;
 
 #define BUTTON_HEIGHT 30        // 功能按钮高度（扫描 图像设置 文字设置 导出）
@@ -96,15 +97,14 @@ void MainWindow::initUI()
     this->titlebar()->setTitle("");//标题栏文字设为空
     setWindowIcon(QIcon(":/img/logo/logo-16.svg"));// 状态栏图标
     this->titlebar()->setIcon(QIcon(":/img/logo/logo-16.svg"));//标题栏图标
-    this->setWindowTitle("扫描管理");//开始菜单栏上鼠标悬浮在窗口上显示的名称
-
+    this->setWindowTitle(tr("Scan Assistant"));//开始菜单栏上鼠标悬浮在窗口上显示的名称
 
     //扫描按钮
     pbtnScan = new DIconButton (nullptr);
     pbtnScan->setIcon(QIcon(":/img/title/scan_new.svg"));//图标
     pbtnScan->setFixedSize(QSize(50, 50));//按钮尺寸
     pbtnScan->setIconSize(QSize(25,25));//图标尺寸
-    pbtnScan->setToolTip("扫描");
+    pbtnScan->setToolTip(tr("Scan"));
     pbtnScan->raise();//置顶
     pbtnScan->setStyleSheet("border-radius:25px; background-color:#0081FF; ");
 
@@ -128,9 +128,9 @@ void MainWindow::initUI()
     //pbtnOutput->setIcon(QIcon(":/img/title/output.svg"));
     //pbtnOutput->setIconSize(QSize(16,16));
     outputMenu = new DMenu(pbtnOutput);//导出按钮菜单
-    outputMenu->addAction(QStringLiteral("导出"), this, SLOT(slotTableViewMenuOutputFile()));
-   // outputMenu->addAction(QStringLiteral("打印"), this, SLOT(slotTableViewMenuPrintFile()));
-    outputMenu->addAction(QStringLiteral("添加到“邮件”"), this, SLOT(slotTableViewMenuEmailFile()));
+    outputMenu->addAction(tr("Export"), this, SLOT(slotTableViewMenuOutputFile()));
+   // outputMenu->addAction(tr("Print"), this, SLOT(slotTableViewMenuPrintFile()));
+    outputMenu->addAction(tr("Attach to mail"), this, SLOT(slotTableViewMenuEmailFile()));
     pbtnOutput->setMenu(outputMenu);
     QHBoxLayout *outputHLayout = new QHBoxLayout ();//图标居左显示
     QLabel *lbl = new QLabel ();
@@ -143,7 +143,6 @@ void MainWindow::initUI()
 
     //搜索框
     pSearchEdit = new DSearchEdit (this->titlebar()) ;
-    //pSearchEdit->setFixedHeight(BUTTON_HEIGHT);
 
     //缩略图模式按钮
     pbtnIconLayout = new DIconButton (nullptr);
@@ -173,7 +172,6 @@ void MainWindow::initUI()
     uploadBtn->setFixedSize(QSize(BUTTON_WIDTH, BUTTON_HEIGHT));
     uploadBtn->setIconSize(QSize(16,16));
     uploadBtn->setVisible(false);
-    uploadBtn->setToolTip("上传已识别完成的档案");
 
     //this->titlebar()->addWidget(pbtnScan,Qt::AlignLeft);
     this->titlebar()->addWidget(pbtnPicEdit,Qt::AlignLeft);
@@ -185,7 +183,7 @@ void MainWindow::initUI()
     this->titlebar()->addWidget(pbtnListLayout,Qt::AlignRight);
 
     QMenu *m = new QMenu () ;
-    m->addAction(QStringLiteral("设置"), this, SLOT(slotMenuSetButtonClicked()));
+    m->addAction(tr("Settings"), this, SLOT(slotMenuSetButtonClicked()));
     this->titlebar()->setMenu(m);
 
     //主布局，分左右结构;左侧为tree，分类显示时设置宽度>0;右侧为缩略图、详细信息列表
@@ -198,19 +196,64 @@ void MainWindow::initUI()
     treeViewModel->setHorizontalHeaderLabels(QStringList()<<"档案信息");
     treeView->setEditTriggers(QAbstractItemView::NoEditTriggers);//双击Item屏蔽可编辑
 
-    rightWidget = new QWidget () ;//右侧容器
-    winStackedLayout = new QStackedLayout();//右侧容器布局
-    rightWidget->setLayout(winStackedLayout);
+    //右侧
+    QWidget *rightAllWidget = new QWidget () ;//右侧容器
+    QVBoxLayout *rightAllLayout = new QVBoxLayout();//右侧布局
+    rightAllWidget->setLayout(rightAllLayout);
 
-    QWidget *rightAllWidget = new QWidget();
-    QGridLayout *gridLayout = new QGridLayout();
-    gridLayout->addWidget(rightWidget, 0, 0, 1, 1);
+    renameWidget = new  QWidget();//重命名控件
+    renameWidget->setFixedHeight(0);
+    GlobalHelper::setWidgetBackgroundColor(renameWidget,QColor(255,255,255,178),false);
+    QHBoxLayout *renameHLayout = new QHBoxLayout();
+    renameWidget->setLayout(renameHLayout);
+    QLabel *fileNameTipLabel = new QLabel ();
+    fileNameTipLabel->setText(tr("File name"));
+    fileNameTipLabel->setStyleSheet("font-size: 14px;font-family: SourceHanSansSC, SourceHanSansSC-Normal;font-weight: Normal;text-align: left;color: #414D68;");
+    fileNameTipLabel->setFixedWidth(52);
+    fileNameText = new DTextEdit();//文件名文本框
+    fileNameText->setPlaceholderText(tr("Required"));
+    fileNameText->setFixedSize(QSize(140,36));
+    QLabel *fileNameNoTipLabel = new QLabel ();
+    fileNameNoTipLabel->setText(tr("+SN"));
+    fileNameNoTipLabel->setStyleSheet("font-size: 14px;font-family: SourceHanSansSC, SourceHanSansSC-Normal;font-weight: Normal;text-align: left;color: #414D68;");
+    fileNameNoTipLabel->setFixedWidth(42);
+    fileNameNoText = new DTextEdit();//文件名编号文本框
+    fileNameNoText->setText("1");
+    fileNameNoText->setFixedSize(QSize(120,36));
+    QLabel *renameTipLabel = new QLabel ();
+    renameTipLabel->setText(tr("Tips: Sort by selected file order"));
+    renameTipLabel->setStyleSheet("font-size: 12px;font-family: SourceHanSansSC, SourceHanSansSC-Normal;font-weight: Normal;text-align: left;color: #526a7f;");
+    cancelRenameBtn = new QPushButton();//取消重命名按钮
+    cancelRenameBtn->setText(tr("Cancel"));
+    cancelRenameBtn->setFixedSize(QSize(73,36));
+    renameBtn = new QPushButton();//重命名按钮
+    renameBtn->setText(tr("Rename"));
+    renameBtn->setFixedSize(QSize(101,36));
+    renameBtn->setEnabled(false);
+    renameHLayout->addWidget(fileNameTipLabel,0,Qt::AlignLeft);
+    renameHLayout->addWidget(fileNameText,0,Qt::AlignLeft);
+    renameHLayout->addWidget(fileNameNoTipLabel,0,Qt::AlignLeft);
+    renameHLayout->addWidget(fileNameNoText,0,Qt::AlignLeft);
+    renameHLayout->addWidget(renameTipLabel,0,Qt::AlignLeft);
+    renameHLayout->addStretch();
+    renameHLayout->addWidget(cancelRenameBtn);
+    renameHLayout->addWidget(renameBtn);
+
+    QWidget *rightListWidget = new QWidget () ;//右侧图像列表容器
+    winStackedLayout = new QStackedLayout();//右侧图像列表布局
+    rightListWidget->setLayout(winStackedLayout);
+
+    rightListBtnWidget = new QWidget();//右侧图像列表+扫描按钮容器
+    QGridLayout *gridLayout = new QGridLayout();//右侧图像列表+扫描按钮布局
+    gridLayout->addWidget(rightListWidget, 0, 0, 1, 1);
     gridLayout->addWidget(pbtnScan, 0, 0, 1, 1,Qt::AlignBottom | Qt::AlignCenter);
-    rightAllWidget->setLayout(gridLayout);
+    rightListBtnWidget->setLayout(gridLayout);
+
+    rightAllLayout->addWidget(renameWidget);
+    rightAllLayout->addWidget(rightListBtnWidget);
 
     mainHLayout->addWidget(treeView);
-    mainHLayout->addWidget(rightAllWidget);//(rightWidget);
-
+    mainHLayout->addWidget(rightAllWidget);
     ui->centralWidget->setLayout(mainHLayout);
 
     showMaskWidgetUI();
@@ -225,6 +268,7 @@ void MainWindow::initUI()
     gridLayout->setSpacing(0);
     winStackedLayout->setMargin(0);
     winStackedLayout->setSpacing(0);
+    rightAllLayout->setMargin(0);
 
 }
 
@@ -240,6 +284,11 @@ void MainWindow::initConnection()
     connect(pSearchEdit,SIGNAL(textChanged(QString)),this,SLOT(slotSearchTextChange(QString)));//搜索框文本改变信号槽
     connect(treeView,SIGNAL(clicked ( const QModelIndex)),this,SLOT(slotTreeViewClick(const QModelIndex)));//树节点单击
     connect(uploadBtn,SIGNAL(clicked()),this,SLOT(slotUploadBtnClick()));//上传按钮
+
+    connect(cancelRenameBtn,SIGNAL(clicked()),this,SLOT(slotCancelRenameBtnClicked()));//取消重命名按钮
+    connect(renameBtn,SIGNAL(clicked()),this,SLOT(slotRenameBtnClicked()));//重命名按钮
+    connect(fileNameText,SIGNAL(textChanged()),this,SLOT(slotFileNameTextChanged()));//文件名文本框
+
 }
 
 //更新UI
@@ -319,7 +368,6 @@ void MainWindow::refreshData(bool isTreeClick,QString folderPath)
         }
         for(int j=0;j<fileTableViewItemCount;j++)
         {
-            //fileTableView->model()->removeRow(0);
             tableViewModel->removeRow(0);
         }
 
@@ -369,7 +417,7 @@ void MainWindow::closeRecognizeThread()
         _recognizeThread->quit();//退出事件循环
         _recognizeThread->wait();//释放线程槽函数资源
     }
-    qDebug()<<tr("关闭识别线程,线程状态：")<<_recognizeThread->isRunning();
+    qDebug()<<"关闭识别线程,线程状态："<<_recognizeThread->isRunning();
 }
 
 //识别结束
@@ -531,7 +579,7 @@ void MainWindow::slotUploadOver()
     }
     maskWidget->hide();
     maskSpinner->stop();
-    qDebug()<<tr("关闭上传线程,线程状态：")<<_uploadThread->isRunning();
+    qDebug()<<"关闭上传线程,线程状态："<<_uploadThread->isRunning();
 }
 
 
@@ -597,13 +645,13 @@ void MainWindow::slotCameraInfo(QVariant qv, const QString &str)
 //关闭拍摄仪线程
 void MainWindow::slotCloseCameraThread()
 {
-    qDebug()<<tr("关闭Camera线程");
+    qDebug()<<"关闭Camera线程";
     if(_getCameraInfoThread->isRunning())
     {
         _getCameraInfoThread->quit();//退出事件循环
         _getCameraInfoThread->wait();//释放线程槽函数资源
     }
-    qDebug()<<tr("Camera线程停止,线程状态：")<<_getCameraInfoThread->isRunning();
+    qDebug()<<"Camera线程停止,线程状态："<<_getCameraInfoThread->isRunning();
     openScannerThread();//开启SANE线程
 }
 
@@ -628,7 +676,7 @@ void MainWindow::openScannerThread()
 //无扫描仪设备
 void MainWindow::slotNoScanner()
 {
-    qDebug()<<tr("无扫描仪设备,关闭SANE线程");
+    qDebug()<<"无扫描仪设备,关闭SANE线程";
     scannerDeviceCount = 0;
     slotCloseScannerThread();
 }
@@ -682,13 +730,13 @@ void MainWindow::slotScannerInfo(QVariant qv, const QString &str)
 void MainWindow::slotCloseScannerThread()
 {
     GlobalHelper::getDeviceInfoIsOver = true;
-    qDebug()<<tr("关闭SANE线程");
+    qDebug()<<"关闭SANE线程";
     if(_getScannerInfoThread->isRunning())
     {
         _getScannerInfoThread->quit();//退出事件循环
         _getScannerInfoThread->wait();//释放线程槽函数资源
     }
-    qDebug()<<tr("SANE线程停止,线程状态：")<<_getScannerInfoThread->isRunning();
+    qDebug()<<"SANE线程停止,线程状态："<<_getScannerInfoThread->isRunning();
     getDevicePar();
 }
 
@@ -801,7 +849,7 @@ void MainWindow::slotCameraParInfo(QVariant qv,const QString &str)
         _getCameraInfoThread->quit();//退出事件循环
         _getCameraInfoThread->wait();//释放线程槽函数资源
     }
-    qDebug()<<tr("par Camera线程停止,线程状态：")<<_getCameraInfoThread->isRunning();
+    qDebug()<<"par Camera线程停止,线程状态："<<_getCameraInfoThread->isRunning();
 
 }
 
@@ -877,7 +925,7 @@ void MainWindow::slotScannerParInfo(QVariant qv,const QString &str)
         _getScannerInfoThread->quit();//退出事件循环
         _getScannerInfoThread->wait();//释放线程槽函数资源
     }
-    qDebug()<<tr("par SANE线程停止,线程状态：")<<_getScannerInfoThread->isRunning();
+    qDebug()<<"par SANE线程停止,线程状态："<<_getScannerInfoThread->isRunning();
     GlobalHelper::getDeviceInfoIsOver = true;
 }
 
@@ -896,9 +944,9 @@ void MainWindow::showNoFileUI()
     pVLayout = new QVBoxLayout () ;//提示布局
     pNoPicTip1 = new DLabel () ;//无图提示1
     pNoPicTip2 = new DLabel () ;//无图提示2
-    pNoPicTip1->setText("暂无扫描的文件");
+    pNoPicTip1->setText(tr("No scanned images"));//暂无扫描的文件
     pNoPicTip1->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
-    pNoPicTip2->setText("可点击扫描按钮添加扫描文件");
+    pNoPicTip2->setText(tr("Click Scan button to start"));//可点击扫描按钮添加扫描文件
     pNoPicTip2->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:14px");
     pNoPicTip1->setAlignment(Qt::AlignCenter);
     pNoPicTip2->setAlignment(Qt::AlignCenter);
@@ -933,16 +981,17 @@ void MainWindow::showFileListUI()
 
     //右键菜单
     listViewMenu = new DMenu(fileListView);
-    listViewMenu->addAction(QStringLiteral("打开"), this, SLOT(slotTableViewMenuOpenFile()));
-    listViewMenu->addAction(QStringLiteral("编辑"), this, SLOT(slotTableViewMenuEditFile()));
-    listViewMenu->addAction(QStringLiteral("导出"), this, SLOT(slotTableViewMenuOutputFile()));
+    listViewMenu->addAction(tr("Open"), this, SLOT(slotTableViewMenuOpenFile()));
+    listViewMenu->addAction(tr("Edit"), this, SLOT(slotTableViewMenuEditFile()));
+    listViewMenu->addAction(tr("Export"), this, SLOT(slotTableViewMenuOutputFile()));
+    listViewMenu->addAction(tr("Rename"), this, SLOT(slotTableViewMenuRenameFile()));
     listViewMenu->addSeparator();
-    listViewMenu->addAction(QStringLiteral("在文件管理器中显示"), this, SLOT(slotTableViewMenuOpenFolder()));
-    listViewMenu->addAction(QStringLiteral("合并PDF"), this, SLOT(slotTableViewMenuOutputPDFFile()));
-    //listViewMenu->addAction(QStringLiteral("打印"), this, SLOT(slotTableViewMenuPrintFile()));
-    listViewMenu->addAction(QStringLiteral("添加到“邮件”"), this, SLOT(slotTableViewMenuEmailFile()));
+    listViewMenu->addAction(tr("Display in file manager"), this, SLOT(slotTableViewMenuOpenFolder()));
+    listViewMenu->addAction(tr("Combine into PDF"), this, SLOT(slotTableViewMenuOutputPDFFile()));
+    //listViewMenu->addAction(tr("Print"), this, SLOT(slotTableViewMenuPrintFile()));
+    listViewMenu->addAction(tr("Attach to mail"), this, SLOT(slotTableViewMenuEmailFile()));
     listViewMenu->addSeparator();
-    listViewMenu->addAction(QStringLiteral("删除"), this, SLOT(slotTableViewMenuDelFile()));
+    listViewMenu->addAction(tr("Delete"), this, SLOT(slotTableViewMenuDelFile()));
 
     //右键菜单响应
     connect(fileListView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(slotListViewContextMenu(QPoint)));
@@ -969,10 +1018,10 @@ void MainWindow::showFileTableUI()
 
     // model 初始化
     tableViewModel->setColumnCount(4);
-    tableViewModel->setHeaderData(0, Qt::Horizontal, tr("名称"));
-    tableViewModel->setHeaderData(1, Qt::Horizontal, tr("修改时间"));
-    tableViewModel->setHeaderData(2, Qt::Horizontal, tr("类型"));
-    tableViewModel->setHeaderData(3, Qt::Horizontal, tr("大小"));
+    tableViewModel->setHeaderData(0, Qt::Horizontal, tr("Name"));
+    tableViewModel->setHeaderData(1, Qt::Horizontal, tr("Time Modified"));
+    tableViewModel->setHeaderData(2, Qt::Horizontal, tr("Type"));
+    tableViewModel->setHeaderData(3, Qt::Horizontal, tr("Size"));
 
 
     //设置列宽
@@ -991,16 +1040,17 @@ void MainWindow::showFileTableUI()
 
     //右键菜单
     tableViewMenu = new DMenu(fileTableView);
-    tableViewMenu->addAction(QStringLiteral("打开"), this, SLOT(slotTableViewMenuOpenFile()));
-    tableViewMenu->addAction(QStringLiteral("编辑"), this, SLOT(slotTableViewMenuEditFile()));
-    tableViewMenu->addAction(QStringLiteral("导出"), this, SLOT(slotTableViewMenuOutputFile()));
+    tableViewMenu->addAction(tr("Open"), this, SLOT(slotTableViewMenuOpenFile()));
+    tableViewMenu->addAction(tr("Edit"), this, SLOT(slotTableViewMenuEditFile()));
+    tableViewMenu->addAction(tr("Export"), this, SLOT(slotTableViewMenuOutputFile()));
+    tableViewMenu->addAction(tr("Rename"), this, SLOT(slotTableViewMenuRenameFile()));
     tableViewMenu->addSeparator();
-    tableViewMenu->addAction(QStringLiteral("在文件管理器中显示"), this, SLOT(slotTableViewMenuOpenFolder()));
-    tableViewMenu->addAction(QStringLiteral("合并PDF"), this, SLOT(slotTableViewMenuOutputPDFFile()));
-    //tableViewMenu->addAction(QStringLiteral("打印"), this, SLOT(slotTableViewMenuPrintFile()));
-    tableViewMenu->addAction(QStringLiteral("添加到“邮件”"), this, SLOT(slotTableViewMenuEmailFile()));
+    tableViewMenu->addAction(tr("Display in file manager"), this, SLOT(slotTableViewMenuOpenFolder()));
+    tableViewMenu->addAction(tr("Combine into PDF"), this, SLOT(slotTableViewMenuOutputPDFFile()));
+    //tableViewMenu->addAction(tr("Print"), this, SLOT(slotTableViewMenuPrintFile()));
+    tableViewMenu->addAction(tr("Attach to mail"), this, SLOT(slotTableViewMenuEmailFile()));
     tableViewMenu->addSeparator();
-    tableViewMenu->addAction(QStringLiteral("删除"), this, SLOT(slotTableViewMenuDelFile()));
+    tableViewMenu->addAction(tr("Delete"), this, SLOT(slotTableViewMenuDelFile()));
 
     //右键菜单响应
     connect(fileTableView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(slotTableViewContextMenu(QPoint)));
@@ -1360,7 +1410,7 @@ void MainWindow::slotTableViewMenuOutputFile()
     {
         return;
     }
-    QString folder = DFileDialog::getExistingDirectory(this,"请选择导出位置");
+    QString folder = DFileDialog::getExistingDirectory(this,tr("Select a location"));
     if(folder.isNull() == false || folder.isEmpty() == false)
     {
         for(int i=0;i<list.size();i++)
@@ -1371,6 +1421,24 @@ void MainWindow::slotTableViewMenuOutputFile()
             QFile::copy(list.at(i),newPath);
         }
     }
+}
+
+//右键重命名
+void MainWindow::slotTableViewMenuRenameFile()
+{
+    QStringList list = getListSelectedFile();
+    if(list.size() <= 0)
+    {
+        return;
+    }
+
+    //多文件
+   // if(list.size() > 1)
+    {
+        renameWidget->setFixedHeight(56);
+        rightListBtnWidget->setEnabled(false);//右侧图像列表+扫描按钮容器
+    }
+
 }
 
 //在文件管理器中打开
@@ -1388,7 +1456,7 @@ void MainWindow::slotTableViewMenuOutputPDFFile()
         return;
     }
 
-    progressBarWindow = new ProgressBarWindow (1,list.size(),"正在合并PDF文件",this);
+    progressBarWindow = new ProgressBarWindow (1,list.size(),tr("Combining into PDF"),this);
     progressBarWindow->setAttribute(Qt::WA_ShowModal,true);//模态窗口
     progressBarWindow->show();
     progressBarWindow->move ((QApplication::desktop()->width() - progressBarWindow->width())/2,
@@ -1423,14 +1491,14 @@ void MainWindow::slotMergeOver()
         progressBarWindow = NULL;
     }
 
-    qDebug()<<tr("1合并线程停止,线程状态：")<<_mergeThread->isRunning();
+    qDebug()<<"1合并线程停止,线程状态："<<_mergeThread->isRunning();
     if(_mergeThread->isRunning())
     {
         _mergeThread->quit();//退出事件循环
         _mergeThread->wait();//释放线程槽函数资源
     }
 
-    qDebug()<<tr("合并线程停止,线程状态：")<<_mergeThread->isRunning();
+    qDebug()<<"合并线程停止,线程状态："<<_mergeThread->isRunning();
     refreshData();
 }
 
@@ -1501,9 +1569,9 @@ void MainWindow::slotTableViewMenuDelFile()
     }
     DDialog *dialog = new DDialog ();
     dialog->setIcon(QIcon(":/img/dialogWarnIcon.svg"));
-    dialog->setMessage("您确定要彻底删除文件吗？");
-    dialog->addButton("取消",false,DDialog::ButtonType::ButtonNormal);
-    dialog->addButton("删除",true,DDialog::ButtonType::ButtonWarning);
+    dialog->setMessage(tr("Are you sure you want to delete the file(s) permanently?"));
+    dialog->addButton(tr("Cancel"),false,DDialog::ButtonType::ButtonNormal);
+    dialog->addButton(tr("Delete"),true,DDialog::ButtonType::ButtonWarning);
     if(dialog->exec()==DDialog::Accepted)//用户点击了确定按钮
     {
         for(int i=0;i<list.size();i++)
@@ -1533,6 +1601,62 @@ void MainWindow::slotListDoubleClicked(const QModelIndex index)
     {
         QString name = tableViewProxyModel->data(index).toString();
         QDesktopServices::openUrl(QUrl::fromLocalFile(QString("%1/%2").arg(GlobalHelper::getScanFolder()).arg(name)));
+    }
+}
+
+//取消重命名按钮
+void MainWindow::slotCancelRenameBtnClicked()
+{
+    renameWidget->setFixedHeight(0);
+    rightListBtnWidget->setEnabled(true);//右侧图像列表+扫描按钮容器
+}
+
+//重命名按钮
+void MainWindow::slotRenameBtnClicked()
+{
+    renameWidget->setFixedHeight(0);
+    rightListBtnWidget->setEnabled(true);//右侧图像列表+扫描按钮容器
+
+    QStringList list = getListSelectedFile();
+    if(list.size() <= 0)
+    {
+        return;
+    }
+
+    QString newNameText = fileNameText->toPlainText().trimmed();
+    int newNameNo = fileNameNoText->toPlainText().trimmed().toInt();
+    for(int i=0;i<list.size();i++)
+    {
+       if(QFile::exists(list.at(i)))
+       {
+           QFileInfo fi(list.at(i));
+           QString folderPath = fi.absoluteDir().path();//文件父目录
+           QString suffix = fi.suffix();//文件后缀名
+           QString newName = folderPath + "/" + newNameText + QString::number(newNameNo) + "." + suffix;
+           while(QFileInfo(newName).exists() == true)//遇到同名，编号追加1
+           {
+               newNameNo++;
+               newName = folderPath + "/" + newNameText + QString::number(newNameNo) + "." + suffix;
+           }
+           bool result = QFile::rename(list.at(i),newName);
+           qDebug()<<"rename result:"<<result<<",old:"<<list.at(i)<<",new:"<<newName;
+       }
+       newNameNo++;
+    }
+    refreshData();
+}
+
+//文件名文本框
+void MainWindow::slotFileNameTextChanged()
+{
+    QString rename = fileNameText->toPlainText();
+    if(rename.trimmed().isEmpty() || rename.trimmed().length() <= 0)
+    {
+        renameBtn->setEnabled(false);
+    }
+    else
+    {
+        renameBtn->setEnabled(true);
     }
 }
 
