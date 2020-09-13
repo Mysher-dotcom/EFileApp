@@ -7,6 +7,7 @@
 QT       += core gui
 QT+=printsupport
 QT+=multimedia
+QT+=dbus
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -52,10 +53,11 @@ SOURCES += \
         thread/uploadfilethread.cpp \
         thread/recognizethread.cpp \
         helper/webhelper.cpp \
-    helper/deviceinfohelper.cpp\
-    hpdfoperation.cpp \
-    thread/mergepdfthread.cpp \
-    progressbarwindow.cpp
+        helper/deviceinfohelper.cpp\
+        hpdfoperation.cpp \
+        thread/mergepdfthread.cpp \
+        progressbarwindow.cpp \
+        drawinterface/drawinterface.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -77,10 +79,11 @@ HEADERS += \
         thread/uploadfilethread.h \
         thread/recognizethread.h \
         helper/webhelper.h \
-    helper/deviceinfohelper.h\
-    hpdfoperation.h \
-    thread/mergepdfthread.h \
-    progressbarwindow.h
+        helper/deviceinfohelper.h\
+        hpdfoperation.h \
+        thread/mergepdfthread.h \
+        progressbarwindow.h \
+        drawinterface/drawinterface.h
 
 FORMS += \
         mainwindow.ui \
@@ -139,7 +142,20 @@ LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_highgui.so \
 
 RC_FILE += logo.rc
 
-TRANSLATIONS += $$PWD/translations/en_us.ts\
-                $$PWD/translations/zh_cn.ts
+#TRANSLATIONS += $$PWD/translations/en_us.ts
+TRANSLATIONS = $$files($$PWD/translations/*.ts)
+
+#CONFIG(release, debug|release) {
+#    TRANSLATIONS = $$files($$PWD/translations/*.ts)
+#    #遍历目录中的ts文件，调用lrelease将其生成为qm文件
+#    for(tsfile, TRANSLATIONS) {
+#        qmfile = $$replace(tsfile, .ts$, .qm)
+#        system(lrelease $$tsfile -qm $$qmfile) | error("Failed to lrelease")
+#    }
+    #将qm文件添加到安装包
+#    dtk_translations.path = /usr/share/$$TARGET/translations
+#    dtk_translations.files = $$PWD/translations/*.qm
+#    INSTALLS += dtk_translations
+#}
 
 

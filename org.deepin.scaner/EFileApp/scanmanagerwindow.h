@@ -80,6 +80,7 @@ private:
     int nCurrentDeviceType;//当前设备类型，0=拍摄仪，1=扫描仪
     int nCurrentDeviceIndex;//当前设备下标
     QString currentDeviceModel;//当前设备型号,如Canon dr-c230
+    bool currentDeviceIsCanUse;//当前设备是否可用
 
     /* 扫描仪参数键值对集合
      * int=参数的下标
@@ -158,6 +159,7 @@ private slots:
     void slotScanButtonClicked();//扫描按钮点击
     void slotDevListPressed(const QModelIndex index);//设备列表点击事件,获取指定设备的参数
     void slotComboBoxCurrentIndexChanged(const int index);//下拉框选项改变
+    void slotFontWaterTextChanged();//水印文本框文本改变事件
     void slotColorButtonClicked();//颜色按钮点击
     void slotNoScannerUI();//无设备UI
     void slotGetDeviceList();//获取设备列表并显示到UI

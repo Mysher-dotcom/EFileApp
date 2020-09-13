@@ -128,7 +128,7 @@ QStringList DeviceInfoHelper::getAllKeys(QString filePath,QString gourpName)
     return setting.allKeys();
 }
 
-//获取组名根据设备名称（Uniscan F40D）
+//获取组名根据设备名称（return Uniscan F40D）
 QString DeviceInfoHelper::getGroupNameByDeviceName(QString filePath,QString deviceName)
 {
     QString groupName = "";

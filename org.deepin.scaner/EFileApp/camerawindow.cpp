@@ -637,7 +637,7 @@ void CameraWindow::shot()
 
     //图片的颜色模式
     //int nImgColorType = GlobalHelper::readSettingValue("imgEdit","imgType").toInt();
-    int nImgColorType= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","docType").toInt();
+    int nImgColorType= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","imgType").toInt();
 
     ImageParam imgparam;
     memset(&imgparam,0,sizeof(imgparam));

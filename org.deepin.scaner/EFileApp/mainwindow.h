@@ -30,6 +30,7 @@
 #include "thread/mergepdfthread.h"
 #include "progressbarwindow.h"
 #include <QGridLayout>
+#include "drawinterface/drawinterface.h"
 
 DWIDGET_USE_NAMESPACE
 
@@ -130,8 +131,8 @@ private:
     QLabel *maskLabel;//遮罩窗口显示文本
     QPushButton *uploadBtn;//上传文件按钮
     QWidget *renameWidget;//重命名控件
-    DTextEdit *fileNameText;//文件名文本框
-    DTextEdit *fileNameNoText;//文件名编号文本框
+    QLineEdit *fileNameText;//文件名文本框
+    QLineEdit *fileNameNoText;//文件名编号文本框
     QPushButton *cancelRenameBtn;//取消重命名按钮
     QPushButton *renameBtn;//重命名按钮
 
@@ -182,7 +183,8 @@ private slots:
     void slotGetProgressBarCloseSignal();//获取进度条窗口关闭信号    
     void slotCancelRenameBtnClicked();//取消重命名按钮
     void slotRenameBtnClicked();//重命名按钮
-    void slotFileNameTextChanged();//文件名文本框
+    void slotFileNameTextChanged(const QString &);//文件名文本框文本改变事件
+    void slotListItemChanged(QStandardItem *item);//列表item改变（重命名）
 
 };
 

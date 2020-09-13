@@ -209,17 +209,20 @@ void MainWindow::initUI()
     QLabel *fileNameTipLabel = new QLabel ();
     fileNameTipLabel->setText(tr("File name"));
     fileNameTipLabel->setStyleSheet("font-size: 14px;font-family: SourceHanSansSC, SourceHanSansSC-Normal;font-weight: Normal;text-align: left;color: #414D68;");
-    fileNameTipLabel->setFixedWidth(52);
-    fileNameText = new DTextEdit();//文件名文本框
+    fileNameTipLabel->setFixedWidth(66);
+    fileNameText = new QLineEdit();//文件名文本框
     fileNameText->setPlaceholderText(tr("Required"));
     fileNameText->setFixedSize(QSize(140,36));
+    fileNameText->setMaxLength(255);//设置最大长度
     QLabel *fileNameNoTipLabel = new QLabel ();
-    fileNameNoTipLabel->setText(tr("+SN"));
+    fileNameNoTipLabel->setText(tr("Start at"));
     fileNameNoTipLabel->setStyleSheet("font-size: 14px;font-family: SourceHanSansSC, SourceHanSansSC-Normal;font-weight: Normal;text-align: left;color: #414D68;");
     fileNameNoTipLabel->setFixedWidth(42);
-    fileNameNoText = new DTextEdit();//文件名编号文本框
+    fileNameNoText = new QLineEdit();//文件名编号文本框,
     fileNameNoText->setText("1");
     fileNameNoText->setFixedSize(QSize(120,36));
+    fileNameNoText->setValidator(new QIntValidator(1,1000,this));//只能输入数字1-1000
+
     QLabel *renameTipLabel = new QLabel ();
     renameTipLabel->setText(tr("Tips: Sort by selected file order"));
     renameTipLabel->setStyleSheet("font-size: 12px;font-family: SourceHanSansSC, SourceHanSansSC-Normal;font-weight: Normal;text-align: left;color: #526a7f;");
@@ -287,7 +290,7 @@ void MainWindow::initConnection()
 
     connect(cancelRenameBtn,SIGNAL(clicked()),this,SLOT(slotCancelRenameBtnClicked()));//取消重命名按钮
     connect(renameBtn,SIGNAL(clicked()),this,SLOT(slotRenameBtnClicked()));//重命名按钮
-    connect(fileNameText,SIGNAL(textChanged()),this,SLOT(slotFileNameTextChanged()));//文件名文本框
+    connect(fileNameText,SIGNAL(textChanged(const QString &)),this,SLOT(slotFileNameTextChanged(const QString &)));//文件名文本框
 
 }
 
@@ -706,7 +709,14 @@ void MainWindow::slotScannerInfo(QVariant qv, const QString &str)
             if(groupName.isEmpty() == true)
             {
                 int groupNameIndex = DeviceInfoHelper::getGroupCount(devListFilePath) ;
-                groupName = "device"+groupNameIndex;
+                if(DeviceInfoHelper::isContainsGroup(devListFilePath,"default"))
+                {
+                    groupName = "device" + QString::number(groupNameIndex - 1);
+                }
+                else
+                {
+                    groupName = "device" + QString::number(groupNameIndex);
+                }
             }
 
             //int groupNameIndex = tmpQSList.at(3).toInt() ;
@@ -968,7 +978,7 @@ void MainWindow::showFileListUI()
     fileListView->setResizeMode(QListView::Adjust);
 
     listViewModel = new QStandardItemModel ();
-    PicItemDelegate *pItemDelegate=new PicItemDelegate (this);
+    PicItemDelegate *pItemDelegate=new PicItemDelegate (fileListView);
     fileListView->setItemDelegate(pItemDelegate);
     listViewProxyModel = new QSortFilterProxyModel (fileListView);
     listViewProxyModel->setSourceModel(listViewModel);
@@ -1000,8 +1010,8 @@ void MainWindow::showFileListUI()
     //connect(imgList,SIGNAL(pressed(const QModelIndex)),this,SLOT(imgListPressed(const QModelIndex)));
     //列表项双击
     connect(fileListView,SIGNAL(doubleClicked(const QModelIndex)),this,SLOT(slotListDoubleClicked(const QModelIndex)));
-    winStackedLayout->addWidget(fileListView);
 
+    winStackedLayout->addWidget(fileListView);
 }
 
 //显示文件信息列表
@@ -1022,7 +1032,6 @@ void MainWindow::showFileTableUI()
     tableViewModel->setHeaderData(1, Qt::Horizontal, tr("Time Modified"));
     tableViewModel->setHeaderData(2, Qt::Horizontal, tr("Type"));
     tableViewModel->setHeaderData(3, Qt::Horizontal, tr("Size"));
-
 
     //设置列宽
     setFileTableSize();
@@ -1339,8 +1348,9 @@ void MainWindow::slotIconLayoutButtonClicked()
     GlobalHelper::writeSettingValue("set","iconList","0");//修改配置文件键值
     pbtnIconLayout->setDown(true);
     pbtnListLayout->setDown(false);
+    renameWidget->setFixedHeight(0);
+    rightListBtnWidget->setEnabled(true);//右侧图像列表+扫描按钮容器
     refreshData();
-
 }
 
 //列表显示
@@ -1350,6 +1360,8 @@ void MainWindow::slotListLayoutButtonClicked()
     GlobalHelper::writeSettingValue("set","iconList","1");//修改配置文件键值
     pbtnIconLayout->setDown(false);
     pbtnListLayout->setDown(true);
+    renameWidget->setFixedHeight(0);
+    rightListBtnWidget->setEnabled(true);//右侧图像列表+扫描按钮容器
     refreshData();
 }
 
@@ -1389,17 +1401,22 @@ void MainWindow::slotTableViewMenuOpenFile()
 void MainWindow::slotTableViewMenuEditFile()
 {
     QStringList list = getListSelectedFile();
-
-
-   // for(int i=0;i<list.size();i++)
+    DrawInterface *m_draw = new DrawInterface("com.deepin.Draw",
+                                              "/com/deepin/Draw",
+                                              QDBusConnection::sessionBus(),this);
+    QList<QString> picList;
+    for(int i=0;i<list.count();i++)
     {
-
-        QProcess *process = new QProcess(this);
-        //process->start("deepin-draw",list);
-        process->startDetached("deepin-draw",QStringList(list.at(0)));
-       //process->waitForFinished();
-       delete process;
+        picList.append(list.at(i));
     }
+    qDebug()<<"图像编辑，数量："<<picList.size();
+    m_draw->openFiles(picList);
+
+/*
+    QProcess *process = new QProcess(this);
+    process->startDetached("deepin-draw",QStringList(list.at(0)));
+    delete process;
+*/
 }
 
 //右键导出
@@ -1427,19 +1444,45 @@ void MainWindow::slotTableViewMenuOutputFile()
 void MainWindow::slotTableViewMenuRenameFile()
 {
     QStringList list = getListSelectedFile();
-    if(list.size() <= 0)
-    {
-        return;
-    }
+    if(list.size() <= 0) return;
 
-    //多文件
-   // if(list.size() > 1)
+    /*if(list.size() == 1)//单个文件
+    {
+        int model = winStackedLayout->currentIndex();
+        if(model == 1)//缩略图
+        {
+            QModelIndexList selectItems = fileListView->selectionModel()->selectedIndexes();
+            if(selectItems.size() > 0)
+            {
+                fileListView->edit(selectItems.at(0));
+                //列表item改变（重命名）
+                connect(listViewModel,SIGNAL(itemChanged(QStandardItem *)),this,SLOT(slotListItemChanged(QStandardItem *)));
+                fileListView->setEditTriggers(QListView::AnyKeyPressed);
+
+
+            }
+        }
+        else if(model == 2)//信息列表
+        {
+
+        }
+    }
+    else*///if(list.size() > 1)//多文件
     {
         renameWidget->setFixedHeight(56);
         rightListBtnWidget->setEnabled(false);//右侧图像列表+扫描按钮容器
     }
-
 }
+
+
+//列表item改变（重命名）
+void MainWindow::slotListItemChanged(QStandardItem *item)
+{
+    QVariant itemData= item->data();
+    PicListItemData picData = itemData.value<PicListItemData>();//还原为原来的数据结构类型;
+    qDebug()<<"*************rename:"<<picData.picName<<","<<picData.picPath;
+}
+
 
 //在文件管理器中打开
 void MainWindow::slotTableViewMenuOpenFolder()
@@ -1623,8 +1666,8 @@ void MainWindow::slotRenameBtnClicked()
         return;
     }
 
-    QString newNameText = fileNameText->toPlainText().trimmed();
-    int newNameNo = fileNameNoText->toPlainText().trimmed().toInt();
+    QString newNameText = fileNameText->text().trimmed();
+    int newNameNo = fileNameNoText->text().trimmed().toInt();
     for(int i=0;i<list.size();i++)
     {
        if(QFile::exists(list.at(i)))
@@ -1646,11 +1689,28 @@ void MainWindow::slotRenameBtnClicked()
     refreshData();
 }
 
-//文件名文本框
-void MainWindow::slotFileNameTextChanged()
+//文件名文本框文本改变事件
+void MainWindow::slotFileNameTextChanged(const QString & newText )
 {
-    QString rename = fileNameText->toPlainText();
-    if(rename.trimmed().isEmpty() || rename.trimmed().length() <= 0)
+    QString newName = fileNameText->text().trimmed();
+    //newName = newName .replace("\n", "");//无法包括\\,\t, \n 单独处理
+    //newName = newName.replace("\t", "");
+    //newName = newName.replace("\\","");
+    //newName = newName.simplified(); //去掉前后空格
+    QRegExp exp("[</\:>*?|]");//去掉特殊字符
+    newName = newName.replace(exp, "");
+
+    //  \x00-\x1f是不可见的控制字符
+    //QRegExp exp1("[\x01-0x1f]");
+    //newName = newName.replace(exp1, "");
+    // \x7f是delete，也不可见，所以替换掉
+    //QRegExp exp2("[\x7f]");
+    //newName = newName.replace(exp2, "");
+qDebug()<<"rename's new name:"<<newName;
+
+    fileNameText->setText(newName);
+
+    if(newName.isEmpty() || newName.length() <= 0)
     {
         renameBtn->setEnabled(false);
     }

@@ -18,22 +18,89 @@ int main(int argc, char *argv[])
      */
     QTranslator translator;
     QLocale locale;
+    qDebug()<<"current system's language:"<<locale.language();
     if(locale.language() == QLocale::Chinese )
-    {
-       qDebug() << "中文系统";
-       translator.load("zh_cn.qm");
-    }
-    else //if( locale.language() == QLocale::English )
-    {
-       qDebug() << "English system" ;
-       translator.load("en_us.qm");
-    }
-    qApp->installTranslator(&translator); //安装翻译器
+        translator.load("./translations/scan-assistantts_zh_CN.qm");//中文（中华人民共和国）
+    else if(locale.language() == QLocale::HongKong )
+        translator.load("./translations/scan-assistantts_zh_HK.qm");//中文（香港特区）
+    else if(locale.language() == QLocale::Taiwan )
+        translator.load("./translations/scan-assistantts_zh_TW.qm");//中文（台湾）
+    else if(locale.language() == QLocale::English )
+        translator.load("./translations/scan-assistantts_en_US.qm");//英文
+    else if(locale.language() == QLocale::Armenian )
+        translator.load("./translations/scan-assistantts_am_ET.qm");//亚美尼亚
+    else if(locale.language() == QLocale::Argentina )
+        translator.load("./translations/scan-assistantts_ar.qm");//阿根廷
+    else if(locale.language() == QLocale::Bulgarian )
+        translator.load("./translations/scan-assistantts_bg.qm");//保加利亚
+    else if(locale.language() == QLocale::Canada)
+        translator.load("./translations/scan-assistantts_ca.qm");//加拿大
+    else if(locale.language() == QLocale::Czech )
+        translator.load("./translations/scan-assistantts_cs.qm");//捷克
+    else if(locale.language() == QLocale::Danish )
+        translator.load("./translations/scan-assistantts_da.qm");// 丹麦
+    else if(locale.language() == QLocale::German )
+        translator.load("./translations/scan-assistantts_de.qm");//德国
+    else if(locale.language() == QLocale::Greek )
+        translator.load("./translations/scan-assistantts_el.qm");//希腊
+    else if(locale.language() == QLocale::Spanish )
+        translator.load("./translations/scan-assistantts_es.qm");//西班牙
+    else if(locale.language() == QLocale::Persian )
+        translator.load("./translations/scan-assistantts_fa.qm");//波斯
+    else if(locale.language() == QLocale::Finnish )
+        translator.load("./translations/scan-assistantts_fi.qm");//芬兰
+    else if(locale.language() == QLocale::French )
+        translator.load("./translations/scan-assistantts_fr.qm");//法国
+    else if(locale.language() == QLocale::Hindi )
+        translator.load("./translations/scan-assistantts_hi_IN.qm");//印度
+    else if(locale.language() == QLocale::Croatian )
+        translator.load("./translations/scan-assistantts_hr.qm");//克罗地亚
+    else if(locale.language() == QLocale::Hungarian )
+        translator.load("./translations/scan-assistantts_hu.qm");//匈牙利
+    else if(locale.language() == QLocale::Indonesian )
+        translator.load("./translations/scan-assistantts_id.qm");//印度尼西亚
+    else if(locale.language() == QLocale::Italian )
+        translator.load("./translations/scan-assistantts_it.qm");//意大利
+    else if(locale.language() == QLocale::Japanese )
+        translator.load("./translations/scan-assistantts_ja.qm");//日本
+    else if(locale.language() == QLocale::Korean )
+        translator.load("./translations/scan-assistantts_ko.qm");//韩国
+    else if(locale.language() == QLocale::Lithuanian )
+        translator.load("./translations/scan-assistantts_lt.qm");//立陶宛
+    else if(locale.language() == QLocale::Montserrat )
+        translator.load("./translations/scan-assistantts_ms.qm");//蒙特塞拉特岛
+    else if(locale.language() == QLocale::Netherlands )
+        translator.load("./translations/scan-assistantts_nl.qm");//荷兰
+    else if(locale.language() == QLocale::Poland )
+        translator.load("./translations/scan-assistantts_pl.qm");//波兰
+    else if(locale.language() == QLocale::Portuguese )
+        translator.load("./translations/scan-assistantts_pt.qm");//葡萄牙语（葡萄牙）
+    else if(locale.language() == QLocale::Portuguese )
+        translator.load("./translations/scan-assistantts_pt_BR.qm");//葡萄牙语（巴西）
+    else if(locale.language() == QLocale::Romanian )
+        translator.load("./translations/scan-assistantts_ro.qm");//罗马尼亚
+    else if(locale.language() == QLocale::Russian )
+        translator.load("./translations/scan-assistantts_ru.qm");//俄罗斯
+    else if(locale.language() == QLocale::Slovenian )
+        translator.load("./translations/scan-assistantts_sk.qm");//斯洛伐克
+    else if(locale.language() == QLocale::Albanian )
+        translator.load("./translations/scan-assistantts_sq.qm");//阿尔巴尼亚语
+    else if(locale.language() == QLocale::Suriname )
+        translator.load("./translations/scan-assistantts_sr.qm");//苏里南
+    else if(locale.language() == QLocale::ElSalvador )
+        translator.load("./translations/scan-assistantts_sv.qm");//萨尔瓦多
+    else if(locale.language() == QLocale::Turkish )
+        translator.load("./translations/scan-assistantts_tr.qm");//土耳其
+    else if(locale.language() == QLocale::Uganda )
+        translator.load("./translations/scan-assistantts_ug.qm");//乌干达
+    else if(locale.language() == QLocale::Ukrainian )
+        translator.load("./translations/scan-assistantts_uk.qm");//乌克兰
 
+    qApp->installTranslator(&translator); //安装翻译器
 
     a.setAttribute(Qt::AA_UseHighDpiPixmaps);
     a.loadTranslator();
-    a.setApplicationVersion(DApplication::buildVersion("5.1.0.4-2"));
+    a.setApplicationVersion(DApplication::buildVersion("5.1.0.4-3"));
     a.setProductIcon(QIcon(":/img/logo/logo-16.svg"));
     a.setOrganizationName(QObject::tr("Scan Assistant"));
     a.setProductName(QObject::tr("Scan Assistant"));

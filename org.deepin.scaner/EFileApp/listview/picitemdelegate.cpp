@@ -9,12 +9,13 @@
 #include <QMimeDatabase>
 #include "camcapturesdk.h"
 #include "helper/globalhelper.h"
-#include <QTextEdit>
+#include <DListView>
+#include <QLineEdit>
 
 //图像列表item样式重构
 PicItemDelegate::PicItemDelegate(QObject *parent) : QStyledItemDelegate (parent)
 {
-
+    parentCtrl = parent;
 }
 
 void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -190,6 +191,21 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
             painter->fillPath(pathMain,QBrush(QColor(0,0,0,5)));
         }
 
+        if(picItemData.isRename == true)
+        {
+            qDebug()<<"**************"<<parentCtrl->metaObject()->className();
+            //确定父控件类型
+            if (parentCtrl->metaObject()->className() == QStringLiteral("Dtk::Widget::DListView"))
+            {
+                DListView *tmpparentCtrl = qobject_cast<DListView*>(parentCtrl); //转为真实的类型
+                QLineEdit *lineEdit = new QLineEdit (tmpparentCtrl);
+                lineEdit->show();
+                lineEdit->setFixedSize(QSize(100,30));
+                lineEdit->move(QPoint(150, 25));
+                lineEdit ->raise();   //在最上层显示
+                lineEdit->setFocus();
+             }
+        }
 
         file->close();
         delete file;

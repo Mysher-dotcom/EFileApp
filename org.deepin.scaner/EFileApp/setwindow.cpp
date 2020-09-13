@@ -81,7 +81,7 @@ void SetWindow::initUI()
     QHBoxLayout *parHLayout2 = new QHBoxLayout ();
     QLabel *parTitleLbl2= new QLabel ();
     parTitleLbl2->setText(tr("Notify me when overwriting"));//覆盖时警告
-    setParTitleLabelStyle(parTitleLbl2,140);
+    setParTitleLabelStyle(parTitleLbl2,200);
     parHLayout2->addWidget(parTitleLbl2);
     parHLayout2->addStretch();
     fileOverWarnSBtn = new DSwitchButton ();
@@ -93,7 +93,7 @@ void SetWindow::initUI()
     QHBoxLayout *parHLayout3 = new QHBoxLayout ();
     QLabel *parTitleLbl3= new QLabel ();
     parTitleLbl3->setText(tr("Notify me when no scanners found"));//无扫描仪时警告
-    setParTitleLabelStyle(parTitleLbl3,140);
+    setParTitleLabelStyle(parTitleLbl3,200);
     parHLayout3->addWidget(parTitleLbl3);
     parHLayout3->addStretch();
     noDeviceWarnSBtn = new DSwitchButton ();
@@ -105,7 +105,7 @@ void SetWindow::initUI()
     QHBoxLayout *parHLayout4 = new QHBoxLayout ();
     QLabel *parTitleLbl4= new QLabel ();
     parTitleLbl4->setText(tr("Play a sound when completed"));//完成后提示音
-    setParTitleLabelStyle(parTitleLbl4,140);
+    setParTitleLabelStyle(parTitleLbl4,200);
     parHLayout4->addWidget(parTitleLbl4);
     parHLayout4->addStretch();
     finishBeepSBtn = new DSwitchButton ();
@@ -117,7 +117,7 @@ void SetWindow::initUI()
     QHBoxLayout *parHLayout5 = new QHBoxLayout ();
     QLabel *parTitleLbl5= new QLabel ();
     parTitleLbl5->setText(tr("Exit when completed"));//完成后退出
-    setParTitleLabelStyle(parTitleLbl5,140);
+    setParTitleLabelStyle(parTitleLbl5,200);
     parHLayout5->addWidget(parTitleLbl5);
     parHLayout5->addStretch();
     finishExitSBtn = new DSwitchButton ();
@@ -129,7 +129,7 @@ void SetWindow::initUI()
     QHBoxLayout *parHLayout6 = new QHBoxLayout ();
     QLabel *parTitleLbl6= new QLabel ();
     parTitleLbl6->setText("条码识别分类");
-    setParTitleLabelStyle(parTitleLbl6,140);
+    setParTitleLabelStyle(parTitleLbl6,200);
     parHLayout6->addWidget(parTitleLbl6);
     parHLayout6->addStretch();
     classificationSBtn = new DSwitchButton ();

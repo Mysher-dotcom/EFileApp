@@ -23,7 +23,9 @@
 #include "errortype.h"
 #include <QStackedLayout>
 #include <QFile>
-
+#include <QDesktopServices>
+#include <QUrl>
+#include <QFontDatabase>
 
 DWIDGET_USE_NAMESPACE
 

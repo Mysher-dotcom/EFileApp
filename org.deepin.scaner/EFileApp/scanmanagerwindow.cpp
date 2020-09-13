@@ -473,6 +473,7 @@ void ScanManagerWindow::initInstallDeviceUI()
     installBtn = new QPushButton();
     installBtn->setFixedSize(QSize(300, 36));
     installBtn->setText(tr("Install Driver"));
+    installBtn->setEnabled(false);
     connect(installBtn, SIGNAL(clicked()), this, SLOT(slotInstallBtnClicked()));
 
     //控件加入布局中
@@ -498,7 +499,6 @@ void ScanManagerWindow::initInstallDeviceUI()
     rightLayout->addWidget(installWidget);
     rightLayout->addWidget(installBtn,0,Qt::AlignCenter | Qt::AlignBottom);
     rightLayout->setSpacing(10);//设置内部控件之间的间距10,（重要）中间区域会随着窗口大小自适应
-
 
     mainSLayout->addWidget(mainWidget);
 
@@ -665,6 +665,8 @@ void ScanManagerWindow::addDeviceItem(int type,QString name,QString model,QStrin
     itemData.devStatus = status;
     itemData.devIndex = index;
     itemData.devLicense = license;
+    itemData.devModelTitle = tr("Model:");
+    itemData.devStatusTitle = tr("Status:");
     pItem->setData(QVariant::fromValue(itemData),Qt::UserRole+1);
     pModel->appendRow(pItem);
 
@@ -865,17 +867,6 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     fontWaterrbBtn=new DRadioButton (nullptr);
     fontWaterrbBtn->setText(tr("Text"));//文字水印
     fontWaterText = new DTextEdit();
-    /*
-    QString strWaterMarkText = GlobalHelper::readSettingValue("imgEdit","waterMarkText");
-    if(strWaterMarkText.isEmpty())
-    {
-        fontWaterText->setText(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss:zzz"));
-    }
-    else
-    {
-        fontWaterText->setText(strWaterMarkText);
-    }
-    */
     colorBtn = new DIconButton (nullptr);
     colorBtn->setIcon(QIcon(":/img/watermarkColor.svg"));
     colorBtn->setFixedSize(QSize(32,32));
@@ -912,7 +903,7 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
 
     QHBoxLayout *parHLayoutBB = new QHBoxLayout ();
     QLabel  *pnameLbl= new QLabel ();
-    pnameLbl->setFixedWidth(80);
+    pnameLbl->setFixedWidth(100);
     pnameLbl->setText(tr("Optimization"));//图像类型
     pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
 
@@ -969,6 +960,7 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     //rtVLayout->addWidget(parWidgetFD,0,Qt::AlignTop);
     rtVLayout->addWidget(parWidgetRepair,0,Qt::AlignTop);
 
+    connect(fontWaterText, SIGNAL(textChanged()), this, SLOT(slotFontWaterTextChanged()));//水印文本框文本改变事件
     connect(colorBtn, SIGNAL(clicked()), this, SLOT(slotColorButtonClicked()));//颜色选择按钮信号槽
 
     //无授权，禁用按钮
@@ -1239,9 +1231,20 @@ void ScanManagerWindow::slotDevListPressed(const QModelIndex)
                         showDeviceParUI(titleName,parName,parIndex,1,parValueList,false,false);//UI显示参数
 
                         scannerParMap.insert(parIndex.toInt(),parValueList);//参数加入集合
+                        //选中参数集合默认加入第一个参数
                         if(parValueList.size()>0)
                         {
-                            //scannerChoiseParMap.insert(parIndex.toInt(),parValueList.at(0));//选中参数集合默认加入第一个参数
+                           scannerChoiseParMap.insert(parIndex.toInt(),parValueList.at(0));
+
+                           //记录扫描仪参数
+                           if(isContainsGroup == false)
+                           {
+                                DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),
+                                                        "imgset",
+                                                        parName,
+                                                        parValueList.at(0));
+                           }
+
                         }
                     }
                 }
@@ -1287,17 +1290,17 @@ void ScanManagerWindow::slotDevListPressed(const QModelIndex)
             }
         }
 
-
-
         nCurrentDeviceType = d.devType;//当前设备类型，0=拍摄仪，1=扫描仪
         nCurrentDeviceIndex = d.devIndex;//当前设备下标
         if(d.devStatus != tr("Idle"))//非空闲状态
         {
             scanBtn->setEnabled(false);
+            currentDeviceIsCanUse = false;
         }
         else
         {
             scanBtn->setEnabled(true);
+            currentDeviceIsCanUse = true;
         }
 
         //记录默认设备
@@ -1412,6 +1415,23 @@ void ScanManagerWindow::slotComboBoxCurrentIndexChanged(const int index)
     qDebug()<<"切换参数名："<<parName<<",参数值:"<<parValue;
     DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset",parName,parValue);
 
+}
+
+//水印文本框文本改变事件
+void ScanManagerWindow::slotFontWaterTextChanged()
+{
+    QString txt = fontWaterText->toPlainText();
+    if(txt.isEmpty())
+    {
+        scanBtn->setEnabled(false);
+    }
+    else
+    {
+        if(currentDeviceIsCanUse == true)
+        {
+            scanBtn->setEnabled(true);
+        }
+    }
 }
 
 //颜色按钮点击

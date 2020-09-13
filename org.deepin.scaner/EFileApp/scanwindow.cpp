@@ -558,20 +558,19 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     //黑白图，二值化
     MImage* srcThreshold = NULL;
     //int nIsLineart = GlobalHelper::readSettingValue("imgEdit","nIsLineart").toInt();
-    int nIsLineart= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","nIsLineart").toInt();
-    if(nIsLineart==0)
+    QString strIsLineart = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","nIsLineart");
+    if(strIsLineart.isEmpty() || strIsLineart.toInt() == 1)
     {
-       srcThreshold = mcvAdaptiveThreshold(srcCut);
-       if(srcCut)
-       {
-           mcvReleaseImage1(srcCut);
-           srcCut = NULL;
-       }
+        srcThreshold = mcvClone(srcCut);
+        if(srcCut)
+        {
+            mcvReleaseImage1(srcCut);
+            srcCut = NULL;
+        }
     }
     else
     {
-        qDebug("33333333333333333\n");
-        srcThreshold = mcvClone(srcCut);
+        srcThreshold = mcvAdaptiveThreshold(srcCut);
         if(srcCut)
         {
             mcvReleaseImage1(srcCut);
@@ -604,8 +603,10 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
         //获取路径
         QString str = QCoreApplication::applicationDirPath();
         QString strFontPath = QString("%1/%2").arg(str).arg("simhei.ttf");
-        //srcWater = mcvWaterMark2(srcRotate,imgParam.szWaterContent,strFontPath.toLocal8Bit().data(),imgParam.nFont,imgParam.nB,imgParam.nG,imgParam.nR,1,0);
-
+        qDebug()<<"watermark font file's path:"<<strFontPath;
+        qDebug()<<"QApplication::font():"<<QApplication::font().toString();
+        //QFontDatabase::addApplicationFont(QApplication::font().toString());
+        //QDesktopServices::openUrl(QUrl::fromLocalFile(strFontPath));
         srcWater = mcvWaterMark2(srcThreshold,cWaterMarkText,strFontPath.toLocal8Bit().data(),0,color_b,color_g,color_r,0,0);
         if(srcThreshold)
         {

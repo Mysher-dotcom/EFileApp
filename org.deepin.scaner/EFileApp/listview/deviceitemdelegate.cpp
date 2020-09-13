@@ -73,7 +73,7 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         //型号
         painter->setFont(QFont("SourceHanSansSC-Normal,SourceHanSansSC",10,300));
         painter->setPen(modelTitlePen);
-        painter->drawText(modelTitleRect,tr("Model:"));//型号：
+        painter->drawText(modelTitleRect,deviceItemData.devModelTitle);//型号：tr("Model:")
 
         painter->setFont(QFont("SourceHanSansSC-Medium,SourceHanSansSC",10,300));
         painter->setPen(modelPen);
@@ -82,7 +82,7 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         //状态
         painter->setFont(QFont("SourceHanSansSC-Normal,SourceHanSansSC",10,300));
         painter->setPen(statusTitlePen);
-        painter->drawText(statusTitleRect,tr("Status:"));//状态：
+        painter->drawText(statusTitleRect,deviceItemData.devStatusTitle);//状态：tr("Status:")
 
         painter->setFont(QFont("SourceHanSansSC-Medium,SourceHanSansSC",10,300));
         painter->setPen(statusPen);
@@ -120,7 +120,7 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
             //型号
             painter->setFont(QFont("SourceHanSansSC-Normal,SourceHanSansSC",10,300));
             painter->setPen(modelTitlePen);
-            painter->drawText(modelTitleRect,tr("Model:"));//型号：
+            painter->drawText(modelTitleRect,deviceItemData.devModelTitle);//型号：tr("Model:")
 
             painter->setFont(QFont("SourceHanSansSC-Medium,SourceHanSansSC",10,300));
             painter->setPen(modelPen);
@@ -129,7 +129,7 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
             //状态
             painter->setFont(QFont("SourceHanSansSC-Normal,SourceHanSansSC",10,300));
             painter->setPen(statusTitlePen);
-            painter->drawText(statusTitleRect,tr("Status:"));//状态：
+            painter->drawText(statusTitleRect,deviceItemData.devStatusTitle);//状态：tr("Status:")
 
             painter->setFont(QFont("SourceHanSansSC-Medium,SourceHanSansSC",10,300));
             painter->setPen(statusPen);
