@@ -23,7 +23,7 @@ void GetScannerInfoThread::slotStartThread()
     if(isStop) return;
 
     //CloseDev(0);
-
+    ExitDev();
     Init();//初始化SANE
 
     long nDevCount = -1;

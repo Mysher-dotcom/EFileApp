@@ -176,7 +176,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="218"/>
         <source>Start at</source>
-        <translation type="unfinished"/>
+        <translation>Почни од</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="227"/>

@@ -57,7 +57,8 @@ SOURCES += \
         hpdfoperation.cpp \
         thread/mergepdfthread.cpp \
         progressbarwindow.cpp \
-        drawinterface/drawinterface.cpp
+        drawinterface/drawinterface.cpp \
+    cpng.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -83,7 +84,8 @@ HEADERS += \
         hpdfoperation.h \
         thread/mergepdfthread.h \
         progressbarwindow.h \
-        drawinterface/drawinterface.h
+        drawinterface/drawinterface.h \
+    cpng.h
 
 FORMS += \
         mainwindow.ui \
@@ -115,8 +117,10 @@ LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/lib/sane/libsane.so.1
 
 INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/jpeg
 INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/hdf
+INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/png
 LIBS += -L/opt/apps/org.deepin.scaner/files/scaner/bin/lib/jpeg  -ljpeg
 LIBS += -L/opt/apps/org.deepin.scaner/files/scaner/bin/lib/hdf -lhpdf
+LIBS += -L/opt/apps/org.deepin.scaner/files/scaner/bin/lib/png -lpng
 #拍摄仪
 INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/CamScanSDK
 INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/CmImage

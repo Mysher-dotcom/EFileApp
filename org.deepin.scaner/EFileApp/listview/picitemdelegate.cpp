@@ -11,7 +11,8 @@
 #include "helper/globalhelper.h"
 #include <DListView>
 #include <QLineEdit>
-
+#include "cpng.h"
+CPNG m_picpng;
 //图像列表item样式重构
 PicItemDelegate::PicItemDelegate(QObject *parent) : QStyledItemDelegate (parent)
 {
@@ -76,12 +77,14 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
 
         QFileInfo fileInfo(picItemData.picPath);
         QString fileSuffix = fileInfo.suffix().toLower();
-
+        pic_data out;
         //JPG图像载入
-        QImage *imgPreview = new QImage(3264,2448,QImage::Format_RGB888);
+        QImage *imgPreview = NULL;
         QFile *file = new QFile(picItemData.picPath);
+        //QImage *pngImage = NULL;
         if(isPic == true && fileSuffix.contains("jpg"))
         {
+            imgPreview=new QImage(3264,2448,QImage::Format_RGB888);
             isJPG = true;
             QByteArray pData;
             file->open(QIODevice::ReadOnly);
@@ -115,8 +118,7 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
             }
         }
         //非JPG图像载入
-        else if(isPic == true &&  (fileSuffix.contains("png")
-                                   ||fileSuffix.contains("ico")
+        else if(isPic == true &&  (fileSuffix.contains("ico")
                                    ||fileSuffix.contains("bmp")
                                    ||fileSuffix.contains("svg")
                                    ||fileSuffix.contains("tif")))
@@ -126,6 +128,40 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
             picIconImage = pngIcon.toImage();
             //picIconImage.load(picItemData.picPath);
         }
+        else if (isPic == true &&fileSuffix.contains("png")) {
+            isJPG = true;
+                      m_picpng.decode_png(picItemData.picPath.toUtf8().data(),&out);
+                     // m_picpng.read_png(picItemData.picPath.toUtf8().data());
+                      qDebug("png width is %d,height is %d,bit_depth is %d,alpha_flag is %d,color type is %d\n",out.width,out.height,out.bit_depth,out.alpha_flag,out.color_type);
+                      if(out.color_type==2)
+                      {
+                          imgPreview = new QImage(out.rgba,out.width,out.height,QImage::Format_RGB888);
+                      }
+                      else {
+                          imgPreview = new QImage(out.rgba,out.width,out.height,QImage::Format_Grayscale8);
+                      }
+                      if(imgPreview==NULL)
+                      {
+                          qDebug("png qimage failed\n");
+                      }
+                      w=out.width;
+                      h=out.height;
+        }
+
+        /*
+        else if (isPic == true &&fileSuffix.contains("png"))
+        {
+           isJPG = false;
+           QFileInfo info;
+           info.setFile(picItemData.picPath);
+           // 获取图标
+           QFileIconProvider provider;
+           QIcon icon = provider.icon(info);
+           //将QIcon转换成QImage
+           QPixmap osIcon = icon.pixmap(QSize(tmpW,tmpH));
+           picIconImage = osIcon.toImage();
+        }
+        */
         //载入的文件非图像，就加在系统文件图标
         else
         {
@@ -212,6 +248,11 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
         file = NULL;
         delete  imgPreview;
         imgPreview =NULL;
+        if (isPic == true &&fileSuffix.contains("png"))
+        {
+            free(out.rgba);
+            out.rgba=NULL;
+        }
 
         painter->restore();
     }

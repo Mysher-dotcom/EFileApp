@@ -13,6 +13,7 @@ public:
 
 
    static bool getDeviceInfoIsOver;//获取设备信息是否结束
+   static QString softVersion;//版本号
 
    //获取扫描存放文件夹路径
    static QString getScanFolder();
@@ -25,6 +26,8 @@ public:
 
    //获取配置文件全路径
    static QString getSettingFilePath();
+
+   static void checkVersion();//匹配版本号，用于是否删除配置文件
 
    //写配置文件,初始值
    static void writeSettingFile();

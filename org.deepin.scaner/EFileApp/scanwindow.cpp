@@ -27,7 +27,7 @@
 #include <QMutex>
 #include "helper/classificationhelper.h"
 #include "helper/deviceinfohelper.h"
-
+#include "cpng.h"
 ScanWindow::ScanWindow(int devIndex,QMap<int ,QString> map,QWidget *parent) :
     DMainWindow(parent),
     ui(new Ui::ScanWindow)
@@ -449,13 +449,18 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     strcpy (part_path, path);
 
     qDebug()<<"scanwindow存图路径:"<<part_path;
-
+    int color_type = 2;
     //内存段转成MImage
     mcvInit();
     int height = h;
     int width = w;
     int channel  = nBpp ;
-
+    if(channel==3)
+    {
+        color_type=2;
+    }
+    else
+        color_type=0;
     MImage * src = mcvCreateImageFromArray(width,height,channel,data,false);
     qDebug("1\n");
 
@@ -590,7 +595,7 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
             strWaterMarkText = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss:zzz");
         }
         char *cWaterMarkText;
-        QByteArray qbaWaterMarkText= strWaterMarkText.toLatin1();
+        QByteArray qbaWaterMarkText= strWaterMarkText.toUtf8();
         cWaterMarkText = qbaWaterMarkText.data();
         //long color_r = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_r").toLong();
         //long color_g = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_g").toLong();
@@ -639,6 +644,31 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
         qDebug("saveImageToJpeg width is %d,height is %d,channel is %d\n",srcWater->width,srcWater->height,srcWater->channel * 8);
         long lret = m_jpg_scan.saveImageToJpeg(dst,srcWater->width,srcWater->height,srcWater->channel * 8,part_path,jpgInfo);
         dst = NULL;
+    }
+    else if(strcmp(tmp,"png")==NULL)
+    {
+        unsigned char* dst = mcvGetImageData(srcWater);
+        CPNG ggpng;
+        pic_data outimage;
+        outimage.width = srcWater->width;
+        outimage.height = srcWater->height;
+        if(color_type==2)
+        {
+            outimage.rgba = new unsigned char[outimage.width*outimage.height*3];
+            memset(outimage.rgba,0,outimage.width*outimage.height*3);
+            memcpy(outimage.rgba,dst,outimage.width*outimage.height*3);
+        }
+        else
+        {
+            outimage.rgba = new unsigned char[outimage.width*outimage.height];
+            memset(outimage.rgba,0,outimage.width*outimage.height);
+            memcpy(outimage.rgba,dst,outimage.width*outimage.height);
+        }
+        outimage.color_type=color_type;
+        outimage.bit_depth = 8;
+        outimage.alpha_flag = 0;
+        ggpng.write_png_file(part_path,&outimage);
+        //delete outimage.rgba;
     }
     else
     {

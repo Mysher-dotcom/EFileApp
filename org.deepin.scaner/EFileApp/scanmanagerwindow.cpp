@@ -64,7 +64,7 @@ ScanManagerWindow::~ScanManagerWindow()
 
 void ScanManagerWindow::closeEvent(QCloseEvent *event)
 {
-    if(isScanClose == false && GlobalHelper::getDeviceInfoIsOver == true)
+    if(isScanClose == false && GlobalHelper::getDeviceInfoIsOver == true && isNoDevice == false)
     {
          getImgEditPar();//从UI上获取图像处理参数
          isScanClose = true;
@@ -613,6 +613,7 @@ void ScanManagerWindow::slotGetDeviceList()
         return;
     }
 
+    isNoDevice = false;//是否无设备
     pModel->clear();//清空原有设备项
     mainSLayout->setCurrentIndex(2); //显示设备信息UI
     backBtn->setVisible(false);//返回按钮隐藏
@@ -1121,6 +1122,7 @@ void ScanManagerWindow::showShotTypeUI(bool isLicense)
 //无设备UI
 void ScanManagerWindow::slotNoScannerUI()
 {
+    isNoDevice = true;//是否无设备
     mainSLayout->setCurrentIndex(0);
 }
 
@@ -1234,7 +1236,7 @@ void ScanManagerWindow::slotDevListPressed(const QModelIndex)
                         //选中参数集合默认加入第一个参数
                         if(parValueList.size()>0)
                         {
-                           scannerChoiseParMap.insert(parIndex.toInt(),parValueList.at(0));
+                           //scannerChoiseParMap.insert(parIndex.toInt(),parValueList.at(0));
 
                            //记录扫描仪参数
                            if(isContainsGroup == false)

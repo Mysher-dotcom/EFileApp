@@ -176,7 +176,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="218"/>
         <source>Start at</source>
-        <translation type="unfinished"/>
+        <translation>Avvia a</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="227"/>

@@ -74,7 +74,7 @@
     <message>
         <location filename="../camerawindow.cpp" line="834"/>
         <source>Cancel</source>
-        <translation>Storno</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <location filename="../camerawindow.cpp" line="835"/>
@@ -176,7 +176,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="218"/>
         <source>Start at</source>
-        <translation type="unfinished"/>
+        <translation>Začít na</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="227"/>
@@ -187,7 +187,7 @@
         <location filename="../mainwindow.cpp" line="230"/>
         <location filename="../mainwindow.cpp" line="1616"/>
         <source>Cancel</source>
-        <translation>Storno</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="233"/>
@@ -283,7 +283,7 @@
     <message>
         <location filename="../progressbarwindow.cpp" line="48"/>
         <source>Cancel</source>
-        <translation>Storno</translation>
+        <translation>Zrušit</translation>
     </message>
 </context>
 <context>
@@ -611,7 +611,7 @@
     <message>
         <location filename="../scanwindow.cpp" line="240"/>
         <source>Cancel</source>
-        <translation>Storno</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <location filename="../scanwindow.cpp" line="241"/>

@@ -22,6 +22,7 @@ GlobalHelper::~GlobalHelper()
 
 //获取设备信息是否结束
 bool GlobalHelper::getDeviceInfoIsOver;
+QString GlobalHelper::softVersion;//版本号
 
 //获取扫描存放文件夹路径
 QString GlobalHelper::getScanFolder()
@@ -76,6 +77,17 @@ QString GlobalHelper::getSettingFilePath()
     QString docPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
     QString appPath = QCoreApplication::applicationDirPath();
     return docPath + "/EFile_config/setting.ini";
+}
+
+//匹配版本号，用于是否删除配置文件
+void GlobalHelper::checkVersion()
+{
+    QString docPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    QString version = readSettingValue("set","version");
+    if(version.isEmpty() || version != softVersion)
+    {
+        deleteDirectory(docPath + "/EFile_config");
+    }
 }
 
 //写配置文件,初始值
@@ -141,6 +153,7 @@ void GlobalHelper::writeSettingFile()
     psettings->setValue("iconList","0");//缩略图模式
     psettings->setValue("dzda","1");//电子档案显示模式
     psettings->setValue("classification","1");//是否分类显示
+    psettings->setValue("version",softVersion);//版本号
     psettings->endGroup();
 
 

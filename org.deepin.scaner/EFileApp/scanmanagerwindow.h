@@ -99,6 +99,7 @@ private:
     QMap<QString ,QString> cameraChoiseParMap;//拍摄仪选中参数键值对集合<参数名称,参数值>，如：<颜色模式,"Color24">
     int emitAdder = 0;//由哪个页面点击新增按钮（0=无设备UI，1=设备信息UI）
     QString localDriverFilePath;//本地驱动路径
+    bool isNoDevice;//是否无设备
 
     //***控件
     ScanWindow *scanWindow;//扫描窗口

@@ -24,12 +24,12 @@
     <message>
         <location filename="../camerawindow.cpp" line="128"/>
         <source>Rotate counterclockwise</source>
-        <translation>Forgatás balra</translation>
+        <translation>Forgatás óramutató járásával ellentétesen</translation>
     </message>
     <message>
         <location filename="../camerawindow.cpp" line="134"/>
         <source>Rotate clockwise</source>
-        <translation>Forgatás jobbra</translation>
+        <translation>Forgatás óramutató járásával megegyezően</translation>
     </message>
     <message>
         <location filename="../camerawindow.cpp" line="140"/>
@@ -176,7 +176,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="218"/>
         <source>Start at</source>
-        <translation type="unfinished"/>
+        <translation>Indítsd</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="227"/>

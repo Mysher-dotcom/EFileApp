@@ -496,12 +496,15 @@ void CameraWindow::paintEvent(QPaintEvent *event)
 void CameraWindow::closeEvent(QCloseEvent *event)
 {
     emit signalWindowClosed();//窗口关闭信号
-    if(shotTimer != NULL)
+    if(nShotType == 1)
     {
-        if(shotTimer->isActive() == true)
+        if(shotTimer != NULL)
         {
-            shotTimer->stop();
-            shotTimer = NULL;
+            if(shotTimer->isActive() == true)
+            {
+                shotTimer->stop();
+                shotTimer = NULL;
+            }
         }
     }
 

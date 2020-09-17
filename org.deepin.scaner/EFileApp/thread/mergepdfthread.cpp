@@ -1,9 +1,9 @@
 #include "mergepdfthread.h"
 #include "hpdfoperation.h"
 #include <QImage>
-
+#include "cpng.h"
 CJpeg merge_jpg;//CJPEG对象
-
+CPNG m_png;
 MergePDFThread::MergePDFThread(QObject *parent): QObject(parent)
 {
 
@@ -40,6 +40,11 @@ void MergePDFThread::startMerge()
             merge_jpg.readBufFromJpeg(jpgPath,&dstBuf,jpgInfo,dstW,dstH);
             pdfop.rgb2pdf(dstBuf,jpgInfo.width,jpgInfo.height,pdfPath,0,fileList.size());
 
+        }
+        else if (QString::compare(tt,"png")==0) {
+            pic_data out;
+            m_png.decode_png(fileList.at(i).toUtf8().data(),&out);
+            pdfop.rgb2pdf(out.rgba,out.width,out.height,pdfPath,0,fileList.size());
         }
         else
         {
