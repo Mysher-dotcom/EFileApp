@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //匹配版本号，用于是否删除配置文件
-    GlobalHelper::softVersion = "5.1.0.4-4";
+    GlobalHelper::softVersion = "5.1.0.4-7";
     GlobalHelper::checkVersion();
     //检查配置文件是否存在，不存在就创建，并写入初始值
     QFileInfo settingFile(GlobalHelper::getSettingFilePath());
@@ -758,7 +758,7 @@ void MainWindow::getDevicePar()
     //无拍摄仪，不获取参数
     if(deviceCount <= 0 && scannerDeviceCount <= 0)
     {
-        //emit signalThreadOver();
+        emit signalThreadOver();
         return;
     }
     QStringList cameraDevIndexList,scannerDevIndexList;
@@ -1695,40 +1695,40 @@ void MainWindow::slotRenameBtnClicked()
 void MainWindow::slotFileNameTextChanged(const QString & newText )
 {
     QString newName = fileNameText->text().trimmed();
-
-        int length = newName.count();
-        qDebug()<<"rename length:"<<length;
-        int maxLength = 250; // 最大字符数
-        if(length > maxLength)
-        {
-            newName.remove(maxLength,length - maxLength);
-            fileNameText->setText(newName);
-        }
-        qDebug()<<"rename new name:"<<newName;
-
-        //newName = newName .replace("\n", "");//无法包括\\,\t, \n 单独处理
-        //newName = newName.replace("\t", "");
-        //newName = newName.replace("\\","");
-        //newName = newName.simplified(); //去掉前后空格
-        QRegExp exp("[</\:>*?|]");//去掉特殊字符
-        newName = newName.replace(exp, "");
-        //  \x00-\x1f是不可见的控制字符
-        //QRegExp exp1("[\x01-0x1f]");
-        //newName = newName.replace(exp1, "");
-        // \x7f是delete，也不可见，所以替换掉
-        //QRegExp exp2("[\x7f]");
-        //newName = newName.replace(exp2, "");
-        qDebug()<<"rename's new name:"<<newName;
-
+    int length = newName.toLocal8Bit().length();//newName.count();
+    qDebug()<<"rename's length,"<<length;
+    int maxLength = 250; // 最大字符数
+    if(length > maxLength)
+    {
+        newName = newName.toLocal8Bit().remove(maxLength,length - maxLength);
+        qDebug()<<"rename's newName,"<<newName;
         fileNameText->setText(newName);
+    }
+    //qDebug()<<"rename new name:"<<newName;
 
-        if(newName.isEmpty() || newName.length() <= 0)
-        {
-            renameBtn->setEnabled(false);
-        }
-        else
-        {
-            renameBtn->setEnabled(true);
-        }
+    //newName = newName .replace("\n", "");//无法包括\\,\t, \n 单独处理
+    //newName = newName.replace("\t", "");
+    //newName = newName.replace("\\","");
+    //newName = newName.simplified(); //去掉前后空格
+    QRegExp exp("[</\:>*?|]");//去掉特殊字符
+    newName = newName.replace(exp, "");
+    //  \x00-\x1f是不可见的控制字符
+    //QRegExp exp1("[\x01-0x1f]");
+    //newName = newName.replace(exp1, "");
+    // \x7f是delete，也不可见，所以替换掉
+    //QRegExp exp2("[\x7f]");
+    //newName = newName.replace(exp2, "");
+   // qDebug()<<"rename's new name:"<<newName;
+
+    fileNameText->setText(newName);
+
+    if(newName.isEmpty() || newName.length() <= 0)
+    {
+        renameBtn->setEnabled(false);
+    }
+    else
+    {
+        renameBtn->setEnabled(true);
+    }
 }
 

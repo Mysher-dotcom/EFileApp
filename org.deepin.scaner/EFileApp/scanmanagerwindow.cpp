@@ -43,6 +43,19 @@ ScanManagerWindow::ScanManagerWindow(QWidget *parent) :
     this->setAcceptDrops(true);//整个窗口支持拖拽，暂时
     isScanClose = false;//是否为点击扫描按钮关闭窗口,窗口关闭时不用再次记录参数
 
+    QString defaultDeviceModelFilePath =  DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceListInfoFilePath(),
+                                             "default",
+                                             "config");
+    int nIsWaterMark= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","isWaterMark").toInt();
+    if(nIsWaterMark == 1)
+    {
+        isNoWatermark = false;
+    }
+    else
+    {
+        isNoWatermark = true;
+    }
+
     //线程执行中，不加载设备列表
     if( GlobalHelper::getDeviceInfoIsOver == true)
     {
@@ -127,6 +140,20 @@ void ScanManagerWindow::initNODeviceUI()
     leftTopLbl->setText(tr("Scanners"));
     leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
 
+    //刷新设备-无设备UI里
+       refreshDeviceBtn2 = new DIconButton (nullptr);
+       refreshDeviceBtn2->setIcon(QIcon(":/img/refresh_device.svg"));
+       refreshDeviceBtn2->setFixedSize(QSize(30, 30));
+       refreshDeviceBtn2->setIconSize(QSize(20,20));
+       refreshDeviceBtn2->setToolTip(tr("Refresh"));
+       connect(refreshDeviceBtn2, SIGNAL(clicked()), this, SLOT(slotRefreshDevice()));
+
+       QWidget *leftTopGroupWidget = new QWidget();
+       QHBoxLayout *leftTopGroupLayout = new QHBoxLayout();
+       leftTopGroupWidget->setLayout(leftTopGroupLayout);
+       leftTopGroupLayout->addWidget(leftTopLbl,0,Qt::AlignLeft);
+       leftTopGroupLayout->addWidget(refreshDeviceBtn2,0,Qt::AlignRight);
+
     QLabel *leftLbl=new QLabel ();
     leftLbl->setText(tr("No scanners found"));
     leftLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
@@ -143,7 +170,7 @@ void ScanManagerWindow::initNODeviceUI()
     QWidget *leftTopWidget = new QWidget();
     QVBoxLayout *leftTopLayout = new QVBoxLayout();
     leftTopWidget->setLayout(leftTopLayout);
-    leftTopLayout->addWidget(leftTopLbl,0,Qt::AlignTop);
+    leftTopLayout->addWidget(leftTopGroupWidget,0,Qt::AlignTop);
     leftTopLayout->addWidget(leftLbl,1,Qt::AlignHCenter);
 
     QWidget *leftBottomWidget = new QWidget();
@@ -963,6 +990,9 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
 
     connect(fontWaterText, SIGNAL(textChanged()), this, SLOT(slotFontWaterTextChanged()));//水印文本框文本改变事件
     connect(colorBtn, SIGNAL(clicked()), this, SLOT(slotColorButtonClicked()));//颜色选择按钮信号槽
+    connect(noWaterrbBtn, SIGNAL(clicked()), this, SLOT(slotNoWaterrbBtnChecked()));
+    connect(fontWaterrbBtn, SIGNAL(clicked()), this, SLOT(slotFontWaterrbBtnChecked()));
+
 
     //无授权，禁用按钮
     if(isLicense == false)
@@ -987,6 +1017,25 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
         parWidgetRepair->setEnabled(false);
     }
 
+}
+
+void ScanManagerWindow::slotNoWaterrbBtnChecked()
+{
+    if(currentDeviceIsCanUse == true)
+    {
+        scanBtn->setEnabled(true);
+    }
+     isNoWatermark = true;//是否选择了无水印
+}
+
+void ScanManagerWindow::slotFontWaterrbBtnChecked()
+{
+    QString txt = fontWaterText->toPlainText();
+    if(txt.isEmpty())
+    {
+        scanBtn->setEnabled(false);
+    }
+    isNoWatermark = false;//是否选择了无水印
 }
 
 //图像格式和颜色模式UI
@@ -1422,10 +1471,20 @@ void ScanManagerWindow::slotComboBoxCurrentIndexChanged(const int index)
 //水印文本框文本改变事件
 void ScanManagerWindow::slotFontWaterTextChanged()
 {
-    QString txt = fontWaterText->toPlainText();
-    if(txt.isEmpty())
+    if(isNoWatermark == false)//是否选择了无水印)
     {
-        scanBtn->setEnabled(false);
+        QString txt = fontWaterText->toPlainText();
+        if(txt.isEmpty())
+        {
+            scanBtn->setEnabled(false);
+        }
+        else
+        {
+            if(currentDeviceIsCanUse == true)
+            {
+                scanBtn->setEnabled(true);
+            }
+        }
     }
     else
     {

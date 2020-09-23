@@ -8,6 +8,7 @@ QT       += core gui
 QT+=printsupport
 QT+=multimedia
 QT+=dbus
+DEFINES += QT_MESSAGELOGCONTEXT
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -85,7 +86,8 @@ HEADERS += \
         thread/mergepdfthread.h \
         progressbarwindow.h \
         drawinterface/drawinterface.h \
-    cpng.h
+    cpng.h \
+    helper/loggerhelper.h
 
 FORMS += \
         mainwindow.ui \

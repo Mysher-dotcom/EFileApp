@@ -311,9 +311,9 @@ int CPNG::write_png_file(const char *filename , pic_data *out) //生成一个新
                 row_pointers[i][j+1] = out->rgba[pos++];
                 row_pointers[i][j+0] = out->rgba[pos++];
             } else {
-                row_pointers[i][j+2] = out->rgba[pos++];
-                row_pointers[i][j+1] = out->rgba[pos++];
                 row_pointers[i][j+0] = out->rgba[pos++];
+                row_pointers[i][j+1] = out->rgba[pos++];
+                row_pointers[i][j+2] = out->rgba[pos++];
             }
         }
     }

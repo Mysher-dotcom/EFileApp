@@ -77,6 +77,7 @@ private:
     void getDevicePar();//获取设备参数
 
 
+
     //变量
     QString preCode;//上一次的条码
     QStringList preCodeInfo;//上一次的条码信息

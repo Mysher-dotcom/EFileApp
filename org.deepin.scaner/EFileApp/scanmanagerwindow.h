@@ -100,6 +100,7 @@ private:
     int emitAdder = 0;//由哪个页面点击新增按钮（0=无设备UI，1=设备信息UI）
     QString localDriverFilePath;//本地驱动路径
     bool isNoDevice;//是否无设备
+    bool isNoWatermark;//是否选择了无水印
 
     //***控件
     ScanWindow *scanWindow;//扫描窗口
@@ -116,6 +117,7 @@ private:
     QWidget *rtWidget;//右侧-上部容器(参数容器)
     QHBoxLayout *rbHLayout;//右侧-下部容器布局(扫描按钮)
     DIconButton *refreshDeviceBtn;//刷新设备
+    DIconButton *refreshDeviceBtn2;//刷新设备-无设备UI里
     DIconButton *backBtn;//返回按钮
     QPushButton *installOnlineBtn;//在线安装按钮
     QPushButton *installLocalBtn;//本地安装按钮
@@ -160,6 +162,8 @@ private slots:
     void slotScanButtonClicked();//扫描按钮点击
     void slotDevListPressed(const QModelIndex index);//设备列表点击事件,获取指定设备的参数
     void slotComboBoxCurrentIndexChanged(const int index);//下拉框选项改变
+    void slotNoWaterrbBtnChecked();
+    void slotFontWaterrbBtnChecked();
     void slotFontWaterTextChanged();//水印文本框文本改变事件
     void slotColorButtonClicked();//颜色按钮点击
     void slotNoScannerUI();//无设备UI
