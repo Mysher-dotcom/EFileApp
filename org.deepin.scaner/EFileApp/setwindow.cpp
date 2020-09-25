@@ -4,6 +4,7 @@
 #include <QHBoxLayout>
 #include <DFileDialog>
 #include "helper/globalhelper.h"
+#include <DLabel>
 
 SetWindow::SetWindow(QWidget *parent) :
     DMainWindow(parent),
@@ -23,6 +24,21 @@ void SetWindow::closeEvent(QCloseEvent *event)
     emit signalWindowClosed();//窗口关闭信号
 }
 
+//当前系统是否为深色主题
+bool SetWindow::isDarkType()
+{
+    DGuiApplicationHelper *guiAppHelp = DGuiApplicationHelper::instance();
+    if(guiAppHelp->themeType() == DGuiApplicationHelper::ColorType::DarkType)
+    {
+        //深色主题
+        return true;
+    }
+    else
+    {
+        //浅色主题
+        return false;
+    }
+}
 
 void SetWindow::initUI()
 {
@@ -47,39 +63,77 @@ void SetWindow::initUI()
 
     //*窗口控件设置*
     QVBoxLayout *winLayout=new QVBoxLayout();//窗口的布局，最外层
-    QWidget *mainWidget=new QWidget ();
-    mainWidget->setGeometry(0, 0, 300, 100);  //主容器设置背景白色
-    QPalette palMain(mainWidget->palette());
-    palMain.setColor(QPalette::Background, Qt::white);
-    mainWidget->setAutoFillBackground(true);
-    mainWidget->setPalette(palMain);
+    DWidget *mainWidget=new DWidget ();
+    if(isDarkType() == true)
+    {
+        //深色主题
+        //mainWidget->setStyleSheet(".DWidget#mainWidget{background:rgba(255,255,255,12);border-radius:8px;}");
+        GlobalHelper::setWidgetBackgroundColor(mainWidget,QColor(255,255,255,12),false);
+    }
+    else
+    {
+        //mainWidget->setStyleSheet("DWidget#mainWidget{background:rgba(255,255,255,255);border-radius:8px;}");
+        //GlobalHelper::setWidgetBackgroundColor(mainWidget,QColor(255,255,255,255),false);
+        mainWidget->setGeometry(0, 0, 300, 100);  //主容器设置背景白色
+        QPalette palMain(mainWidget->palette());
+        palMain.setColor(QPalette::Background, Qt::white);
+        mainWidget->setAutoFillBackground(true);
+        mainWidget->setPalette(palMain);
+    }
 
     QVBoxLayout *mainVLayout=new QVBoxLayout ();//主容器布局
 
-    QLabel *lbl = new QLabel ();
+    DLabel *lbl = new DLabel ();
     lbl->setText(tr("General Settings"));//扫描管理设置
-    lbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
     mainVLayout->addWidget(lbl,0,Qt::AlignTop);
+    if(isDarkType() == true)
+    {
+        //深色主题
+        lbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgb(192,198,212);font-size:17px");
+    }
+    else
+    {
+        lbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+    }
 
-    QWidget *parWidget = new QWidget ();
-    GlobalHelper::setWidgetBackgroundColor(parWidget,QColor(249,249,249,255));//容器设置背景
+    DWidget *parWidget = new DWidget ();
+    if(isDarkType() == true)
+    {
+        //深色主题
+        GlobalHelper::setWidgetBackgroundColor(parWidget,QColor(255,255,255,12));
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidget,QColor(249,249,249,255));
+    }
+
     QHBoxLayout *parHLayout = new QHBoxLayout ();
-    QLabel  *parTitleLbl= new QLabel ();
+    DLabel  *parTitleLbl= new DLabel ();
     parTitleLbl->setText(tr("Location"));//缓存位置
     setParTitleLabelStyle(parTitleLbl,80);
     parHLayout->addWidget(parTitleLbl);
     savePathText = new DTextEdit ();
+    savePathText->setFixedHeight(30);
     savePathText->setText(GlobalHelper::readSettingValue("set","savepath"));//读取配置文件
     parHLayout->addWidget(savePathText);
     selectSavePathBtn = new DSuggestButton ();
+    selectSavePathBtn->setFixedHeight(30);
     selectSavePathBtn->setText("...");
     parHLayout->addWidget(selectSavePathBtn);
     parWidget->setLayout(parHLayout);//参数行的容器加入布局
 
-    QWidget *parWidget2 = new QWidget ();
-    GlobalHelper::setWidgetBackgroundColor(parWidget2,QColor(249,249,249,255));//容器设置背景
+    DWidget *parWidget2 = new DWidget ();
+    if(isDarkType() == true)
+    {
+        //深色主题
+        GlobalHelper::setWidgetBackgroundColor(parWidget2,QColor(255,255,255,12));
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidget2,QColor(249,249,249,255));
+    }
     QHBoxLayout *parHLayout2 = new QHBoxLayout ();
-    QLabel *parTitleLbl2= new QLabel ();
+    DLabel *parTitleLbl2= new DLabel ();
     parTitleLbl2->setText(tr("Notify me when overwriting"));//覆盖时警告
     setParTitleLabelStyle(parTitleLbl2,200);
     parHLayout2->addWidget(parTitleLbl2);
@@ -88,10 +142,18 @@ void SetWindow::initUI()
     parHLayout2->addWidget(fileOverWarnSBtn);
     parWidget2->setLayout(parHLayout2);//参数行的容器加入布局
 
-    QWidget *parWidget3 = new QWidget ();
-    GlobalHelper::setWidgetBackgroundColor(parWidget3,QColor(249,249,249,255));//容器设置背景
+    DWidget *parWidget3 = new DWidget ();
+    if(isDarkType() == true)
+    {
+        //深色主题
+        GlobalHelper::setWidgetBackgroundColor(parWidget3,QColor(255,255,255,12));
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidget3,QColor(249,249,249,255));
+    }
     QHBoxLayout *parHLayout3 = new QHBoxLayout ();
-    QLabel *parTitleLbl3= new QLabel ();
+    DLabel *parTitleLbl3= new DLabel ();
     parTitleLbl3->setText(tr("Notify me when no scanners found"));//无扫描仪时警告
     setParTitleLabelStyle(parTitleLbl3,200);
     parHLayout3->addWidget(parTitleLbl3);
@@ -100,10 +162,18 @@ void SetWindow::initUI()
     parHLayout3->addWidget(noDeviceWarnSBtn);
     parWidget3->setLayout(parHLayout3);//参数行的容器加入布局
 
-    QWidget *parWidget4 = new QWidget ();
-    GlobalHelper::setWidgetBackgroundColor(parWidget4,QColor(249,249,249,255));//容器设置背景
+    DWidget *parWidget4 = new DWidget ();
+    if(isDarkType() == true)
+    {
+        //深色主题
+        GlobalHelper::setWidgetBackgroundColor(parWidget4,QColor(255,255,255,12));
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidget4,QColor(249,249,249,255));
+    }
     QHBoxLayout *parHLayout4 = new QHBoxLayout ();
-    QLabel *parTitleLbl4= new QLabel ();
+    DLabel *parTitleLbl4= new DLabel ();
     parTitleLbl4->setText(tr("Play a sound when completed"));//完成后提示音
     setParTitleLabelStyle(parTitleLbl4,200);
     parHLayout4->addWidget(parTitleLbl4);
@@ -112,10 +182,18 @@ void SetWindow::initUI()
     parHLayout4->addWidget(finishBeepSBtn);
     parWidget4->setLayout(parHLayout4);//参数行的容器加入布局
 
-    QWidget *parWidget5 = new QWidget ();
-    GlobalHelper::setWidgetBackgroundColor(parWidget5,QColor(249,249,249,255));//容器设置背景
+    DWidget *parWidget5 = new DWidget ();
+    if(isDarkType() == true)
+    {
+        //深色主题
+        GlobalHelper::setWidgetBackgroundColor(parWidget5,QColor(255,255,255,12));
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidget5,QColor(249,249,249,255));
+    }
     QHBoxLayout *parHLayout5 = new QHBoxLayout ();
-    QLabel *parTitleLbl5= new QLabel ();
+    DLabel *parTitleLbl5= new DLabel ();
     parTitleLbl5->setText(tr("Exit when completed"));//完成后退出
     setParTitleLabelStyle(parTitleLbl5,200);
     parHLayout5->addWidget(parTitleLbl5);
@@ -124,10 +202,18 @@ void SetWindow::initUI()
     parHLayout5->addWidget(finishExitSBtn);
     parWidget5->setLayout(parHLayout5);//参数行的容器加入布局
 
-    QWidget *parWidget6 = new QWidget ();
-    GlobalHelper::setWidgetBackgroundColor(parWidget6,QColor(249,249,249,255));//容器设置背景
+    DWidget *parWidget6 = new DWidget ();
+    if(isDarkType() == true)
+    {
+        //深色主题
+        GlobalHelper::setWidgetBackgroundColor(parWidget6,QColor(255,255,255,12));
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidget6,QColor(249,249,249,255));
+    }
     QHBoxLayout *parHLayout6 = new QHBoxLayout ();
-    QLabel *parTitleLbl6= new QLabel ();
+    DLabel *parTitleLbl6= new DLabel ();
     parTitleLbl6->setText("条码识别分类");
     setParTitleLabelStyle(parTitleLbl6,200);
     parHLayout6->addWidget(parTitleLbl6);
@@ -202,7 +288,16 @@ void SetWindow::initUI()
 void SetWindow::setParTitleLabelStyle(QLabel *lbl,int w)
 {
     lbl->setFixedWidth(w);
-    lbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+
+    if(isDarkType() == true)
+    {
+        //深色主题
+        lbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+    }
+    else
+    {
+        lbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    }
 }
 
 void SetWindow::onBtnColorClicked()

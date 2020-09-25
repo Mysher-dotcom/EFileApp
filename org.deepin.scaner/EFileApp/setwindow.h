@@ -26,6 +26,7 @@ public:
     explicit SetWindow(QWidget *parent = nullptr);
     ~SetWindow();
     void closeEvent(QCloseEvent *event);
+    bool isDarkType();//当前系统是否为深色主题
 
 private:
     Ui::SetWindow *ui;

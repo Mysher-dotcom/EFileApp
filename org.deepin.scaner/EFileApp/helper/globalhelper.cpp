@@ -10,6 +10,7 @@
 #include <QColor>
 #include <QPalette>
 #include <QtMultimedia/QSound>
+#include <DGuiApplicationHelper>
 
 GlobalHelper::GlobalHelper()
 {

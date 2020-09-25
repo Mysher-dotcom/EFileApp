@@ -15,6 +15,7 @@ public:
    static bool getDeviceInfoIsOver;//获取设备信息是否结束
    static QString softVersion;//版本号
 
+
    //获取扫描存放文件夹路径
    static QString getScanFolder();
 

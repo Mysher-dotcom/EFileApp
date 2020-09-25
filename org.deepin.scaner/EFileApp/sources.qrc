@@ -38,5 +38,13 @@
         <file>img/addDevice.svg</file>
         <file>img/back.svg</file>
         <file>img/refresh_device.svg</file>
+        <file>img/back_dark.svg</file>
+        <file>img/refresh_device_dark.svg</file>
+        <file>img/camera/1t1_dark.svg</file>
+        <file>img/camera/cut_dark.svg</file>
+        <file>img/camera/rotateleft_dark.svg</file>
+        <file>img/camera/rotateright_dark.svg</file>
+        <file>img/camera/zoomin_dark.svg</file>
+        <file>img/camera/zoomout_dark.svg</file>
     </qresource>
 </RCC>

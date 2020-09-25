@@ -42,6 +42,7 @@ public:
     void dragEnterEvent(QDragEnterEvent *e);//筛选拖拽事件
     void dropEvent(QDropEvent *e);//处理拖拽事件
     void closeEvent(QCloseEvent *event);
+    bool isDarkType();//当前系统是否为深色主题
 
 private:
     Ui::ScanManagerWindow *ui;
@@ -101,6 +102,7 @@ private:
     QString localDriverFilePath;//本地驱动路径
     bool isNoDevice;//是否无设备
     bool isNoWatermark;//是否选择了无水印
+    bool isClickedInstallBtn;//是否点击了安装按钮
 
     //***控件
     ScanWindow *scanWindow;//扫描窗口
@@ -121,14 +123,14 @@ private:
     DIconButton *backBtn;//返回按钮
     QPushButton *installOnlineBtn;//在线安装按钮
     QPushButton *installLocalBtn;//本地安装按钮
-    QLabel *installTitleLabel;//标题栏
+    DLabel *installTitleLabel;//标题栏
     QStackedLayout *installSLayout;//安装控件区域
-    QWidget *localParWidget;//本地安装区域
+    DWidget *localParWidget;//本地安装区域
     DComboBox *vendorCBB;//厂商
     DComboBox *modelCBB;//型号
     DComboBox *driverCBB;//驱动
-    QLabel *localDriverTipLabel;//导入本地驱动文本提示
-    QLabel *localDriverTipLabel2;//导入本地驱动文本提示2
+    DLabel *localDriverTipLabel;//导入本地驱动文本提示
+    DLabel *localDriverTipLabel2;//导入本地驱动文本提示2
     QPushButton *importDriverBtn;//导入本地驱动按钮
     QPushButton *installBtn;//安装按钮
 

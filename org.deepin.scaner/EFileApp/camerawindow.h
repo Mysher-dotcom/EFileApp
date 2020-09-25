@@ -16,6 +16,8 @@
 #include <QWheelEvent>
 #include <QTimer>
 #include <QTimerEvent>
+#include <DWidget>
+#include <DLabel>
 
 DWIDGET_USE_NAMESPACE
 
@@ -33,7 +35,8 @@ public:
 
      void paintEvent(QPaintEvent *event);//窗口渲染
      void closeEvent(QCloseEvent *event);//窗口关闭     
-     void wheelEvent(QWheelEvent *event);//鼠标滑轮事件(禁用)
+     void wheelEvent(QWheelEvent *event);//鼠标滑轮事件(禁用)     
+     bool isDarkType();//当前系统是否为深色主题
      /*
      void mousePressEvent(QMouseEvent *event);//窗口中鼠标按下
      void mouseMoveEvent(QMouseEvent *event);//窗口中鼠标移动
@@ -92,14 +95,14 @@ private:
     QVBoxLayout *rightTopVLayout;//右侧上部布局
     QVBoxLayout *rightBottomVLayout;//右侧下部布局
     QHBoxLayout *toolBarHLayout;//工具栏布局
-    QWidget *mainWidget;//主容器
-    QWidget *leftWidget;//左侧容器
-    QWidget *videoWidget;//视频容器
-    QWidget *leftBottomWidget;//左侧下部容器
-    QWidget *rightWidget;//右侧容器
-    QWidget *rightTopWidget;//右侧上部容器
-    QWidget *rightBottomWidget;//右侧下部容器
-    QWidget *toolBarWidget;//工具栏容器
+    DWidget *mainWidget;//主容器
+    DWidget *leftWidget;//左侧容器
+    DWidget *videoWidget;//视频容器
+    DWidget *leftBottomWidget;//左侧下部容器
+    DWidget *rightWidget;//右侧容器
+    DWidget *rightTopWidget;//右侧上部容器
+    DWidget *rightBottomWidget;//右侧下部容器
+    DWidget *toolBarWidget;//工具栏容器
     QPushButton *scanBtn;//扫描按钮
     DIconButton *oneTOneBtn;//1:1按钮
     DIconButton *zoomInBtn;//放大按钮
@@ -114,8 +117,8 @@ private:
     QPushButton *saveBtn;//保存按钮
     //QFrame *previewImageFrame;//预览的图像
     QWidget *timerWidget;//定时拍容器
-    QLabel *timerIconLabel;//定时拍图标
-    QLabel *timerLabel;//定时拍秒
+    DLabel *timerIconLabel;//定时拍图标
+    DLabel *timerLabel;//定时拍秒
 
 
 signals:

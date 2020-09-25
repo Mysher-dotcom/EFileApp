@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 58 (84663) - https://sketch.com -->
+    <title>button/tailor_dark</title>
+    <desc>Created with Sketch.</desc>
+    <g id="控件" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="button/tailor_dark" transform="translate(-17.000000, -17.000000)" fill="#C5CFE0">
+            <g transform="translate(17.000000, 17.000000)" id="Group">
+                <g>
+                    <path d="M4,0 L4,3 L13,3 L13,12 L16,12 L16,13 L13,13 L13,16 L12,16 L12,13 L3,13 L3,4 L0,4 L0,3 L3,3 L3,0 L4,0 Z M4,4 L4,12 L12,12 L12,4 L4,4 Z" id="形状结合"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

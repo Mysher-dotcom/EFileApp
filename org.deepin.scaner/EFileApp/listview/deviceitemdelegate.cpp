@@ -3,11 +3,28 @@
 #include "listviewitemdata.h"
 #include <QDebug>
 #include <QFile>
+#include <DGuiApplicationHelper>
 
 //设备列表Item样式重构
 DeviceItemDelegate::DeviceItemDelegate(QObject *parent) : QStyledItemDelegate (parent)
 {
 
+}
+
+//当前系统是否为深色主题
+bool DeviceItemDelegate::isDarkType() const
+{
+    DGuiApplicationHelper *guiAppHelp = DGuiApplicationHelper::instance();
+    if(guiAppHelp->themeType() == DGuiApplicationHelper::ColorType::DarkType)
+    {
+        //深色主题
+        return true;
+    }
+    else
+    {
+        //浅色主题
+        return false;
+    }
 }
 
 void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -39,7 +56,15 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         path.quadTo(rect.bottomRight(),rect.bottomRight()+ QPointF(0,-radius));
         path.lineTo(rect.topRight()+ QPointF(0,radius));
         path.quadTo(rect.topRight(),rect.topRight()+ QPointF(-radius,-0));
-        painter->fillPath(path,QBrush(QColor(0,0,0,7)));//黑色0.03半透明透明背景
+        //painter->fillPath(path,QBrush(QColor(0,0,0,7)));//黑色0.03半透明透明背景
+        if(isDarkType()==true)
+        {
+            painter->fillPath(path,QBrush(QColor(255,255,255,12)));
+        }
+        else
+        {
+            painter->fillPath(path,QBrush(QColor(0,0,0,7)));//黑色0.03半透明透明背景
+        }
 
         //绘制图标、名称、型号、状态位置区域
         QRectF iconRect=QRectF(rect.left()+10, rect.top()+15, 60, 60);
@@ -49,11 +74,28 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         QRectF statusTitleRect=QRectF(rect.left()+iconRect.width()+20,rect.top()+nameRect.height()+modelRect.height()+20,60, 20);
         QRectF statusRect=QRectF(rect.left()+iconRect.width()+20+46,rect.top()+nameRect.height()+modelRect.height()+20,100, 20);
 
-        QPen namePen = QColor(65,77,104,255);
-        QPen modelTitlePen = QColor(82,106,127,255);
-        QPen modelPen = QColor(0,26,46,255);
-        QPen statusTitlePen = QColor(82,106,127,255);
-        QPen statusPen = QColor(0,26,46,255);
+        QPen namePen ;
+        QPen modelTitlePen ;
+        QPen modelPen ;
+        QPen statusTitlePen ;
+        QPen statusPen ;
+
+        if(isDarkType()==true)
+        {
+            namePen = QColor(255,255,255,255);
+            modelTitlePen =  QColor(255,255,255,255);
+            modelPen =  QColor(255,255,255,255);
+            statusTitlePen =  QColor(255,255,255,255);
+            statusPen =  QColor(255,255,255,255);
+        }
+        else
+        {
+            namePen = QColor(65,77,104,255);
+            modelTitlePen = QColor(82,106,127,255);
+            modelPen = QColor(0,26,46,255);
+            statusTitlePen = QColor(82,106,127,255);
+            statusPen = QColor(0,26,46,255);
+        }
 
         //绘制图标、名称、型号、状态
         //图标
@@ -93,8 +135,15 @@ void DeviceItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         //先判断选中状态，再判断鼠标悬浮状态，如果反之，鼠标悬浮选中项时，会改变样式
         if(option.state.testFlag(QStyle::State_Selected))
         {
-
-            painter->fillPath(path,QBrush(QColor(0,129,255)));//内容区域背景色
+            //内容区域背景色  painter->fillPath(path,QBrush(QColor(0,129,255)));
+            if(isDarkType()==true)
+            {
+                painter->fillPath(path,QBrush(QColor(0,89,210)));
+            }
+            else
+            {
+                painter->fillPath(path,QBrush(QColor(0,129,255)));
+            }
 
             QPen namePen = QColor(255,255,255,255);
             QPen modelTitlePen = QColor(255,255,255,255);

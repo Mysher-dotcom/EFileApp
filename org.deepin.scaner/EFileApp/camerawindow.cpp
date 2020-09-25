@@ -63,12 +63,28 @@ CameraWindow::~CameraWindow()
     delete ui;
 }
 
+//当前系统是否为深色主题
+bool CameraWindow::isDarkType()
+{
+    DGuiApplicationHelper *guiAppHelp = DGuiApplicationHelper::instance();
+    if(guiAppHelp->themeType() == DGuiApplicationHelper::ColorType::DarkType)
+    {
+        //深色主题
+        return true;
+    }
+    else
+    {
+        //浅色主题
+        return false;
+    }
+}
+
 //初始化界面
 void CameraWindow::initUI()
 {
     //*窗口基本属性设置*
-    this->resize(840,480);//窗口初始尺寸
-    this->setMinimumSize(840,480);//窗口最小尺寸
+    this->resize(850,680);//窗口初始尺寸
+    this->setMinimumSize(850,680);//窗口最小尺寸
     this->titlebar()->setTitle("");//标题栏文字设为空
     setWindowIcon(QIcon(":/img/logo/logo-16.svg"));// 状态栏图标
     this->titlebar()->setIcon(QIcon(":/img/logo/logo-16.svg"));//标题栏图标
@@ -85,14 +101,14 @@ void CameraWindow::initUI()
     rightTopVLayout = new QVBoxLayout();//右侧上部布局
     rightBottomVLayout = new QVBoxLayout();//右侧下部布局
     toolBarHLayout = new QHBoxLayout();//工具栏布局
-    mainWidget = new QWidget () ;//主容器
-    leftWidget = new QWidget () ;//左侧容器
-    videoWidget = new QWidget ();//视频容器
-    leftBottomWidget = new QWidget () ;//左侧下部容器
-    rightWidget = new QWidget () ;//右侧容器
-    rightTopWidget = new QWidget () ;//右侧上部容器
-    rightBottomWidget = new QWidget () ;//右侧下部容器
-    toolBarWidget = new QWidget () ;//工具栏容器
+    mainWidget = new DWidget () ;//主容器
+    leftWidget = new DWidget () ;//左侧容器
+    videoWidget = new DWidget ();//视频容器
+    leftBottomWidget = new DWidget () ;//左侧下部容器
+    rightWidget = new DWidget () ;//右侧容器
+    rightTopWidget = new DWidget () ;//右侧上部容器
+    rightBottomWidget = new DWidget () ;//右侧下部容器
+    toolBarWidget = new DWidget () ;//工具栏容器
     scanBtn = new QPushButton();//扫描按钮
     oneTOneBtn = new DIconButton(nullptr);//1:1按钮
     zoomInBtn = new DIconButton(nullptr);//放大按钮
@@ -104,47 +120,33 @@ void CameraWindow::initUI()
     imgListView = new DListView () ;//图像列表
     saveBtn = new QPushButton();//保存按钮
 
-    oneTOneBtn->setIcon(QIcon(":/img/camera/1t1.svg"));
     oneTOneBtn->setFixedSize(QSize(50, 50));
     oneTOneBtn->setIconSize(QSize(20,20));
     oneTOneBtn->setToolTip(tr("1:1 Size"));
-    oneTOneBtn->setStyleSheet("background:white;border-radius:8px;");
 
-    zoomInBtn->setIcon(QIcon(":/img/camera/zoomin.svg"));
     zoomInBtn->setFixedSize(QSize(50, 50));
     zoomInBtn->setIconSize(QSize(20,20));
     zoomInBtn->setToolTip(tr("Zoom in"));
-    zoomInBtn->setStyleSheet("background:white;border-radius:8px;");
 
-    zoomOutBtn->setIcon(QIcon(":/img/camera/zoomout.svg"));
     zoomOutBtn->setFixedSize(QSize(50, 50));
     zoomOutBtn->setIconSize(QSize(20,20));
     zoomOutBtn->setToolTip(tr("Zoom out"));
-    zoomOutBtn->setStyleSheet("background:white;border-radius:8px;");
 
-    rotateLeftBtn->setIcon(QIcon(":/img/camera/rotateleft.svg"));
     rotateLeftBtn->setFixedSize(QSize(50, 50));
     rotateLeftBtn->setIconSize(QSize(20,20));
     rotateLeftBtn->setToolTip(tr("Rotate counterclockwise"));
-    rotateLeftBtn->setStyleSheet("background:white;border-radius:8px;");
 
-    rotateRightBtn->setIcon(QIcon(":/img/camera/rotateright.svg"));
     rotateRightBtn->setFixedSize(QSize(50, 50));
     rotateRightBtn->setIconSize(QSize(20,20));
     rotateRightBtn->setToolTip(tr("Rotate clockwise"));
-    rotateRightBtn->setStyleSheet("background:white;border-radius:8px;");
 
-    cutBtn->setIcon(QIcon(":/img/camera/cut.svg"));
     cutBtn->setFixedSize(QSize(50, 50));
     cutBtn->setIconSize(QSize(20,20));
     cutBtn->setToolTip(tr("Crop"));
-    cutBtn->setStyleSheet("background:white;border-radius:8px;");
 
-    bookBtn->setIcon(QIcon(":/img/camera/book.svg"));
     bookBtn->setFixedSize(QSize(50, 50));
     bookBtn->setIconSize(QSize(20,20));
     bookBtn->setToolTip(tr("Book"));
-    bookBtn->setStyleSheet("background:white;border-radius:8px;");
     bookBtn->setVisible(false);
 
     //videoWidget->setMinimumSize(QSize(600,380));
@@ -155,25 +157,25 @@ void CameraWindow::initUI()
     saveBtn->setFixedSize(QSize(180,36));
 
     rightWidget->setFixedWidth(220);//右侧容器固定220px宽
-    //rightWidget->setStyleSheet("background:white;");
+
+    /*
     QColor bgColor(255,255,255,255);
-    //rightWidget->setGeometry(0, 0, 300, 100);
     QPalette palr(rightWidget->palette());
     palr.setColor(QPalette::Background, bgColor);
     rightWidget->setAutoFillBackground(true);
-    rightWidget->setPalette(palr);
-
+    rightWidget->setPalette(palr);*/
+/*
     QColor bgColor2(247,247,247,255);
     //leftBottomWidget->setGeometry(0, 0, 300, 100);
     QPalette pal2(leftBottomWidget->palette());
     pal2.setColor(QPalette::Background, bgColor2);
     leftBottomWidget->setAutoFillBackground(true);
-    leftBottomWidget->setPalette(pal2);
+    leftBottomWidget->setPalette(pal2);*/
 
     leftBottomWidget->setFixedHeight(140);//左侧下部容器一定要设置高度，否则视频容器不会铺满整个左侧上部
 
-    //工具栏背景色和边框阴影
-    toolBarWidget->setStyleSheet("background:rgba(247,247,247,255);border-radius:18px;");
+
+    //工具栏边框阴影
     QColor shadowColor(0,0,0,25);
     QGraphicsDropShadowEffect *toolBarShadow = new QGraphicsDropShadowEffect (this);
     toolBarShadow->setOffset(-1,5);
@@ -183,17 +185,15 @@ void CameraWindow::initUI()
 
     QHBoxLayout *timerHLayout = new QHBoxLayout () ;//定时拍布局
     timerWidget = new QWidget () ;//定时拍容器
-    timerIconLabel = new QLabel();//定时拍图标
+    timerIconLabel = new DLabel();//定时拍图标
     timerIconLabel->setPixmap(QPixmap(":/img/camera/shottimer.svg"));
-    timerLabel = new QLabel();//定时拍秒
+    timerLabel = new DLabel();//定时拍秒
     timerLabel->setText(QString(" %1 %2").arg(QString::number(nShotTime)).arg(tr("s")));
     timerHLayout->addStretch();
     timerHLayout->addWidget(timerIconLabel);
     timerHLayout->addWidget(timerLabel);
     timerHLayout->addStretch();
     timerWidget->setLayout(timerHLayout);
-    //定时拍背景色和边框
-    timerWidget->setStyleSheet("background:rgba(247,247,247,255);border-radius:18px;");
     timerWidget->setFixedSize(100,50);
 
     videoHLayout->addWidget(timerWidget);
@@ -259,6 +259,49 @@ void CameraWindow::initUI()
     mainVLayout->setSpacing(0);
     winVLayout->setMargin(0);
     winVLayout->setSpacing(0);
+
+    if(isDarkType()==true)
+    {
+        oneTOneBtn->setStyleSheet("background:rgba(255,255,255,12);border-radius:8px;");
+        zoomInBtn->setStyleSheet("background:rgba(255,255,255,12);border-radius:8px;");
+        zoomOutBtn->setStyleSheet("background:rgba(255,255,255,12);border-radius:8px;");
+        rotateLeftBtn->setStyleSheet("background:rgba(255,255,255,12);border-radius:8px;");
+        rotateRightBtn->setStyleSheet("background:rgba(255,255,255,12);border-radius:8px;");
+        cutBtn->setStyleSheet("background:rgba(255,255,255,12);border-radius:8px;");
+        bookBtn->setStyleSheet("background:rgba(255,255,255,12);border-radius:8px;");
+        GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,12),false);//容器设置背景色
+        GlobalHelper::setWidgetBackgroundColor(leftBottomWidget,QColor(255,255,255,12),false);//容器设置背景色
+        toolBarWidget->setStyleSheet("background:rgba(255,255,255,12);border-radius:18px;");//工具栏背景色
+        timerWidget->setStyleSheet("background:rgba(255,255,255,12);border-radius:18px;");//定时拍背景色和边框
+        oneTOneBtn->setIcon(QIcon(":/img/camera/1t1_dark.svg"));
+        zoomInBtn->setIcon(QIcon(":/img/camera/zoomin_dark.svg"));
+        zoomOutBtn->setIcon(QIcon(":/img/camera/zoomout_dark.svg"));
+        rotateLeftBtn->setIcon(QIcon(":/img/camera/rotateleft_dark.svg"));
+        rotateRightBtn->setIcon(QIcon(":/img/camera/rotateright_dark.svg"));
+        bookBtn->setIcon(QIcon(":/img/camera/book.svg"));
+        cutBtn->setIcon(QIcon(":/img/camera/cut_dark.svg"));
+    }
+    else
+    {
+        oneTOneBtn->setStyleSheet("background:white;border-radius:8px;");
+        zoomInBtn->setStyleSheet("background:white;border-radius:8px;");
+        zoomOutBtn->setStyleSheet("background:white;border-radius:8px;");
+        rotateLeftBtn->setStyleSheet("background:white;border-radius:8px;");
+        rotateRightBtn->setStyleSheet("background:white;border-radius:8px;");
+        cutBtn->setStyleSheet("background:white;border-radius:8px;");
+        bookBtn->setStyleSheet("background:white;border-radius:8px;");
+        GlobalHelper::setWidgetBackgroundColor(toolBarWidget,QColor(255,255,255,255),false);//容器设置背景色
+        GlobalHelper::setWidgetBackgroundColor(leftBottomWidget,QColor(247,247,247,255),false);//容器设置背景色
+        toolBarWidget->setStyleSheet("background:rgba(247,247,247,255);border-radius:18px;");//工具栏背景色
+        timerWidget->setStyleSheet("background:rgba(247,247,247,255);border-radius:18px;");//定时拍背景色和边框
+        oneTOneBtn->setIcon(QIcon(":/img/camera/1t1.svg"));
+        zoomInBtn->setIcon(QIcon(":/img/camera/zoomin.svg"));
+        zoomOutBtn->setIcon(QIcon(":/img/camera/zoomout.svg"));
+        rotateLeftBtn->setIcon(QIcon(":/img/camera/rotateleft.svg"));
+        rotateRightBtn->setIcon(QIcon(":/img/camera/rotateright.svg"));
+        bookBtn->setIcon(QIcon(":/img/camera/book.svg"));
+        cutBtn->setIcon(QIcon(":/img/camera/cut.svg"));
+    }
 
     //videoWidget->setStyleSheet("background:blue;");
     //previewImageFrame->setStyleSheet("background:red");

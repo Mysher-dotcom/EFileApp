@@ -75,6 +75,22 @@ ScanManagerWindow::~ScanManagerWindow()
     delete ui;
 }
 
+//当前系统是否为深色主题
+bool ScanManagerWindow::isDarkType()
+{
+    DGuiApplicationHelper *guiAppHelp = DGuiApplicationHelper::instance();
+    if(guiAppHelp->themeType() == DGuiApplicationHelper::ColorType::DarkType)
+    {
+        //深色主题
+        return true;
+    }
+    else
+    {
+        //浅色主题
+        return false;
+    }
+}
+
 void ScanManagerWindow::closeEvent(QCloseEvent *event)
 {
     if(isScanClose == false && GlobalHelper::getDeviceInfoIsOver == true && isNoDevice == false)
@@ -113,8 +129,8 @@ void ScanManagerWindow::dropEvent(QDropEvent *e)
 void ScanManagerWindow::initUI()
 {
     //*****窗口设置*******
-    this->resize(810,520);//窗口初始尺寸
-    this->setMinimumSize(QSize(640,320));//窗口最小尺寸
+    this->resize(850,680);//窗口初始尺寸
+    this->setMinimumSize(QSize(850,680));//窗口最小尺寸
     this->titlebar()->setTitle("");//标题栏文字设为空
     this->titlebar()->setMenuVisible(false);//隐藏标题栏
     setWindowIcon(QIcon(":/img/logo/logo-16.svg"));// 状态栏图标
@@ -136,44 +152,70 @@ void ScanManagerWindow::initUI()
 void ScanManagerWindow::initNODeviceUI()
 {
     //左侧
-    QLabel *leftTopLbl=new QLabel ();
+    DLabel *leftTopLbl=new DLabel ();
     leftTopLbl->setText(tr("Scanners"));
-    leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
-
+    if(isDarkType()==true)
+    {
+        leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+    }
+    else
+    {
+        leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    }
     //刷新设备-无设备UI里
-       refreshDeviceBtn2 = new DIconButton (nullptr);
-       refreshDeviceBtn2->setIcon(QIcon(":/img/refresh_device.svg"));
-       refreshDeviceBtn2->setFixedSize(QSize(30, 30));
-       refreshDeviceBtn2->setIconSize(QSize(20,20));
-       refreshDeviceBtn2->setToolTip(tr("Refresh"));
-       connect(refreshDeviceBtn2, SIGNAL(clicked()), this, SLOT(slotRefreshDevice()));
+    refreshDeviceBtn2 = new DIconButton (nullptr);
+    if(isDarkType()==true)
+    {
+        refreshDeviceBtn2->setIcon(QIcon(":/img/refresh_device_dark.svg"));
+    }
+    else
+    {
+        refreshDeviceBtn2->setIcon(QIcon(":/img/refresh_device.svg"));
+    }
+    refreshDeviceBtn2->setFixedSize(QSize(30, 30));
+    //refreshDeviceBtn2->setIconSize(QSize(20,20));
+    refreshDeviceBtn2->setToolTip(tr("Refresh"));
+    connect(refreshDeviceBtn2, SIGNAL(clicked()), this, SLOT(slotRefreshDevice()));
 
-       QWidget *leftTopGroupWidget = new QWidget();
-       QHBoxLayout *leftTopGroupLayout = new QHBoxLayout();
-       leftTopGroupWidget->setLayout(leftTopGroupLayout);
-       leftTopGroupLayout->addWidget(leftTopLbl,0,Qt::AlignLeft);
-       leftTopGroupLayout->addWidget(refreshDeviceBtn2,0,Qt::AlignRight);
+    DWidget *leftTopGroupWidget = new DWidget();
+    QHBoxLayout *leftTopGroupLayout = new QHBoxLayout();
+    leftTopGroupWidget->setLayout(leftTopGroupLayout);
+    leftTopGroupLayout->addWidget(leftTopLbl,0,Qt::AlignLeft);
+    leftTopGroupLayout->addWidget(refreshDeviceBtn2,0,Qt::AlignRight);
 
-    QLabel *leftLbl=new QLabel ();
+    DLabel *leftLbl=new DLabel ();
     leftLbl->setText(tr("No scanners found"));
-    leftLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
-
+    if(isDarkType()==true)
+    {
+        leftLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+    }
+    else
+    {
+        leftLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    }
     //新增设备按钮-无设备UI里
     addDeviceBtn2 = new DIconButton(nullptr);
-    addDeviceBtn2->setIcon(QIcon(":/img/addDevice.svg"));//图标
+    if(isDarkType()==true)
+    {
+        addDeviceBtn2->setIcon(QIcon(":/img/addDevice_dark.svg"));//图标
+    }
+    else
+    {
+        addDeviceBtn2->setIcon(QIcon(":/img/addDevice.svg"));//图标
+    }
     addDeviceBtn2->setFixedSize(QSize(48, 48));//按钮尺寸
     addDeviceBtn2->setIconSize(QSize(48,48));//图标尺寸
     addDeviceBtn2->raise();//置顶
     addDeviceBtn2->setStyleSheet("background:transparent;");
     connect(addDeviceBtn2, SIGNAL(clicked()), this, SLOT(slotAddDeviceButtonClicked2()));
 
-    QWidget *leftTopWidget = new QWidget();
+    DWidget *leftTopWidget = new DWidget();
     QVBoxLayout *leftTopLayout = new QVBoxLayout();
     leftTopWidget->setLayout(leftTopLayout);
     leftTopLayout->addWidget(leftTopGroupWidget,0,Qt::AlignTop);
     leftTopLayout->addWidget(leftLbl,1,Qt::AlignHCenter);
 
-    QWidget *leftBottomWidget = new QWidget();
+    DWidget *leftBottomWidget = new DWidget();
     QGridLayout *leftGridLayout = new QGridLayout();
     leftGridLayout->addWidget(leftTopWidget, 0, 0, 1, 1);
     leftGridLayout->addWidget(addDeviceBtn2, 0, 0, 1, 1,Qt::AlignBottom | Qt::AlignCenter);
@@ -181,22 +223,36 @@ void ScanManagerWindow::initNODeviceUI()
 
 
     //右侧
-    QLabel *rightTopLbl=new QLabel();//右上空白占位提示信息
+    DLabel *rightTopLbl=new DLabel();//右上空白占位提示信息
 
-    QLabel *rightLbl=new QLabel ();
+    DLabel *rightLbl=new DLabel ();
     rightLbl->setText(tr("Make sure your scanner is powered on and connected"));
-    rightLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
-
+    if(isDarkType()==true)
+    {
+        rightLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+    }
+    else
+    {
+        rightLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    }
     //控件加入布局中
     QHBoxLayout *mainLayout = new QHBoxLayout();
     QVBoxLayout *leftLayout = new QVBoxLayout();
     QVBoxLayout *rightLayout = new QVBoxLayout();
-    QWidget *mainWidget = new QWidget();
-    QWidget *leftWidget = new QWidget();
-    QWidget *rightWidget = new QWidget();
+    DWidget *mainWidget = new DWidget();
+    DWidget *leftWidget = new DWidget();
+    DWidget *rightWidget = new DWidget();
     leftWidget->setFixedWidth(300);//左侧容器固定宽度300px
-    GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,255),false);//左侧容器设置背景白色
-    GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,255),false);//右侧容器设置背景白色
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,12),false);//左侧容器设置背景白色
+        GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,12),false);//右侧容器设置背景白色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,255),false);//左侧容器设置背景白色
+        GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,255),false);//右侧容器设置背景白色
+    }
     mainLayout->addWidget(leftWidget);
     mainLayout->addWidget(rightWidget);
     mainWidget->setLayout(mainLayout);
@@ -216,38 +272,74 @@ void ScanManagerWindow::initNODeviceUI()
 void ScanManagerWindow::initCheckingDeviceUI()
 {
     //左侧
-    QLabel *leftTopLbl=new QLabel ();
+    DLabel *leftTopLbl=new DLabel ();
     leftTopLbl->setText(tr("Scanners"));
-    leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+    if(isDarkType()==true)
+    {
+        leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+    }
+    else
+    {
+        leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    }
 
     lSpinner = new DSpinner();//左侧提示动画
     lSpinner->setFixedSize(QSize(28,28));
     lSpinner->show();
     lSpinner->start();
-    QLabel *leftLbl=new QLabel ();
+    DLabel *leftLbl=new DLabel ();
     leftLbl->setText(tr("Detecting..."));
-    leftLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
+    if(isDarkType()==true)
+    {
+        leftLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+    }
+    else
+    {
+        leftLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    }
 
     //右侧
-    QLabel *rightTopLbl=new QLabel();//右上空白占位提示信息
+    DLabel *rightTopLbl=new DLabel();//右上空白占位提示信息
 
-    QLabel *rightLbl=new QLabel ();
+    DLabel *rightLbl=new DLabel ();
     //rightLbl->setText(tr("正在检测"));
-    rightLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
-    QLabel *rightLbl2=new QLabel ();
+    if(isDarkType()==true)
+    {
+        rightLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+    }
+    else
+    {
+        rightLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    }
+    DLabel *rightLbl2=new DLabel ();
     rightLbl2->setText(tr("If it takes a long time, use another USB port, or restart your scanner and PC"));
-    rightLbl2->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:14px");
+    if(isDarkType()==true)
+    {
+        rightLbl2->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+    }
+    else
+    {
+        rightLbl2->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    }
 
     //控件加入布局中
     QHBoxLayout *mainLayout = new QHBoxLayout();
     QVBoxLayout *leftLayout = new QVBoxLayout();
     QVBoxLayout *rightLayout = new QVBoxLayout();
-    QWidget *mainWidget = new QWidget();
-    QWidget *leftWidget = new QWidget();
-    QWidget *rightWidget = new QWidget();
+    DWidget *mainWidget = new DWidget();
+    DWidget *leftWidget = new DWidget();
+    DWidget *rightWidget = new DWidget();
     leftWidget->setFixedWidth(300);//左侧容器固定宽度300px
-    GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,255),false);//左侧容器设置背景白色
-    GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,255),false);//右侧容器设置背景白色
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,12),false);//左侧容器设置背景色
+        GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,12),false);//右侧容器设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,255),false);//左侧容器设置背景白色
+        GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,255),false);//右侧容器设置背景白色
+    }
     mainLayout->addWidget(leftWidget);
     mainLayout->addWidget(rightWidget);
     mainWidget->setLayout(mainLayout);
@@ -256,8 +348,8 @@ void ScanManagerWindow::initCheckingDeviceUI()
 
     QHBoxLayout *leftLayout2 = new QHBoxLayout();
     QVBoxLayout *rightLayout2 = new QVBoxLayout();
-    QWidget *leftWidget2 = new QWidget();
-    QWidget *rightWidget2 = new QWidget();
+    DWidget *leftWidget2 = new DWidget();
+    DWidget *rightWidget2 = new DWidget();
     leftWidget2->setLayout(leftLayout2);
     rightWidget2->setLayout(rightLayout2);
     leftLayout2->addWidget(lSpinner);
@@ -277,10 +369,16 @@ void ScanManagerWindow::initCheckingDeviceUI()
 void ScanManagerWindow::initDeviceInfoUI()
 {
     //***左侧
-    QLabel *leftTopLbl=new QLabel ();
+    DLabel *leftTopLbl=new DLabel ();
     leftTopLbl->setText(tr("Scanners"));
-    leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
-
+    if(isDarkType()==true)
+    {
+        leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+    }
+    else
+    {
+        leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    }
     refreshDeviceBtn = new DIconButton (nullptr);//刷新设备
     refreshDeviceBtn->setIcon(QIcon(":/img/refresh_device.svg"));
     refreshDeviceBtn->setFixedSize(QSize(30, 30));
@@ -288,7 +386,8 @@ void ScanManagerWindow::initDeviceInfoUI()
     refreshDeviceBtn->setToolTip(tr("Refresh"));
     connect(refreshDeviceBtn, SIGNAL(clicked()), this, SLOT(slotRefreshDevice()));
 
-    QWidget *leftTopWidget = new QWidget();
+
+    DWidget *leftTopWidget = new DWidget();
     QHBoxLayout *leftTopLayout = new QHBoxLayout();
     leftTopWidget->setLayout(leftTopLayout);
     leftTopLayout->addWidget(leftTopLbl,0,Qt::AlignLeft);
@@ -312,14 +411,21 @@ void ScanManagerWindow::initDeviceInfoUI()
 
     //新增设备按钮
     addDeviceBtn = new DIconButton(nullptr);
-    addDeviceBtn->setIcon(QIcon(":/img/addDevice.svg"));//图标
+    if(isDarkType()==true)
+    {
+        addDeviceBtn->setIcon(QIcon(":/img/addDevice_dark.svg"));//图标
+    }
+    else
+    {
+        addDeviceBtn->setIcon(QIcon(":/img/addDevice.svg"));//图标
+    }
     addDeviceBtn->setFixedSize(QSize(48, 48));//按钮尺寸
     addDeviceBtn->setIconSize(QSize(48,48));//图标尺寸
     addDeviceBtn->raise();//置顶
     addDeviceBtn->setStyleSheet("background:transparent;");
     connect(addDeviceBtn, SIGNAL(clicked()), this, SLOT(slotAddDeviceButtonClicked()));
 
-    QWidget *leftBottomWidget = new QWidget();
+    DWidget *leftBottomWidget = new DWidget();
     QGridLayout *gridLayout = new QGridLayout();
     gridLayout->addWidget(devListView, 0, 0, 1, 1);
     gridLayout->addWidget(addDeviceBtn, 0, 0, 1, 1,Qt::AlignBottom | Qt::AlignCenter);
@@ -338,19 +444,27 @@ void ScanManagerWindow::initDeviceInfoUI()
     QVBoxLayout *rightLayout = new QVBoxLayout();//右布局
     rtVLayout = new QVBoxLayout();//参数布局
     rbHLayout = new QHBoxLayout();//扫描按钮布局
-    QWidget *mainWidget = new QWidget();//主容器
-    QWidget *leftWidget = new QWidget();//左容器
-    QWidget *rightWidget = new QWidget();//右容器
-    QWidget *rightTopWidget = new QWidget();//右容器-参数容器
-    QWidget *rightBottomWidget = new QWidget();//右容器-扫描按钮容器
+    DWidget *mainWidget = new DWidget();//主容器
+    DWidget *leftWidget = new DWidget();//左容器
+    DWidget *rightWidget = new DWidget();//右容器
+    DWidget *rightTopWidget = new DWidget();//右容器-参数容器
+    DWidget *rightBottomWidget = new DWidget();//右容器-扫描按钮容器
 
     //滚动条，右侧参数容器，参数可能过多，需要滚动条
     DScrollArea *rtScrollArea = new DScrollArea (this);
     rtScrollArea->setWidgetResizable(true);
 
     leftWidget->setFixedWidth(300);//左侧容器固定宽度300px
-    GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,255),false);//左侧容器设置背景白色
-    GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,255),false);//右侧容器设置背景白色
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,12),false);//左侧容器设置背景色
+        //GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,12),false);//右侧容器不要背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,255),false);//左侧容器设置背景白色
+        GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,255),false);//右侧容器设置背景白色
+    }
     //容器设置布局
     mainWidget->setLayout(mainLayout);
     leftWidget->setLayout(leftLayout);
@@ -382,18 +496,31 @@ void ScanManagerWindow::initInstallDeviceUI()
 {
     //标题栏返回按钮
     backBtn = new DIconButton(nullptr);
-    backBtn->setIcon(QIcon(":/img/back.svg"));//图标
+    if(isDarkType()==true)
+    {
+        backBtn->setIcon(QIcon(":/img/back_dark.svg"));//图标
+    }
+    else
+    {
+        backBtn->setIcon(QIcon(":/img/back.svg"));//图标
+    }
     backBtn->setFixedSize(QSize(36, 36));//按钮尺寸
-    backBtn->setIconSize(QSize(15,15));//图标尺寸
     backBtn->setToolTip(tr("Back"));
     this->titlebar()->addWidget(backBtn,Qt::AlignLeft);
     backBtn->setVisible(false);
     connect(backBtn, SIGNAL(clicked()), this, SLOT(slotBackBtnClicked()));
 
     //***左侧
-    QLabel *leftTopLbl=new QLabel ();
+    DLabel *leftTopLbl=new DLabel ();
     leftTopLbl->setText(tr("Add a driver"));
-    leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+    if(isDarkType()==true)
+    {
+        leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+    }
+    else
+    {
+        leftTopLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    }
     //在线安装按钮
     installOnlineBtn = new QPushButton ();
     installOnlineBtn->setFixedSize(QSize(288, 38));
@@ -414,12 +541,27 @@ void ScanManagerWindow::initInstallDeviceUI()
     g->addButton(installLocalBtn);
 
     //***右侧
-    installTitleLabel = new QLabel();//标题栏
+    installTitleLabel = new DLabel();//标题栏
     installTitleLabel->setText(tr("Select a driver"));
-    installTitleLabel->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+    if(isDarkType()==true)
+    {
+        installTitleLabel->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+    }
+    else
+    {
+        installTitleLabel->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    }
     installSLayout = new QStackedLayout();//安装控件区域
-    QWidget *installWidget = new QWidget();
+    DWidget *installWidget = new DWidget();
     //installWidget->setStyleSheet("background:rgba(247,247,247,255);border-radius: 10px;");
+    if(isDarkType()==true)
+    {
+        //GlobalHelper::setWidgetBackgroundColor(installWidget,QColor(255,255,255,12),false);//左侧容器不要设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(installWidget,QColor(255,255,255,255),false);//左侧容器设置背景白色
+    }
     installWidget->setLayout(installSLayout);
     vendorCBB = new DComboBox();//厂商
     vendorCBB->addItem(tr("None"));
@@ -429,18 +571,36 @@ void ScanManagerWindow::initInstallDeviceUI()
     driverCBB->addItem(tr("No drivers detected, but you can install a local driver"));
 
     //在线安装区域
-    QWidget *onlineParWidget = new QWidget();
+    DWidget *onlineParWidget = new DWidget();
+   /* if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(onlineParWidget,QColor(255,255,255,12),false);
+    }*/
     QVBoxLayout *onlineParLayout = new QVBoxLayout();
     onlineParWidget->setLayout(onlineParLayout);
     for(int i=0;i<3;i++)
     {
-        QWidget *parWidget = new QWidget ();//每一个参数行的容器
+        DWidget *parWidget = new DWidget ();//每一个参数行的容器
         parWidget->setFixedHeight(48);
-        GlobalHelper::setWidgetBackgroundColor(parWidget,QColor(249,249,249,255),false);//容器设置背景
+        if(isDarkType()==true)
+        {
+            GlobalHelper::setWidgetBackgroundColor(parWidget,QColor(255,255,255,12),false);//容器设置背景
+        }
+        else
+        {
+            GlobalHelper::setWidgetBackgroundColor(parWidget,QColor(249,249,249,255),false);//容器设置背景
+        }
         QHBoxLayout *parHLayout = new QHBoxLayout ();//每一个参数行的布局
-        QLabel  *pnameLbl= new QLabel ();//参数名称
+        DLabel  *pnameLbl= new DLabel ();//参数名称
         pnameLbl->setFixedWidth(80);
-        pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+        if(isDarkType()==true)
+        {
+            pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+        }
+        else
+        {
+            pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+        }
         parHLayout->addWidget(pnameLbl);
         if(i == 0)
         {
@@ -472,19 +632,40 @@ void ScanManagerWindow::initInstallDeviceUI()
     installSLayout->addWidget(onlineParWidget);//在线安装区域加入右侧区域[0]
 
     //本地安装区域
-    localParWidget = new QWidget();
+    localParWidget = new DWidget();
     localParWidget->setAcceptDrops(true);//支持接收拖拽事件
     QVBoxLayout *localParLayout = new QVBoxLayout();
     localParWidget->setLayout(localParLayout);
     //localParWidget->setStyleSheet("border-radius: 10px;");
-    GlobalHelper::setWidgetBackgroundColor(localParWidget,QColor(247,247,247,255),false);
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(localParWidget,QColor(255,255,255,12),false);
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(localParWidget,QColor(247,247,247,255),false);
+    }
 
-    localDriverTipLabel = new QLabel();//导入本地驱动文本提示
+    localDriverTipLabel = new DLabel();//导入本地驱动文本提示
     localDriverTipLabel->setText(tr("Drag a local driver here"));
-    localDriverTipLabel->setStyleSheet("font-family:SourceHanSansSC,sourceHanSansSC;;color:rgba(180,180,180,1);font-size:12px");
-    localDriverTipLabel2 = new QLabel();//导入本地驱动文本提示2
+    if(isDarkType()==true)
+    {
+        localDriverTipLabel->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+    }
+    else
+    {
+        localDriverTipLabel->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    }
+    localDriverTipLabel2 = new DLabel();//导入本地驱动文本提示2
     localDriverTipLabel2->setText(tr("or"));
-    localDriverTipLabel2->setStyleSheet("font-family:SourceHanSansSC,sourceHanSansSC;;color:rgba(180,180,180,1);font-size:12px");
+    if(isDarkType()==true)
+    {
+        localDriverTipLabel2->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgb(192,198,212);font-size:14px");
+    }
+    else
+    {
+        localDriverTipLabel2->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    }
     importDriverBtn = new QPushButton();//导入本地驱动按钮
     importDriverBtn->setFixedSize(QSize(140, 36));
     importDriverBtn->setText(tr("Import Local Driver"));
@@ -507,12 +688,20 @@ void ScanManagerWindow::initInstallDeviceUI()
     QHBoxLayout *mainLayout = new QHBoxLayout();
     QVBoxLayout *leftLayout = new QVBoxLayout();
     QVBoxLayout *rightLayout = new QVBoxLayout();
-    QWidget *mainWidget = new QWidget();
-    QWidget *leftWidget = new QWidget();
-    QWidget *rightWidget = new QWidget();
+    DWidget *mainWidget = new DWidget();
+    DWidget *leftWidget = new DWidget();
+    DWidget *rightWidget = new DWidget();
     leftWidget->setFixedWidth(300);//左侧容器固定宽度300px
-    GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,255),false);//左侧容器设置背景白色
-    GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,255),false);//右侧容器设置背景白色
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,12),false);//左侧容器设置背景色
+        GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,12),false);//右侧容器设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(leftWidget,QColor(255,255,255,255),false);//左侧容器设置背景白色
+        GlobalHelper::setWidgetBackgroundColor(rightWidget,QColor(255,255,255,255),false);//右侧容器设置背景白色
+    }
     mainWidget->setLayout(mainLayout);
     leftWidget->setLayout(leftLayout);
     rightWidget->setLayout(rightLayout);
@@ -535,6 +724,7 @@ void ScanManagerWindow::initInstallDeviceUI()
 //新增设备按钮点击
 void ScanManagerWindow::slotAddDeviceButtonClicked()
 {
+    isClickedInstallBtn = false;//是否点击了安装按钮
     emitAdder = 1;
     mainSLayout->setCurrentIndex(3);//显示安装设备UI
     backBtn->setVisible(true);
@@ -543,6 +733,7 @@ void ScanManagerWindow::slotAddDeviceButtonClicked()
 //新增设备按钮-无设备UI里
 void ScanManagerWindow::slotAddDeviceButtonClicked2()
 {
+    isClickedInstallBtn = false;//是否点击了安装按钮
     emitAdder = 0;
     mainSLayout->setCurrentIndex(3);//显示安装设备UI
     backBtn->setVisible(true);
@@ -552,13 +743,22 @@ void ScanManagerWindow::slotAddDeviceButtonClicked2()
 void ScanManagerWindow::slotBackBtnClicked()
 {
     backBtn->setVisible(false);
-    if(emitAdder == 0)
+    //未点击安装按钮
+    if(isClickedInstallBtn == false)
     {
-         mainSLayout->setCurrentIndex(0);//无设备UI
+        if(emitAdder == 0)
+        {
+             mainSLayout->setCurrentIndex(0);//无设备UI
+        }
+        else
+        {
+            mainSLayout->setCurrentIndex(2);//显示设备信息UI
+        }
     }
+    //点击安装按钮
     else
     {
-        mainSLayout->setCurrentIndex(2);//显示设备信息UI
+        slotRefreshDevice();//更新设备列表
     }
 }
 
@@ -617,6 +817,7 @@ void ScanManagerWindow::slotInstallBtnClicked()
     QFileInfo fi(localDriverFilePath);
     if(fi.exists())
     {
+        isClickedInstallBtn = true;//是否点击了安装按钮
         //驱动，以系统默认方式打开
          QDesktopServices::openUrl(QUrl::fromLocalFile(localDriverFilePath));
     }
@@ -714,27 +915,30 @@ void ScanManagerWindow::showDeviceParUI(QString titleName,QString parName,QStrin
 {
     if(titleName.length() > 0)
     {
-        QLabel *lbl = new QLabel ();
+        DLabel *lbl = new DLabel ();
         lbl->setText(titleName);//("扫描设置");
-        lbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+        //lbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+        lbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;font-size:17px");
         if(isAddTitleTopMargin == true)
         {
-            QLabel *tmplbl=new QLabel(); //用一个空白的label，达到上边距距离
+            DLabel *tmplbl=new DLabel(); //用一个空白的label，达到上边距距离
             rtVLayout->addWidget(tmplbl,0,Qt::AlignTop);
         }
         rtVLayout->addWidget(lbl,0,Qt::AlignTop);
     }
-    QWidget *parWidget = new QWidget ();//每一个参数行的容器
+    DWidget *parWidget = new DWidget ();//每一个参数行的容器
     parWidget->setFixedHeight(48);
-    //容器设置背景
-    parWidget->setGeometry(0, 0, 300, 100);
-    QPalette pal(parWidget->palette());
-    pal.setColor(QPalette::Background, QColor(249,249,249,255));
-    parWidget->setAutoFillBackground(true);
-    parWidget->setPalette(pal);
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidget,QColor(255,255,255,12),false);//左侧容器设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidget,QColor(249,249,249,255),false);//左侧容器设置背景白色
+    }
 
     QHBoxLayout *parHLayout = new QHBoxLayout ();//每一个参数行的布局
-    QLabel  *pnameLbl= new QLabel ();//参数名称，显示配置文件中的翻译文本
+    DLabel  *pnameLbl= new DLabel ();//参数名称，显示配置文件中的翻译文本
     pnameLbl->setFixedWidth(80);
 
     if(locale.language() == QLocale::Chinese )
@@ -745,7 +949,8 @@ void ScanManagerWindow::showDeviceParUI(QString titleName,QString parName,QStrin
     {
         pnameLbl->setText(parName);
     }
-    pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+   // pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;font-size:14px");
     parHLayout->addWidget(pnameLbl);
 
     bool isContainsGroup = DeviceInfoHelper::isContainsGroup(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset");
@@ -834,14 +1039,28 @@ void ScanManagerWindow::showDeviceParUI(QString titleName,QString parName,QStrin
 //图像处理参数UI
 void ScanManagerWindow::showImgEditParUI(bool isLicense)
 {
-    QLabel *lblNULLCut=new QLabel();//用一个空白的label，达到上边距距离
-    QLabel *lblCut = new QLabel ();
+    DLabel *lblNULLCut=new DLabel();//用一个空白的label，达到上边距距离
+    DLabel *lblCut = new DLabel ();
     lblCut->setText(tr("Crop"));//裁剪
-    lblCut->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+    if(isDarkType() == true)
+    {
+        lblCut->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;font-size:17px;color:rgb(192,198,212);");
+    }
+    else
+    {
+        lblCut->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;font-size:17px;color:rgba(0,26,46,1);");
+    }
 
-    QWidget *parWidgetNoCut = new QWidget ();//每一个参数行的容器
+    DWidget *parWidgetNoCut = new DWidget ();//每一个参数行的容器
     parWidgetNoCut->setFixedHeight(48);
-    GlobalHelper::setWidgetBackgroundColor(parWidgetNoCut,QColor(249,249,249,255));//容器设置背景
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetNoCut,QColor(255,255,255,12),false);//容器设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetNoCut,QColor(249,249,249,255),false);//容器设置背景色
+    }
     QHBoxLayout *parHLayoutNoCut = new QHBoxLayout ();
     noCutrbBtn=new DRadioButton (nullptr);
     noCutrbBtn->setText(tr("No crop"));//不裁剪
@@ -849,18 +1068,32 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     parHLayoutNoCut->addWidget(noCutrbBtn);
     parWidgetNoCut->setLayout(parHLayoutNoCut);//不裁切参数行的容器加入布局
 
-    QWidget *parWidgetSingleCut = new QWidget ();
+    DWidget *parWidgetSingleCut = new DWidget ();
     parWidgetSingleCut->setFixedHeight(48);
-    GlobalHelper::setWidgetBackgroundColor(parWidgetSingleCut,QColor(249,249,249,255));//容器设置背景
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetSingleCut,QColor(255,255,255,12),false);//容器设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetSingleCut,QColor(249,249,249,255),false);//容器设置背景色
+    }
     QHBoxLayout *parHLayoutSingleCut = new QHBoxLayout ();
     singleCutrbBtn=new DRadioButton (nullptr);
     singleCutrbBtn->setText(tr("Single area"));//单图裁剪
     parHLayoutSingleCut->addWidget(singleCutrbBtn);
     parWidgetSingleCut->setLayout(parHLayoutSingleCut);
 
-    QWidget *parWidgetMulCut = new QWidget ();
+    DWidget *parWidgetMulCut = new DWidget ();
     parWidgetMulCut->setFixedHeight(48);
-    GlobalHelper::setWidgetBackgroundColor(parWidgetMulCut,QColor(249,249,249,255));//容器设置背景
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetMulCut,QColor(255,255,255,12),false);//容器设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetMulCut,QColor(249,249,249,255),false);//容器设置背景色
+    }
     QHBoxLayout *parHLayoutMulCut = new QHBoxLayout ();
     mulCutrbBtn=new DRadioButton (nullptr);
     mulCutrbBtn->setText(tr("Multiple areas"));//多图裁剪
@@ -874,13 +1107,27 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     btnGroup->addButton(mulCutrbBtn);
     btnGroup->setExclusive(true);
 
-    QLabel *lblNULLWM=new QLabel(); //用一个空白的label，达到上边距距离
-    QLabel *lblWM = new QLabel ();
+    DLabel *lblNULLWM=new DLabel(); //用一个空白的label，达到上边距距离
+    DLabel *lblWM = new DLabel ();
     lblWM->setText(tr("Watermark"));//水印设置
-    lblWM->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
-    QWidget *parWidgetNoWM = new QWidget ();
+    if(isDarkType() == true)
+    {
+        lblWM->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;font-size:17px;color:rgb(192,198,212);");
+    }
+    else
+    {
+        lblWM->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;font-size:17px;color:rgba(0,26,46,1);");
+    }
+    DWidget *parWidgetNoWM = new DWidget ();
     parWidgetNoWM->setFixedHeight(48);
-    GlobalHelper::setWidgetBackgroundColor(parWidgetNoWM,QColor(249,249,249,255));//容器设置背景
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetNoWM,QColor(255,255,255,12),false);//容器设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetNoWM,QColor(249,249,249,255),false);//容器设置背景色
+    }
     QHBoxLayout *parHLayoutNoWM = new QHBoxLayout ();
     noWaterrbBtn=new DRadioButton (nullptr);
     noWaterrbBtn->setText(tr("No watermark"));//无水印
@@ -888,9 +1135,16 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     parHLayoutNoWM->addWidget(noWaterrbBtn);
     parWidgetNoWM->setLayout(parHLayoutNoWM);
 
-    QWidget *parWidgetFontWM = new QWidget ();
+    DWidget *parWidgetFontWM = new DWidget ();
     parWidgetFontWM->setFixedHeight(48);
-    GlobalHelper::setWidgetBackgroundColor(parWidgetFontWM,QColor(249,249,249,255));//容器设置背景
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetFontWM,QColor(255,255,255,12),false);//容器设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetFontWM,QColor(249,249,249,255),false);//容器设置背景色
+    }
     QHBoxLayout *parHLayoutFontWM = new QHBoxLayout ();
     fontWaterrbBtn=new DRadioButton (nullptr);
     fontWaterrbBtn->setText(tr("Text"));//文字水印
@@ -921,20 +1175,40 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
    // btnGroup2->addButton(imageWaterBtn);
     btnGroup2->setExclusive(true);
 
-    QLabel *lblNULLIE=new QLabel();//用一个空白的label，达到上边距距离
-    QLabel *lblIE = new QLabel ();
+    DLabel *lblNULLIE=new DLabel();//用一个空白的label，达到上边距距离
+    DLabel *lblIE = new DLabel ();
     lblIE->setText(tr("Images"));//图像处理
-    lblIE->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
-    QWidget *parWidgetBB = new QWidget ();
+    if(isDarkType() == true)
+    {
+        lblIE->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;font-size:17px;color:rgb(192,198,212);");
+    }
+    else
+    {
+        lblIE->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;font-size:17px;color:rgba(0,26,46,1);");
+    }
+    DWidget *parWidgetBB = new DWidget ();
     parWidgetBB->setFixedHeight(48);
-    GlobalHelper::setWidgetBackgroundColor(parWidgetBB,QColor(249,249,249,255));//容器设置背景
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetBB,QColor(255,255,255,12),false);//容器设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetBB,QColor(249,249,249,255),false);//容器设置背景色
+    }
 
     QHBoxLayout *parHLayoutBB = new QHBoxLayout ();
-    QLabel  *pnameLbl= new QLabel ();
+    DLabel  *pnameLbl= new DLabel ();
     pnameLbl->setFixedWidth(100);
     pnameLbl->setText(tr("Optimization"));//图像类型
-    pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
-
+    if(isDarkType() == true)
+    {
+        pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;font-size:14px;color:rgb(192,198,212);");
+    }
+    else
+    {
+        pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;font-size:14px;color:rgba(0,26,46,1);");
+    }
     //文档类型下拉框
     docTypeCBB = new DComboBox ();
     docTypeCBB->addItem(tr("Original"));//原始文档
@@ -958,9 +1232,16 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     parWidgetFD->setLayout(parHLayoutFD);
     */
 
-    QWidget *parWidgetRepair = new QWidget ();
+    DWidget *parWidgetRepair = new DWidget ();
     parWidgetRepair->setFixedHeight(48);
-    GlobalHelper::setWidgetBackgroundColor(parWidgetRepair,QColor(249,249,249,255));//容器设置背景
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetRepair,QColor(255,255,255,12),false);//容器设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetRepair,QColor(249,249,249,255),false);//容器设置背景色
+    }
     QHBoxLayout *parHLayoutRepair = new QHBoxLayout ();
     repairCKB=new DCheckBox (nullptr);
     repairCKB->setText(tr("Fill missing corners"));//缺角修复
@@ -1041,15 +1322,28 @@ void ScanManagerWindow::slotFontWaterrbBtnChecked()
 //图像格式和颜色模式UI
 void ScanManagerWindow::showImgFormatAndTypeUI(bool isCamera,bool isLicense)
 {
-    QWidget *parWidgetBB = new QWidget ();
+    DWidget *parWidgetBB = new DWidget ();
     parWidgetBB->setFixedHeight(48);
-    GlobalHelper::setWidgetBackgroundColor(parWidgetBB,QColor(249,249,249,255));//容器设置背景
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetBB,QColor(255,255,255,12),false);//容器设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetBB,QColor(249,249,249,255),false);//容器设置背景色
+    }
     QHBoxLayout *parHLayoutBB = new QHBoxLayout ();
-    QLabel  *pnameLbl= new QLabel ();
+    DLabel  *pnameLbl= new DLabel ();
     pnameLbl->setFixedWidth(80);
     pnameLbl->setText(tr("Image"));//图片格式
-    pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
-
+    if(isDarkType() == true)
+    {
+        pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;font-size:14px;color:rgb(192,198,212);");
+    }
+    else
+    {
+        pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;font-size:14px;color:rgba(0,26,46,1);");
+    }
     imgFormatCBB = new DComboBox ();
     imgFormatCBB->addItem("jpg");
     imgFormatCBB->addItem("bmp");
@@ -1063,14 +1357,28 @@ void ScanManagerWindow::showImgFormatAndTypeUI(bool isCamera,bool isLicense)
 
     if(isCamera)
     {
-        QWidget *parWidgetBB2 = new QWidget ();
+        DWidget *parWidgetBB2 = new DWidget ();
         parWidgetBB2->setFixedHeight(48);
-        GlobalHelper::setWidgetBackgroundColor(parWidgetBB2,QColor(249,249,249,255));//容器设置背景
+        if(isDarkType()==true)
+        {
+            GlobalHelper::setWidgetBackgroundColor(parWidgetBB2,QColor(255,255,255,12),false);//容器设置背景色
+        }
+        else
+        {
+            GlobalHelper::setWidgetBackgroundColor(parWidgetBB2,QColor(249,249,249,255),false);//容器设置背景色
+        }
         QHBoxLayout *parHLayoutBB2 = new QHBoxLayout ();
-        QLabel  *pnameLbl2= new QLabel ();
+        DLabel  *pnameLbl2= new DLabel ();
         pnameLbl2->setFixedWidth(80);
         pnameLbl2->setText(tr("Color mode"));//色彩模式
-        pnameLbl2->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+        if(isDarkType() == true)
+        {
+            pnameLbl2->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;font-size:14px;color:rgb(192,198,212);");
+        }
+        else
+        {
+            pnameLbl2->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;font-size:14px;color:rgba(0,26,46,1);");
+        }
 
         imgTypeCBB = new DComboBox ();
         imgTypeCBB->addItem(tr("Colorful"));//彩色图
@@ -1095,16 +1403,30 @@ void ScanManagerWindow::showImgFormatAndTypeUI(bool isCamera,bool isLicense)
 //拍摄方式UI
 void ScanManagerWindow::showShotTypeUI(bool isLicense)
 {
-    QLabel *lblNULLIE=new QLabel();//用一个空白的label，达到上边距距离
+    DLabel *lblNULLIE=new DLabel();//用一个空白的label，达到上边距距离
     rtVLayout->addWidget(lblNULLIE,0,Qt::AlignTop);
-    QLabel *lblIE = new QLabel ();
+    DLabel *lblIE = new DLabel ();
     lblIE->setText(tr("Method"));//拍摄方式
-    lblIE->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+    if(isDarkType() == true)
+    {
+        lblIE->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgb(192,198,212);font-size:17px");
+    }
+    else
+    {
+        lblIE->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+    }
     rtVLayout->addWidget(lblIE,0,Qt::AlignTop);
 
-    QWidget *parWidgetBB = new QWidget ();
+    DWidget *parWidgetBB = new DWidget ();
     parWidgetBB->setFixedHeight(48);
-    GlobalHelper::setWidgetBackgroundColor(parWidgetBB,QColor(249,249,249,255));//容器设置背景
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetBB,QColor(255,255,255,12),false);//容器设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetBB,QColor(249,249,249,255),false);//容器设置背景色
+    }
     QHBoxLayout *parHLayoutBB = new QHBoxLayout ();
     shotTypeManualrbBtn = new DRadioButton (nullptr);
     shotTypeManualrbBtn->setText(tr("Manual scan"));//手动拍摄
@@ -1113,9 +1435,16 @@ void ScanManagerWindow::showShotTypeUI(bool isLicense)
     parWidgetBB->setLayout(parHLayoutBB);
     rtVLayout->addWidget(parWidgetBB,0,Qt::AlignTop);
 
-    QWidget *parWidgetBB2 = new QWidget ();
+    DWidget *parWidgetBB2 = new DWidget ();
     parWidgetBB2->setFixedHeight(48);
-    GlobalHelper::setWidgetBackgroundColor(parWidgetBB2,QColor(249,249,249,255));//容器设置背景
+    if(isDarkType()==true)
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetBB2,QColor(255,255,255,12),false);//容器设置背景色
+    }
+    else
+    {
+        GlobalHelper::setWidgetBackgroundColor(parWidgetBB2,QColor(249,249,249,255),false);//容器设置背景色
+    }
     QHBoxLayout *parHLayoutBB2 = new QHBoxLayout ();
     shotTypeTimerrbBtn = new DRadioButton (nullptr);
     shotTypeTimerrbBtn->setText(tr("Set timer"));//定时
@@ -1126,10 +1455,17 @@ void ScanManagerWindow::showShotTypeUI(bool isLicense)
     shotTypeTimerCBB->addItem("10");
     shotTypeTimerCBB->setFixedWidth(80);
     parHLayoutBB2->addWidget(shotTypeTimerCBB);
-    QLabel  *pnameLbl= new QLabel ();
+    DLabel  *pnameLbl= new DLabel ();
     pnameLbl->setFixedWidth(80);
     pnameLbl->setText(tr("s"));//秒拍摄
-    pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
+    if(isDarkType() == true)
+    {
+        pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgb(192,198,212);font-size:17px");
+    }
+    else
+    {
+        pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
+    }
     parHLayoutBB2->addWidget(pnameLbl);
     parHLayoutBB2->addStretch();
 

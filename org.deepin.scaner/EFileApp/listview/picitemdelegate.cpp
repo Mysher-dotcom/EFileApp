@@ -12,11 +12,29 @@
 #include <DListView>
 #include <QLineEdit>
 #include "cpng.h"
+#include <DGuiApplicationHelper>
+
 CPNG m_picpng;
 //图像列表item样式重构
 PicItemDelegate::PicItemDelegate(QObject *parent) : QStyledItemDelegate (parent)
 {
     parentCtrl = parent;
+}
+
+//当前系统是否为深色主题
+bool PicItemDelegate::isDarkType() const
+{
+    DGuiApplicationHelper *guiAppHelp = DGuiApplicationHelper::instance();
+    if(guiAppHelp->themeType() == DGuiApplicationHelper::ColorType::DarkType)
+    {
+        //深色主题
+        return true;
+    }
+    else
+    {
+        //浅色主题
+        return false;
+    }
 }
 
 void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -62,7 +80,14 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
         rectContent.setHeight(rect.height()-20);
         QPainterPath pathMain;
         pathMain.addRoundedRect(rectContent,18,18);//18px圆角
-        painter->fillPath(pathMain,QBrush(Qt::white));//白色背景
+        if(isDarkType()==true)
+        {
+            painter->fillPath(pathMain,QBrush(QColor(255,255,255,12)));
+        }
+        else
+        {
+            painter->fillPath(pathMain,QBrush(Qt::white));//白色背景
+        }
 
         //计算图像显示的宽高，最宽/最高 = 85px
         bool isJPG = false;
@@ -128,24 +153,26 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
             picIconImage = pngIcon.toImage();
             //picIconImage.load(picItemData.picPath);
         }
-        else if (isPic == true &&fileSuffix.contains("png")) {
+        else if (isPic == true &&fileSuffix.contains("png"))
+        {
             isJPG = true;
-                      m_picpng.decode_png(picItemData.picPath.toUtf8().data(),&out);
-                     // m_picpng.read_png(picItemData.picPath.toUtf8().data());
-                      qDebug("png width is %d,height is %d,bit_depth is %d,alpha_flag is %d,color type is %d\n",out.width,out.height,out.bit_depth,out.alpha_flag,out.color_type);
-                      if(out.color_type==2)
-                      {
-                          imgPreview = new QImage(out.rgba,out.width,out.height,QImage::Format_RGB888);
-                      }
-                      else {
-                          imgPreview = new QImage(out.rgba,out.width,out.height,QImage::Format_Grayscale8);
-                      }
-                      if(imgPreview==NULL)
-                      {
-                          qDebug("png qimage failed\n");
-                      }
-                      w=out.width;
-                      h=out.height;
+            m_picpng.decode_png(picItemData.picPath.toUtf8().data(),&out);
+           // m_picpng.read_png(picItemData.picPath.toUtf8().data());
+            qDebug("png width is %d,height is %d,bit_depth is %d,alpha_flag is %d,color type is %d\n",out.width,out.height,out.bit_depth,out.alpha_flag,out.color_type);
+            if(out.color_type==2)
+            {
+                imgPreview = new QImage(out.rgba,out.width,out.height,QImage::Format_RGB888);
+            }
+            else
+            {
+                imgPreview = new QImage(out.rgba,out.width,out.height,QImage::Format_Grayscale8);
+            }
+            if(imgPreview==NULL)
+            {
+                qDebug("png qimage failed\n");
+            }
+            w=out.width;
+            h=out.height;
         }
 
         /*
@@ -210,7 +237,14 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
         {
             painter->drawImage(picRect,picIconImage);
         }
-        painter->setPen(QPen(QColor("#526A7F")));//字体颜色
+        if(isDarkType()==true)
+        {
+            painter->setPen(QPen(QColor(255,255,255,255)));//字体颜色
+        }
+        else
+        {
+            painter->setPen(QPen(QColor("#526A7F")));//字体颜色
+        }
         painter->drawText(nameRect,fileName);//图片名
 
         //鼠标悬浮、选中样式
@@ -218,13 +252,28 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
         if(option.state.testFlag(QStyle::State_Selected))
         {
             painter->setRenderHint(QPainter::Antialiasing);
-            painter->fillPath(pathMain,QBrush(QColor(0,0,0,51)));//内容区域背景色
+
+            if(isDarkType()==true)
+            {
+                painter->fillPath(pathMain,QBrush(QColor(255,255,255,20)));//内容区域背景色
+            }
+            else
+            {
+                painter->fillPath(pathMain,QBrush(QColor(0,0,0,51)));//内容区域背景色
+            }
             painter->setRenderHint(QPainter::Antialiasing);
             painter->drawImage(iconRect,QImage(":/img/itemSelected.svg"));//右上角勾图标
         }
         else if(option.state.testFlag(QStyle::State_MouseOver))
         {
-            painter->fillPath(pathMain,QBrush(QColor(0,0,0,5)));
+            if(isDarkType()==true)
+            {
+                painter->fillPath(pathMain,QBrush(QColor(255,255,255,12)));
+            }
+            else
+            {
+                painter->fillPath(pathMain,QBrush(QColor(0,0,0,5)));
+            }
         }
 
         if(picItemData.isRename == true)

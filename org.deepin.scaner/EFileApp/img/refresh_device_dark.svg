@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="20px" height="16px" viewBox="0 0 20 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 58 (84663) - https://sketch.com -->
-    <title>button/refresh</title>
+    <title>button/refresh_dark</title>
     <desc>Created with Sketch.</desc>
     <g id="控件" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="button/refresh" transform="translate(-8.000000, -10.000000)" fill="#536076">
+        <g id="button/refresh_dark" transform="translate(-8.000000, -10.000000)" fill="#C5CFE0">
             <g transform="translate(8.000000, 10.000000)" id="dcc_refresh_icon">
                 <path d="M2.5,3 L5,7 L3.07089222,6.9999765 C3.02417312,7.32658697 3,7.66047052 3,8 C3,11.8659932 6.13400675,15 10,15 C11.9610111,15 13.7336828,14.1936236 15.0045182,12.8943678 L15.7234152,13.5895057 C14.2707552,15.0767479 12.2431961,16 10,16 C5.581722,16 2,12.418278 2,8 C2,7.66147003 2.02102713,7.32785122 2.06184658,7.00037836 L0,7 L2.5,3 Z M10,0 C14.0796344,0 17.4460359,3.05371356 17.9381123,7.00004872 L20,7 L17.5,11 L15,7 L16.92911,6.99999177 C16.4438768,3.60770164 13.5264691,1 10,1 C8.47146191,1 7.05735211,1.48992576 5.90613496,2.32131293 L5.21728523,1.58646698 C6.55136826,0.589999101 8.2067833,0 10,0 Z"></path>
             </g>

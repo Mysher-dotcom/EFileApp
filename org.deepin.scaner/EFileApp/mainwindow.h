@@ -46,6 +46,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    bool isDarkType();//当前系统是否为深色主题
     void refreshData(bool isTreeClick = false, QString folderPath = nullptr);//更新文件列表
     void resizeEvent(QResizeEvent *event);//窗口尺寸改变
     void closeEvent(QCloseEvent *event);
@@ -113,8 +114,8 @@ private:
     DTreeView *treeView;//左侧tree
     QStandardItemModel *treeViewModel;//左侧tree Item数据
     QStackedLayout *winStackedLayout;//右侧容器布局
-    QWidget *rightListBtnWidget;//右侧图像列表+扫描按钮容器
-    QWidget *tipWidget;//提示容器
+    DWidget *rightListBtnWidget;//右侧图像列表+扫描按钮容器
+    DWidget *tipWidget;//提示容器
     QVBoxLayout *pVLayout;//提示布局
     DLabel *pNoPicTip1;//无图提示1
     DLabel *pNoPicTip2;//无图提示2
@@ -131,9 +132,9 @@ private:
     DSpinner *maskSpinner;//遮罩窗口进度动画
     QLabel *maskLabel;//遮罩窗口显示文本
     QPushButton *uploadBtn;//上传文件按钮
-    QWidget *renameWidget;//重命名控件
-    QLineEdit *fileNameText;//文件名文本框
-    QLineEdit *fileNameNoText;//文件名编号文本框
+    DWidget *renameWidget;//重命名控件
+    DLineEdit *fileNameText;//文件名文本框
+    DLineEdit *fileNameNoText;//文件名编号文本框
     QPushButton *cancelRenameBtn;//取消重命名按钮
     QPushButton *renameBtn;//重命名按钮
 

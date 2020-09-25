@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //匹配版本号，用于是否删除配置文件
-    GlobalHelper::softVersion = "5.1.0.4-7";
+    GlobalHelper::softVersion = "5.1.0.4-9";
     GlobalHelper::checkVersion();
     //检查配置文件是否存在，不存在就创建，并写入初始值
     QFileInfo settingFile(GlobalHelper::getSettingFilePath());
@@ -86,6 +86,23 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+//当前系统是否为深色主题
+bool MainWindow::isDarkType()
+{
+    DGuiApplicationHelper *guiAppHelp = DGuiApplicationHelper::instance();
+    if(guiAppHelp->themeType() == DGuiApplicationHelper::ColorType::DarkType)
+    {
+        //深色主题
+        return true;
+    }
+    else
+    {
+        //浅色主题
+        return false;
+    }
+}
+
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     //DeviceInfoHelper::setAllDeviceIsNoCollec();//设置所有设备为未连接状态
@@ -94,8 +111,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 //初始化界面
 void MainWindow::initUI()
 {
-    this->resize(830,520);//窗口初始尺寸
-    this->setMinimumSize(QSize(640,320));//窗口最小尺寸
+    this->resize(960,750);//窗口初始尺寸
+    this->setMinimumSize(QSize(960,750));//窗口最小尺寸
     this->titlebar()->setTitle("");//标题栏文字设为空
     setWindowIcon(QIcon(":/img/logo/logo-16.svg"));// 状态栏图标
     this->titlebar()->setIcon(QIcon(":/img/logo/logo-16.svg"));//标题栏图标
@@ -145,6 +162,7 @@ void MainWindow::initUI()
 
     //搜索框
     pSearchEdit = new DSearchEdit (this->titlebar()) ;
+    pSearchEdit->setMinimumSize(350,35);
 
     //缩略图模式按钮
     pbtnIconLayout = new DIconButton (nullptr);
@@ -199,33 +217,33 @@ void MainWindow::initUI()
     treeView->setEditTriggers(QAbstractItemView::NoEditTriggers);//双击Item屏蔽可编辑
 
     //右侧
-    QWidget *rightAllWidget = new QWidget () ;//右侧容器
+    DWidget *rightAllWidget = new DWidget () ;//右侧容器
     QVBoxLayout *rightAllLayout = new QVBoxLayout();//右侧布局
     rightAllWidget->setLayout(rightAllLayout);
 
-    renameWidget = new  QWidget();//重命名控件
+    renameWidget = new  DWidget();//重命名控件
     renameWidget->setFixedHeight(0);
-    GlobalHelper::setWidgetBackgroundColor(renameWidget,QColor(255,255,255,178),false);
+    //GlobalHelper::setWidgetBackgroundColor(renameWidget,QColor(255,255,255,178),false);
     QHBoxLayout *renameHLayout = new QHBoxLayout();
     renameWidget->setLayout(renameHLayout);
-    QLabel *fileNameTipLabel = new QLabel ();
+    DLabel *fileNameTipLabel = new DLabel ();
     fileNameTipLabel->setText(tr("File name"));
-    fileNameTipLabel->setStyleSheet("font-size: 14px;font-family: SourceHanSansSC, SourceHanSansSC-Normal;font-weight: Normal;text-align: left;color: #414D68;");
+    fileNameTipLabel->setStyleSheet("font-size: 14px;font-family: SourceHanSansSC, SourceHanSansSC-Normal;font-weight: Normal;text-align: left;");//color: #414D68;
     fileNameTipLabel->setFixedWidth(66);
-    fileNameText = new QLineEdit();//文件名文本框
-    fileNameText->setPlaceholderText(tr("Required"));
+    fileNameText = new DLineEdit();//文件名文本框
+    //fileNameText->setPlaceholderText(tr("Required"));
     fileNameText->setFixedSize(QSize(140,36));
-    fileNameText->setMaxLength(255);//设置最大长度
-    QLabel *fileNameNoTipLabel = new QLabel ();
+    //fileNameText->setMaxLength(255);//设置最大长度
+    DLabel *fileNameNoTipLabel = new DLabel ();
     fileNameNoTipLabel->setText(tr("Start at"));
-    fileNameNoTipLabel->setStyleSheet("font-size: 14px;font-family: SourceHanSansSC, SourceHanSansSC-Normal;font-weight: Normal;text-align: left;color: #414D68;");
+    fileNameNoTipLabel->setStyleSheet("font-size: 14px;font-family: SourceHanSansSC, SourceHanSansSC-Normal;font-weight: Normal;text-align: left;");//color: #414D68;
     fileNameNoTipLabel->setFixedWidth(42);
-    fileNameNoText = new QLineEdit();//文件名编号文本框,
+    fileNameNoText = new DLineEdit();//文件名编号文本框,
     fileNameNoText->setText("1");
     fileNameNoText->setFixedSize(QSize(120,36));
-    fileNameNoText->setValidator(new QIntValidator(1,1000,this));//只能输入数字1-1000
+    //fileNameNoText->setValidator(new QIntValidator(1,1000,this));//只能输入数字1-1000
 
-    QLabel *renameTipLabel = new QLabel ();
+    DLabel *renameTipLabel = new DLabel ();
     renameTipLabel->setText(tr("Tips: Sort by selected file order"));
     renameTipLabel->setStyleSheet("font-size: 12px;font-family: SourceHanSansSC, SourceHanSansSC-Normal;font-weight: Normal;text-align: left;color: #526a7f;");
     cancelRenameBtn = new QPushButton();//取消重命名按钮
@@ -244,11 +262,11 @@ void MainWindow::initUI()
     renameHLayout->addWidget(cancelRenameBtn);
     renameHLayout->addWidget(renameBtn);
 
-    QWidget *rightListWidget = new QWidget () ;//右侧图像列表容器
+    DWidget *rightListWidget = new DWidget () ;//右侧图像列表容器
     winStackedLayout = new QStackedLayout();//右侧图像列表布局
     rightListWidget->setLayout(winStackedLayout);
 
-    rightListBtnWidget = new QWidget();//右侧图像列表+扫描按钮容器
+    rightListBtnWidget = new DWidget();//右侧图像列表+扫描按钮容器
     QGridLayout *gridLayout = new QGridLayout();//右侧图像列表+扫描按钮布局
     gridLayout->addWidget(rightListWidget, 0, 0, 1, 1);
     gridLayout->addWidget(pbtnScan, 0, 0, 1, 1,Qt::AlignBottom | Qt::AlignCenter);
@@ -952,14 +970,16 @@ void MainWindow::slotDeviceParOver()
 //无文件UI
 void MainWindow::showNoFileUI()
 {
-    tipWidget = new QWidget ();//提示容器
+    tipWidget = new DWidget ();//提示容器
     pVLayout = new QVBoxLayout () ;//提示布局
     pNoPicTip1 = new DLabel () ;//无图提示1
     pNoPicTip2 = new DLabel () ;//无图提示2
     pNoPicTip1->setText(tr("No scanned images"));//暂无扫描的文件
-    pNoPicTip1->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
+    //pNoPicTip1->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:17px");
+    pNoPicTip1->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;font-size:17px");
     pNoPicTip2->setText(tr("Click Scan button to start"));//可点击扫描按钮添加扫描文件
-    pNoPicTip2->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:14px");
+    //pNoPicTip2->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(85,85,85,0.4);font-size:14px");
+    pNoPicTip2->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;font-size:14px");
     pNoPicTip1->setAlignment(Qt::AlignCenter);
     pNoPicTip2->setAlignment(Qt::AlignCenter);
     pVLayout->addStretch();
