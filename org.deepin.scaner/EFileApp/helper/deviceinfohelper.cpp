@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QTextCodec>
+#include <QDebug>
 
 DeviceInfoHelper::DeviceInfoHelper()
 {
@@ -154,7 +155,7 @@ QString DeviceInfoHelper::getGroupNameByDeviceName(QString filePath,QString devi
     return groupName;
 }
 
-//设置所有设备为未连接状态
+//设置所有设备为未连接状态,设备下标置成999
 void DeviceInfoHelper::setAllDeviceIsNoCollec()
 {
     QString filePath = getDeviceListInfoFilePath();
@@ -164,6 +165,7 @@ void DeviceInfoHelper::setAllDeviceIsNoCollec()
     for(int i=0;i<allGroup.length();i++)
     {
          DeviceInfoHelper::writeValue(filePath,allGroup[i],"status","2");
+         DeviceInfoHelper::writeValue(filePath,allGroup[i],"index","999");//设备下标置成999
     }
 }
 

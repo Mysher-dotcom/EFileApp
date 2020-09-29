@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //匹配版本号，用于是否删除配置文件
-    GlobalHelper::softVersion = "5.1.0.4-9";
+    GlobalHelper::softVersion = "5.1.0.4-10";
     GlobalHelper::checkVersion();
     //检查配置文件是否存在，不存在就创建，并写入初始值
     QFileInfo settingFile(GlobalHelper::getSettingFilePath());
@@ -609,7 +609,7 @@ void MainWindow::slotUploadOver()
 //开启拍摄仪线程
 void MainWindow::openCameraThread()
 {
-    DeviceInfoHelper::setAllDeviceIsNoCollec();//设置所有设备为未连接状态
+    DeviceInfoHelper::setAllDeviceIsNoCollec();//设置所有设备为未连接状态,设备下标置成999
 
     QStringList list;
     //参数可以是任何值，线程对象的参数用于获取指定设备的参数，在获取设备信息中用不到
@@ -619,9 +619,17 @@ void MainWindow::openCameraThread()
 
     connect(_getCameraInfoThread,SIGNAL(started()),getCameraInfoThread,SLOT(slotStartCameraThread()));//开启线程槽函数
     connect(_getCameraInfoThread,SIGNAL(finished()),getCameraInfoThread,SLOT(deleteLater()));//终止线程时要调用deleteLater槽函数
-    connect(getCameraInfoThread,SIGNAL(signalNoCamera()),this,SLOT(slotCloseCameraThread()));//无设备信号槽
+    connect(getCameraInfoThread,SIGNAL(signalNoCamera()),this,SLOT(slotNoCamera()));//无设备信号槽
     connect(getCameraInfoThread,SIGNAL(signalCameraInfo(QVariant, const QString &)),this,SLOT(slotCameraInfo(QVariant,const QString &)),Qt::QueuedConnection);//设备信息信号槽
     _getCameraInfoThread->start();//开启线程
+}
+
+//无拍摄仪设备
+void MainWindow::slotNoCamera()
+{
+    qDebug()<<"无拍摄仪设备,关闭拍摄仪线程";
+    deviceCount = 0;
+    slotCloseCameraThread();
 }
 
 //记录拍摄仪设备信息
@@ -631,6 +639,7 @@ void MainWindow::slotCameraInfo(QVariant qv, const QString &str)
     if(cameraInfoMap.size() <= 0)
     {
         //无设备
+        deviceCount = 0;
         slotCloseCameraThread();
         return;
     }
@@ -644,13 +653,12 @@ void MainWindow::slotCameraInfo(QVariant qv, const QString &str)
         qDebug()<<"Camera线程回传的设备信息数据,key:"<<itCameraInfo.key()<<",value:"<<itCameraInfo.value();
         if(tmpQSList.size() >= 5)
         {
-            QString devGroupName = DeviceInfoHelper::getGroupNameByDeviceName(devListFilePath,tmpQSList.at(1));
+            QString devGroupName = DeviceInfoHelper::getGroupNameByDeviceName(devListFilePath,tmpQSList.at(1));//获取连接电脑的设备名称(设备类型:Document Scanner)在配置文件中的组名
             qDebug()<<tmpQSList.at(1)<<" 设备组名："<<devGroupName;
             if(devGroupName.isEmpty() == true)
             {
                 devGroupName = "device"+tmpQSList.at(3);
             }
-
             DeviceInfoHelper::writeValue(devListFilePath,devGroupName,"type","1");//类型，0=扫描仪，1=拍摄仪
             DeviceInfoHelper::writeValue(devListFilePath,devGroupName,"index",tmpQSList.at(3));//设备下标
             DeviceInfoHelper::writeValue(devListFilePath,devGroupName,"name",tmpQSList.at(0));//设备名称
@@ -707,24 +715,25 @@ void MainWindow::slotNoScanner()
 //记录扫描仪设备信息
 void MainWindow::slotScannerInfo(QVariant qv, const QString &str)
 {
-    QMap<int ,QStringList> cameraInfoMap = qv.value<QMap<int ,QStringList>>();//还原为原来的数据结构类型
-    if(cameraInfoMap.size() <= 0)
+    QMap<int ,QStringList> scannerInfoMap = qv.value<QMap<int ,QStringList>>();//还原为原来的数据结构类型
+    if(scannerInfoMap.size() <= 0)
     {
         //无设备
+        scannerDeviceCount = 0;
         slotCloseScannerThread();
         return;
     }
     //循环记录设备信息
     QString devListFilePath = DeviceInfoHelper::getDeviceListInfoFilePath();
     QMap<int,QStringList>::iterator itInfo;
-    for(itInfo = cameraInfoMap.begin();itInfo!=cameraInfoMap.end();itInfo++)
+    for(itInfo = scannerInfoMap.begin();itInfo!=scannerInfoMap.end();itInfo++)
     {
         //记录设备信息,key: 0 ,value: ("拍摄仪 1", "Document Scanner", "空闲", "0")
         QStringList tmpQSList = itInfo.value();//参数值
         qDebug()<<"sane线程回传的设备信息数据,key:"<<itInfo.key()<<",value:"<<itInfo.value();
         if(tmpQSList.size()>=4)
         {
-            QString groupName = DeviceInfoHelper::getGroupNameByDeviceName(devListFilePath,tmpQSList.at(1));
+            QString groupName = DeviceInfoHelper::getGroupNameByDeviceName(devListFilePath,tmpQSList.at(1));//获取连接电脑的设备名称(设备类型:Document Scanner)在配置文件中的组名
             qDebug()<<tmpQSList.at(1)<<" 设备组名："<<groupName;
             if(groupName.isEmpty() == true)
             {
@@ -738,17 +747,12 @@ void MainWindow::slotScannerInfo(QVariant qv, const QString &str)
                     groupName = "device" + QString::number(groupNameIndex);
                 }
             }
-
-            //int groupNameIndex = tmpQSList.at(3).toInt() ;
-            //groupNameIndex = groupNameIndex + deviceCount;
-            //QString groupName = QString("device%1").arg(QString::number(groupNameIndex));
             DeviceInfoHelper::writeValue(devListFilePath,groupName,"type","0");//类型，0=扫描仪，1=拍摄仪
             DeviceInfoHelper::writeValue(devListFilePath,groupName,"index",tmpQSList.at(3));//设备下标
             DeviceInfoHelper::writeValue(devListFilePath,groupName,"name",tmpQSList.at(0));//设备名称
             DeviceInfoHelper::writeValue(devListFilePath,groupName,"model",tmpQSList.at(1));//设备类型
             DeviceInfoHelper::writeValue(devListFilePath,groupName,"status",tmpQSList.at(2));//设备状态，0=空闲
             DeviceInfoHelper::writeValue(devListFilePath,groupName,"config", DeviceInfoHelper::getDeviceInfoFilePath(tmpQSList.at(1)));//设备具体配置文件路径
-            deviceCount++;
             scannerDeviceCount++;
         }
     }
@@ -776,17 +780,27 @@ void MainWindow::getDevicePar()
     //无拍摄仪，不获取参数
     if(deviceCount <= 0 && scannerDeviceCount <= 0)
     {
-        emit signalThreadOver();
+        slotDeviceParOver();
+        return;
+    }
+    QList<DeviceInfoData> devList = DeviceInfoHelper::getDeviceListInfo();//从配置文件中获取所有记录的设备
+    if(devList.length()<=0)
+    {
+        slotDeviceParOver();
         return;
     }
     QStringList cameraDevIndexList,scannerDevIndexList;
-    QList<DeviceInfoData> devList = DeviceInfoHelper::getDeviceListInfo();
     for(int i=0;i<devList.length();i++)
     {
         int devType = devList.at(i).type;
         int devIndex = devList.at(i).index;
-        qDebug()<<"dev type:"<<devType<<",dev index:"<<devIndex;
-        if(devType == 0)
+        int devStatus = devList.at(i).status;//设备状态，0=空闲，1=占用，2=未连接
+        qDebug()<<"dev type:"<<devType<<",dev index:"<<devIndex<<",dev status:"<<devStatus;
+        if(devStatus != 0)//未连接的设备不取参数
+        {
+            continue;
+        }
+        if(devType == 0)//扫描仪
         {
             scannerDevIndexList<<QString::number(devIndex);
         }
@@ -796,34 +810,40 @@ void MainWindow::getDevicePar()
         }
     }
 
-    //拍摄仪参数
-    getCameraInfoThread = new GetCameraInfoThread (cameraDevIndexList);
-    _getCameraInfoThread = new QThread();
-    getCameraInfoThread->moveToThread(_getCameraInfoThread);
-    connect(_getCameraInfoThread,SIGNAL(started()),getCameraInfoThread,SLOT(slotGetCameraPar()));//开启线程槽函数
-    connect(_getCameraInfoThread,SIGNAL(finished()),getCameraInfoThread,SLOT(deleteLater()));//终止线程时要调用deleteLater槽函数
-    connect(getCameraInfoThread,SIGNAL(signalCameraParInfo(QVariant, const QString &)),this,SLOT(slotCameraParInfo(QVariant,const QString &)),Qt::QueuedConnection);//设备参数信号槽
-    if(scannerDeviceCount <= 0)
+    //获取拍摄仪参数
+    if(cameraDevIndexList.length() > 0 )
     {
-        connect(getCameraInfoThread,SIGNAL(signalParOver()), this,SLOT(slotDeviceParOver()));//设备参数停止线程
+        getCameraInfoThread = new GetCameraInfoThread (cameraDevIndexList);
+        _getCameraInfoThread = new QThread();
+        getCameraInfoThread->moveToThread(_getCameraInfoThread);
+        connect(_getCameraInfoThread,SIGNAL(started()),getCameraInfoThread,SLOT(slotGetCameraPar()));//开启线程槽函数
+        connect(_getCameraInfoThread,SIGNAL(finished()),getCameraInfoThread,SLOT(deleteLater()));//终止线程时要调用deleteLater槽函数
+        connect(getCameraInfoThread,SIGNAL(signalCameraParInfo(QVariant, const QString &)),this,SLOT(slotCameraParInfo(QVariant,const QString &)),Qt::QueuedConnection);//设备参数信号槽
+        if(scannerDevIndexList.length() <= 0)//如果没有扫描仪，获取拍摄仪参数后就直接退出
+        {
+            connect(getCameraInfoThread,SIGNAL(signalParOver()), this,SLOT(slotDeviceParOver()));
+        }
+        else
+        {
+            connect(getCameraInfoThread,SIGNAL(signalParOver()), this,SLOT(slotCameraParOver()));
+        }
+        _getCameraInfoThread->start();//开启多线程
+        GlobalHelper::getDeviceInfoIsOver = false;
     }
-    _getCameraInfoThread->start();//开启多线程
-    GlobalHelper::getDeviceInfoIsOver = false;
 
-    //无扫描仪，不获取参数
-    if(scannerDeviceCount <= 0) return;
-
-    //扫描仪参数
-    getScannerInfoThread = new GetScannerInfoThread (scannerDevIndexList);
-    _getScannerInfoThread = new QThread();
-    getScannerInfoThread->moveToThread(_getScannerInfoThread);
-    connect(_getScannerInfoThread,SIGNAL(started()),getScannerInfoThread,SLOT(slotGetDevicePar()));//开启线程槽函数
-    connect(_getScannerInfoThread,SIGNAL(finished()),getScannerInfoThread,SLOT(deleteLater()));//终止线程时要调用deleteLater槽函数
-    connect(getScannerInfoThread,SIGNAL(signalScannerParInfo(QVariant, const QString &)), this,SLOT(slotScannerParInfo(QVariant,const QString &)),Qt::QueuedConnection);//设备参数信号槽
-    connect(getScannerInfoThread,SIGNAL(signalParOver()), this,SLOT(slotDeviceParOver()));//设备参数停止线程
-    _getScannerInfoThread->start();//开启多线程
-    GlobalHelper::getDeviceInfoIsOver = false;
-
+    //获取扫描仪参数
+    if(scannerDevIndexList.length() > 0)
+    {
+        getScannerInfoThread = new GetScannerInfoThread (scannerDevIndexList);
+        _getScannerInfoThread = new QThread();
+        getScannerInfoThread->moveToThread(_getScannerInfoThread);
+        connect(_getScannerInfoThread,SIGNAL(started()),getScannerInfoThread,SLOT(slotGetDevicePar()));//开启线程槽函数
+        connect(_getScannerInfoThread,SIGNAL(finished()),getScannerInfoThread,SLOT(deleteLater()));//终止线程时要调用deleteLater槽函数
+        connect(getScannerInfoThread,SIGNAL(signalScannerParInfo(QVariant, const QString &)), this,SLOT(slotScannerParInfo(QVariant,const QString &)),Qt::QueuedConnection);//设备参数信号槽
+        connect(getScannerInfoThread,SIGNAL(signalParOver()), this,SLOT(slotScannerParOver()));//设备参数停止线程
+        _getScannerInfoThread->start();//开启多线程
+        GlobalHelper::getDeviceInfoIsOver = false;
+    }
 }
 
 //记录拍摄仪设备参数信息
@@ -835,6 +855,11 @@ void MainWindow::slotCameraParInfo(QVariant qv,const QString &str)
     {
         int devType = devList.at(i).type;
         int devIndex = devList.at(i).index;
+        int devStatus = devList.at(i).status;//设备状态，0=空闲，1=占用，2=未连接
+        if(devStatus != 0)//未连接的设备不取参数
+        {
+            continue;
+        }
 
         if(devType == 1 && devIndex == str.toInt())
         {
@@ -873,14 +898,6 @@ void MainWindow::slotCameraParInfo(QVariant qv,const QString &str)
 
     }
 
-    //closeCameraThread();
-    if(_getCameraInfoThread->isRunning())
-    {
-        _getCameraInfoThread->quit();//退出事件循环
-        _getCameraInfoThread->wait();//释放线程槽函数资源
-    }
-    qDebug()<<"par Camera线程停止,线程状态："<<_getCameraInfoThread->isRunning();
-
 }
 
 //记录扫描仪设备参数信息
@@ -892,6 +909,11 @@ void MainWindow::slotScannerParInfo(QVariant qv,const QString &str)
     {
         int devType = devList.at(i).type;
         int devIndex = devList.at(i).index;
+        int devStatus = devList.at(i).status;//设备状态，0=空闲，1=占用，2=未连接
+        if(devStatus != 0)//未连接的设备不取参数
+        {
+            continue;
+        }
 
         if(devType == 0 && devIndex == str.toInt())
         {
@@ -949,21 +971,49 @@ void MainWindow::slotScannerParInfo(QVariant qv,const QString &str)
 
     //记录参数顺序，在下参扫描的时候用到
     DeviceInfoHelper::writeValue(filePath,"baseorder","order",parOrder);
+}
 
+
+//获取拍摄仪设备参数结束
+void MainWindow::slotCameraParOver()
+{
+    if(_getCameraInfoThread->isRunning())
+    {
+        _getCameraInfoThread->quit();//退出事件循环
+        _getCameraInfoThread->wait();//释放线程槽函数资源
+    }
+    qDebug()<<"par Camera线程停止,线程状态："<<_getCameraInfoThread->isRunning();
+}
+
+//获取扫描仪设备参数结束
+void MainWindow::slotScannerParOver()
+{
     if(_getScannerInfoThread->isRunning())
     {
         _getScannerInfoThread->quit();//退出事件循环
         _getScannerInfoThread->wait();//释放线程槽函数资源
     }
     qDebug()<<"par SANE线程停止,线程状态："<<_getScannerInfoThread->isRunning();
-    GlobalHelper::getDeviceInfoIsOver = true;
+    slotDeviceParOver();
 }
 
-//设备参数停止线程
+//设备参数停止线程,发送信号通知刷新UI
 void MainWindow::slotDeviceParOver()
 {
+    if(_getCameraInfoThread->isRunning())
+    {
+        _getCameraInfoThread->quit();//退出事件循环
+        _getCameraInfoThread->wait();//释放线程槽函数资源
+    }
+    qDebug()<<"par Camera线程停止,线程状态："<<_getCameraInfoThread->isRunning();
+    if(_getScannerInfoThread->isRunning())
+    {
+        _getScannerInfoThread->quit();//退出事件循环
+        _getScannerInfoThread->wait();//释放线程槽函数资源
+    }
+    qDebug()<<"par SANE线程停止,线程状态："<<_getScannerInfoThread->isRunning();
+    qDebug()<<"设备参数停止线程,发送信号通知刷新UI";
     GlobalHelper::getDeviceInfoIsOver = true;
-    qDebug()<<"par emit thread over";
     emit signalThreadOver();
 }
 
@@ -1519,6 +1569,12 @@ void MainWindow::slotTableViewMenuOutputPDFFile()
     if(list.size() <= 0)
     {
         return;
+    }
+    //限制200个
+    int i=200;
+    while(list.size()>200)
+    {
+        list.removeAt(i);
     }
 
     progressBarWindow = new ProgressBarWindow (1,list.size(),tr("Combining into PDF"),this);

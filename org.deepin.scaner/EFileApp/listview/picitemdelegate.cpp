@@ -19,6 +19,8 @@ CPNG m_picpng;
 PicItemDelegate::PicItemDelegate(QObject *parent) : QStyledItemDelegate (parent)
 {
     parentCtrl = parent;
+    bIsLoad = new bool;
+    bIsLoad= false;
 }
 
 //当前系统是否为深色主题
@@ -27,7 +29,7 @@ bool PicItemDelegate::isDarkType() const
     DGuiApplicationHelper *guiAppHelp = DGuiApplicationHelper::instance();
     if(guiAppHelp->themeType() == DGuiApplicationHelper::ColorType::DarkType)
     {
-        //深色主题
+       //深色主题
         return true;
     }
     else
@@ -37,8 +39,18 @@ bool PicItemDelegate::isDarkType() const
     }
 }
 
+void PicItemDelegate::SetIsLoad(bool isLoad) const
+{
+
+}
+
 void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    if(bIsLoad)
+    {
+        return ;
+    }
+    SetIsLoad(true);
     if(index.isValid())
     {
         painter->save();
@@ -92,55 +104,80 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
         //计算图像显示的宽高，最宽/最高 = 85px
         bool isJPG = false;
         QImage picIconImage;
-        long w=85,h=85;//图像宽高
+        int w = 85,h = 85;
         int tmpW = w;//绘制区域宽高
         int tmpH = h;
         //说明载入的文件是图像
         QMimeDatabase db;
         QMimeType mime = db.mimeTypeForFile(picItemData.picPath);
-        bool isPic =  mime.name().startsWith("image/");
+        bool isPic =  false;//mime.name().startsWith("image/");//图像列表数量过多，缩略图太卡，暂时不现实缩略图，以图标代替 vector 20200929
 
         QFileInfo fileInfo(picItemData.picPath);
         QString fileSuffix = fileInfo.suffix().toLower();
-        pic_data out;
+
         //JPG图像载入
         QImage *imgPreview = NULL;
-        QFile *file = new QFile(picItemData.picPath);
+        //QFile *file = new QFile(picItemData.picPath);
         //QImage *pngImage = NULL;
         if(isPic == true && fileSuffix.contains("jpg"))
         {
-            imgPreview=new QImage(3264,2448,QImage::Format_RGB888);
             isJPG = true;
-            QByteArray pData;
-            file->open(QIODevice::ReadOnly);
-            pData = file->readAll();
-            char* tmp = pData.data();
-            unsigned char * srcBuf = (unsigned char * )tmp;
+            CJpeg decodeJPG;
             unsigned char* dstBuf = NULL;
-            Cam_readBufFromJpegBuf(srcBuf,file->size(),w,h,&dstBuf);
-            for (int i = 0 ; i < h ; i++)
+            JPEGInfo jpgInfo;
+
+            if(decodeJPG.readBufFromJpeg(picItemData.picPath.toUtf8().data(),&dstBuf,jpgInfo,w,h) == 0)
             {
-                for (int j = 0 ; j < w ; j++)
+                w = jpgInfo.width;
+                h = jpgInfo.height;
+
+
+                if(jpgInfo.colorSpace == 3)
                 {
-                    imgPreview->setPixel(j,i,qRgb(* (dstBuf + i*w * 3 + j * 3),* (dstBuf + i*w * 3 + j * 3 + 1),* (dstBuf + i*w * 3 + j * 3 + 2)));
+                    imgPreview = new QImage(w,h,QImage::Format_RGB888);
+                    memcpy(imgPreview->bits(),dstBuf,w * h * 3);
+                }
+                else if(jpgInfo.colorSpace == 1)
+                {
+                    imgPreview = new QImage(w,h,QImage::Format_Grayscale8);
+                    memcpy(imgPreview->bits(),dstBuf,w * h);
+                }
+
+                if(imgPreview==NULL)
+                {
+                    qDebug("png qimage failed\n");
+                }
+
+
+    //            QByteArray pData;
+    //            file->open(QIODevice::ReadOnly);
+    //            pData = file->readAll();
+    //            char* tmp = pData.data();
+    //            unsigned char * srcBuf = (unsigned char * )tmp;
+    //            unsigned char* dstBuf = NULL;
+    //            Cam_readBufFromJpegBuf(srcBuf,file->size(),w,h,&dstBuf);
+    //            imgPreview=new QImage(w,h,QImage::Format_RGB888);
+    //            memcpy(imgPreview->bits(),dstBuf,w * h * 3);
+
+                //说明载入的文/删除SDK内的缓存
+                delete dstBuf;
+                dstBuf = NULL;
+
+                tmpW = w;
+                tmpH = h;
+                if(tmpW >= tmpH)
+                {
+                    tmpW = 85;
+                    tmpH = h * 85 / w;
+                }
+                else
+                {
+                    tmpH = 85;
+                    tmpW = w * 85 / h;
                 }
             }
-            //删除SDK内的缓存
-            delete dstBuf;
-            dstBuf = NULL;
 
-            tmpW = w;
-            tmpH = h;
-            if(tmpW >= tmpH)
-            {
-                tmpW = 85;
-                tmpH = h * 85 / w;
-            }
-            else
-            {
-                tmpH = 85;
-                tmpW = w * 85 / h;
-            }
+
         }
         //非JPG图像载入
         else if(isPic == true &&  (fileSuffix.contains("ico")
@@ -155,24 +192,41 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
         }
         else if (isPic == true &&fileSuffix.contains("png"))
         {
+            pic_data out;
             isJPG = true;
             m_picpng.decode_png(picItemData.picPath.toUtf8().data(),&out);
            // m_picpng.read_png(picItemData.picPath.toUtf8().data());
             qDebug("png width is %d,height is %d,bit_depth is %d,alpha_flag is %d,color type is %d\n",out.width,out.height,out.bit_depth,out.alpha_flag,out.color_type);
-            if(out.color_type==2)
+            if(out.color_type == 2)
             {
-                imgPreview = new QImage(out.rgba,out.width,out.height,QImage::Format_RGB888);
+                imgPreview = new QImage(out.width,out.height,QImage::Format_RGB888);
+                memcpy(imgPreview->bits(),out.rgba,out.width * out.height * 3);
             }
-            else
+            else if(out.color_type == 0)
             {
-                imgPreview = new QImage(out.rgba,out.width,out.height,QImage::Format_Grayscale8);
+                imgPreview = new QImage(out.width,out.height,QImage::Format_Grayscale8);
+                memcpy(imgPreview->bits(),out.rgba,out.width * out.height);
             }
             if(imgPreview==NULL)
             {
                 qDebug("png qimage failed\n");
             }
+
+            free( out.rgba);
             w=out.width;
             h=out.height;
+            tmpW = w;
+            tmpH = h;
+            if(tmpW >= tmpH)
+            {
+                tmpW = 85;
+                tmpH = h * 85 / w;
+            }
+            else
+            {
+                tmpH = 85;
+                tmpW = w * 85 / h;
+            }
         }
 
         /*
@@ -225,7 +279,7 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
         QRectF nameRect=QRectF(fontX,fontY, 150, 25);
         QRectF iconRect=QRectF(rect.right()-30,rect.top()+5,28,28);//右上角勾图标
 
-        //绘制图片、图片名
+        //绘制图片、图片名dstBuf
         painter->setRenderHint(QPainter::Antialiasing);//反锯齿
         //painter->drawImage(picRect,picIconImage);//QImage(picItemData.picPath));//贴图
 
@@ -292,19 +346,18 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
              }
         }
 
-        file->close();
-        delete file;
-        file = NULL;
+
         delete  imgPreview;
         imgPreview =NULL;
-        if (isPic == true &&fileSuffix.contains("png"))
-        {
-            free(out.rgba);
-            out.rgba=NULL;
-        }
+//        if (isPic == true &&fileSuffix.contains("png"))
+//        {
+//            free(out.rgba);
+//            out.rgba=NULL;
+//        }
 
         painter->restore();
     }
+
 }
 
 QSize PicItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

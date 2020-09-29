@@ -41,7 +41,8 @@ ScanManagerWindow::ScanManagerWindow(QWidget *parent) :
 
     initUI();
     this->setAcceptDrops(true);//整个窗口支持拖拽，暂时
-    isScanClose = false;//是否为点击扫描按钮关闭窗口,窗口关闭时不用再次记录参数
+    isScanClose = false;//是否为点击扫描按钮关闭窗口,窗口关闭时不用再次记录参数    
+    isClickedInstallBtn = false;//是否点击了安装按钮
 
     QString defaultDeviceModelFilePath =  DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceListInfoFilePath(),
                                              "default",
@@ -98,6 +99,11 @@ void ScanManagerWindow::closeEvent(QCloseEvent *event)
          getImgEditPar();//从UI上获取图像处理参数
          isScanClose = true;
     }
+    if(isClickedInstallBtn)
+    {
+         slotRefreshDevice();//更新设备列表
+     }
+
 }
 
 //筛选拖拽事件
@@ -667,7 +673,7 @@ void ScanManagerWindow::initInstallDeviceUI()
         localDriverTipLabel2->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
     }
     importDriverBtn = new QPushButton();//导入本地驱动按钮
-    importDriverBtn->setFixedSize(QSize(140, 36));
+    importDriverBtn->setFixedSize(QSize(160, 36));
     importDriverBtn->setText(tr("Import Local Driver"));
     connect(importDriverBtn, SIGNAL(clicked()), this, SLOT(slotImportDriverBtnClicked()));
     localParLayout->addStretch();
@@ -724,7 +730,6 @@ void ScanManagerWindow::initInstallDeviceUI()
 //新增设备按钮点击
 void ScanManagerWindow::slotAddDeviceButtonClicked()
 {
-    isClickedInstallBtn = false;//是否点击了安装按钮
     emitAdder = 1;
     mainSLayout->setCurrentIndex(3);//显示安装设备UI
     backBtn->setVisible(true);
@@ -733,7 +738,6 @@ void ScanManagerWindow::slotAddDeviceButtonClicked()
 //新增设备按钮-无设备UI里
 void ScanManagerWindow::slotAddDeviceButtonClicked2()
 {
-    isClickedInstallBtn = false;//是否点击了安装按钮
     emitAdder = 0;
     mainSLayout->setCurrentIndex(3);//显示安装设备UI
     backBtn->setVisible(true);
@@ -744,7 +748,7 @@ void ScanManagerWindow::slotBackBtnClicked()
 {
     backBtn->setVisible(false);
     //未点击安装按钮
-    if(isClickedInstallBtn == false)
+    if(!isClickedInstallBtn)
     {
         if(emitAdder == 0)
         {
@@ -817,7 +821,7 @@ void ScanManagerWindow::slotInstallBtnClicked()
     QFileInfo fi(localDriverFilePath);
     if(fi.exists())
     {
-        isClickedInstallBtn = true;//是否点击了安装按钮
+        isClickedInstallBtn = true;//点击了安装按钮
         //驱动，以系统默认方式打开
          QDesktopServices::openUrl(QUrl::fromLocalFile(localDriverFilePath));
     }
@@ -826,6 +830,7 @@ void ScanManagerWindow::slotInstallBtnClicked()
 //更新设备列表
 void ScanManagerWindow::slotRefreshDevice()
 {
+    isClickedInstallBtn = false;//是否点击了安装按钮
     mainSLayout->setCurrentIndex(1);
     emit signalSearchDevice();//发送搜索设备信号
 }
@@ -1201,14 +1206,14 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     DLabel  *pnameLbl= new DLabel ();
     pnameLbl->setFixedWidth(100);
     pnameLbl->setText(tr("Optimization"));//图像类型
-    if(isDarkType() == true)
+    /*if(isDarkType() == true)
     {
         pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;font-size:14px;color:rgb(192,198,212);");
     }
     else
     {
         pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;font-size:14px;color:rgba(0,26,46,1);");
-    }
+    }*/
     //文档类型下拉框
     docTypeCBB = new DComboBox ();
     docTypeCBB->addItem(tr("Original"));//原始文档
@@ -1294,6 +1299,7 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
         //文档处理设置
         lblNULLIE->setEnabled(false);
         lblIE->setEnabled(false);
+        pnameLbl->setEnabled(false);
         parWidgetBB->setEnabled(false);
         parWidgetRepair->setEnabled(false);
     }
@@ -1371,14 +1377,14 @@ void ScanManagerWindow::showImgFormatAndTypeUI(bool isCamera,bool isLicense)
         DLabel  *pnameLbl2= new DLabel ();
         pnameLbl2->setFixedWidth(80);
         pnameLbl2->setText(tr("Color mode"));//色彩模式
-        if(isDarkType() == true)
+        /*if(isDarkType() == true)
         {
             pnameLbl2->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;font-size:14px;color:rgb(192,198,212);");
         }
         else
         {
             pnameLbl2->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;font-size:14px;color:rgba(0,26,46,1);");
-        }
+        }*/
 
         imgTypeCBB = new DComboBox ();
         imgTypeCBB->addItem(tr("Colorful"));//彩色图
@@ -1457,15 +1463,7 @@ void ScanManagerWindow::showShotTypeUI(bool isLicense)
     parHLayoutBB2->addWidget(shotTypeTimerCBB);
     DLabel  *pnameLbl= new DLabel ();
     pnameLbl->setFixedWidth(80);
-    pnameLbl->setText(tr("s"));//秒拍摄
-    if(isDarkType() == true)
-    {
-        pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgb(192,198,212);font-size:17px");
-    }
-    else
-    {
-        pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Bold,sourceHanSansSC;font-weight:bold;color:rgba(0,26,46,1);font-size:17px");
-    }
+    pnameLbl->setText(tr("s"));//秒拍摄    
     parHLayoutBB2->addWidget(pnameLbl);
     parHLayoutBB2->addStretch();
 

@@ -72,6 +72,7 @@ void GetScannerInfoThread::slotStartThread()
         //需要传递的扫描仪数据
         QVariant qvDevInfoMap; //申明通用数据对象
         qvDevInfoMap.setValue(devInfoMap); //数据包装
+        qDebug()<<"emit scanner info";
         emit signalScannerInfo(qvDevInfoMap,"abc");//发送信号给主线程，主线程绘制设备信息和参数UI
     }
 }

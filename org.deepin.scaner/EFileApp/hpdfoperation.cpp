@@ -58,15 +58,9 @@ int hpdfoperation::jpeg2pdf(char  *jpeg_file_name,char * pdf_file_name,_HPDF_Pag
         int x = 0;
         int y = 0;
         HPDF_Page_DrawImage(page, hpdfImage, x, y, HPDF_Image_GetWidth(hpdfImage),HPDF_Image_GetHeight(hpdfImage));
-        if(multipage && multipage_saveFlag){
-            /* save the document to a file */
-                HPDF_SaveToFile (pdf, pdf_file_name);
-                /* clean up */
-                HPDF_Free (pdf);
-                pdf = NULL;
-        }
 
-        if(!multipage && !multipage_saveFlag){
+
+        if(multipage_saveFlag){
             /* save the document to a file */
                 HPDF_SaveToFile (pdf, pdf_file_name);
                 /* clean up */
@@ -125,7 +119,7 @@ int hpdfoperation::png2pdf(char *png_file_name, char *pdf_file_name, _HPDF_PageS
         int x = 0;
         int y = 0;
         HPDF_Page_DrawImage(page, hpdfImage, x, y, HPDF_Image_GetWidth(hpdfImage),HPDF_Image_GetHeight(hpdfImage));
-        if(multipage && multipage_saveFlag){
+        if(multipage_saveFlag){
             /* save the document to a file */
                 HPDF_SaveToFile (pdf, pdf_file_name);
                 /* clean up */
@@ -133,18 +127,11 @@ int hpdfoperation::png2pdf(char *png_file_name, char *pdf_file_name, _HPDF_PageS
                 pdf = NULL;
         }
 
-        if(!multipage && !multipage_saveFlag){
-            /* save the document to a file */
-                HPDF_SaveToFile (pdf, pdf_file_name);
-                /* clean up */
-                HPDF_Free (pdf);
-                pdf = NULL;
 
-        }
         return ERROR_GOOD;
 
 }
-int hpdfoperation::rgb2pdf(unsigned char *srcData, int srcDataWidth, int srcDataHeight,char *destFile ,int colorType,int nPage)
+int hpdfoperation::rgb2pdf(unsigned char *srcData, int srcDataWidth, int srcDataHeight,char *destFile ,int colorType,bool multipage ,bool multipage_saveFlag)
 {
     if(srcData==NULL ||srcDataWidth < 0 || srcDataHeight < 0 ||destFile == NULL){
             return ERROR_ARGV;
@@ -177,7 +164,7 @@ int hpdfoperation::rgb2pdf(unsigned char *srcData, int srcDataWidth, int srcData
 
     /*Create new page*/
  page = HPDF_AddPage (pdf);
- /*Set page object*/
+ /*Set page ozbject*/
 HPDF_Page_SetSize (page, HPDF_PAGE_SIZE_A4, HPDF_PAGE_LANDSCAPE);
  dst = HPDF_Page_CreateDestination (page);
 
@@ -192,9 +179,13 @@ HPDF_Page_SetSize (page, HPDF_PAGE_SIZE_A4, HPDF_PAGE_LANDSCAPE);
  int y = 0;
  HPDF_Page_DrawImage(page, hpdfImage, x, y, HPDF_Image_GetWidth(hpdfImage),HPDF_Image_GetHeight(hpdfImage));
 
- /* save the document to a file */
-     HPDF_SaveToFile (pdf, destFile);
-     /* clean up */
-    // HPDF_Free (pdf);
+ if(multipage_saveFlag){
+     /* save the document to a file */
+         HPDF_SaveToFile (pdf, destFile);
+         /* clean up */
+         HPDF_Free (pdf);
+         pdf = NULL;
+
+ }
        return ERROR_GOOD;
 }

@@ -18,6 +18,10 @@ public:
 
     bool isDarkType() const ; //当前系统是否为深色主题
 
+private:
+    bool bIsLoad;
+    void SetIsLoad(bool isLoad) const;
+
 };
 
 #endif // PICITEMDELEGATE_H

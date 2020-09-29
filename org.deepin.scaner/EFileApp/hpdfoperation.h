@@ -19,7 +19,7 @@ public:
                             bool multipage = false,bool multipage_saveFlag = false);
     int png2pdf(char  *png_file_name,char * pdf_file_name,_HPDF_PageSizes PAGE_SIZE_TYPE = HPDF_PAGE_SIZE_A4,
                             bool multipage = false,bool multipage_saveFlag = false);
-    int rgb2pdf(unsigned char *srcData, int srcDataWidth,  int srcDataHeight,char *destFile,int colorType,int nPage);
+    int rgb2pdf(unsigned char *srcData, int srcDataWidth,  int srcDataHeight,char *destFile,int colorType,bool multipage ,bool multipage_saveFlag);
 };
 
 #endif // HPDFOPERATION_H

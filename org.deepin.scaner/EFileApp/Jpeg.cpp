@@ -751,7 +751,7 @@ long CJpeg::readBufFromJpeg(char * filepath,uchar * * des_buff,JPEGInfo &jpgInfo
     jpgInfo.width = cinfo.output_width;//图像宽度
     jpgInfo.height = cinfo.output_height;//图像高度
     jpgInfo.colorSpace = cinfo.output_components;
-    unsigned short depth = cinfo.output_components * cinfo.output_width;//图像深度
+    unsigned short depth = (cinfo.output_components * cinfo.output_width * 8  + 31)/32 * 4;//图像深度
     long lbgrlength = depth * cinfo.output_height;
 
     * des_buff = new uchar[lbgrlength];

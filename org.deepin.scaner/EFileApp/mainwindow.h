@@ -174,11 +174,14 @@ private slots:
     void slotUploadOver();//上传结束
     void slotCameraInfo(QVariant qv, const QString &str);//记录拍摄仪设备信息
     void slotScannerInfo(QVariant qv, const QString &str);//记录扫描仪设备信息
+    void slotCloseCameraThread();//关闭拍摄仪线程
+    void slotCloseScannerThread();//关闭SANE线程
+    void slotNoCamera();//无拍摄仪设备
+    void slotNoScanner();//无扫描仪设备
     void slotCameraParInfo(QVariant qv,  const QString &str);//记录拍摄仪设备参数信息
     void slotScannerParInfo(QVariant qv, const QString &str);//记录扫描仪设备参数信息
-    void slotCloseCameraThread();//关闭拍摄仪线程
-    void slotCloseScannerThread();//关闭SANE线程    
-    void slotNoScanner();//无扫描仪设备
+    void slotCameraParOver();//获取拍摄仪设备参数结束
+    void slotScannerParOver();//获取扫描仪设备参数结束
     void slotDeviceParOver();//设备参数停止线程
     void slotSingleFileMergeOver(QString filePath,int fileIndex);//单个文件执行合并PDF结束
     void slotMergeOver();//合并PDF结束

@@ -38,22 +38,37 @@ void MergePDFThread::startMerge()
         if(QString::compare(tt,"jpg")==0)
         {
             merge_jpg.readBufFromJpeg(jpgPath,&dstBuf,jpgInfo,dstW,dstH);
-            pdfop.rgb2pdf(dstBuf,jpgInfo.width,jpgInfo.height,pdfPath,0,fileList.size());
 
+            if(jpgInfo.colorSpace == 1)
+            {
+                pdfop.rgb2pdf(dstBuf,jpgInfo.width,jpgInfo.height,pdfPath,1,true,i == fileList.size() - 1);
+            }
+            else {
+                pdfop.rgb2pdf(dstBuf,jpgInfo.width,jpgInfo.height,pdfPath,0,true,i == fileList.size() - 1);
+            }
+
+            //pdfop.jpeg2pdf(jpgPath,pdfPath,HPDF_PAGE_SIZE_A4,true,i == fileList.size() - 1);
         }
         else if (QString::compare(tt,"png")==0) {
             pic_data out;
+
             m_png.decode_png(fileList.at(i).toUtf8().data(),&out);
-            pdfop.rgb2pdf(out.rgba,out.width,out.height,pdfPath,0,fileList.size());
+
+            if(out.color_type == 0)
+                pdfop.rgb2pdf(out.rgba,out.width,out.height,pdfPath,1,true,i == fileList.size() - 1);
+            else {
+                pdfop.rgb2pdf(out.rgba,out.width,out.height,pdfPath,0,true,i == fileList.size() - 1);
+            }
+            //pdfop.png2pdf(jpgPath,pdfPath,HPDF_PAGE_SIZE_A4,true,i == fileList.size() - 1);
         }
-        else
-        {
-            char strPath[256]={0};
-            strcpy(strPath,fileList.at(i).toUtf8().data());
-            QImage* img2 = new QImage(strPath);
-            dstBuf = img2->bits ();
-            pdfop.rgb2pdf(dstBuf,img2->width(),img2->height(),pdfPath,0,i+1);
-        }
+//        else
+//        {
+//            char strPath[256]={0};
+//            strcpy(strPath,fileList.at(i).toUtf8().data());
+//            QImage* img2 = new QImage(strPath);
+//            dstBuf = img2->bits ();
+//            pdfop.rgb2pdf(dstBuf,img2->width(),img2->height(),pdfPath,0,i+1);
+//        }
         emit signalSingleFileMergeOver(fileList.at(i),i);
     }
     emit signalOver();
