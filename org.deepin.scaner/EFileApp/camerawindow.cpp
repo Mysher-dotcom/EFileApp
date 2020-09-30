@@ -90,6 +90,7 @@ void CameraWindow::initUI()
     this->titlebar()->setIcon(QIcon(":/img/logo/logo-16.svg"));//标题栏图标
     this->titlebar()->setMenuVisible(false);//菜单按钮隐藏
     this->setWindowTitle(tr("Scanner"));//开始菜单栏上鼠标悬浮在窗口上显示的名称
+    this->setWindowFlags(this->windowFlags()&~Qt::WindowMinimizeButtonHint);//最小化按钮隐藏
 
     //*窗口布局设置*
     winVLayout = new QVBoxLayout();//窗口布局

@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //匹配版本号，用于是否删除配置文件
-    GlobalHelper::softVersion = "5.1.0.4-10";
+    GlobalHelper::softVersion = "5.1.0.4-11";
     GlobalHelper::checkVersion();
     //检查配置文件是否存在，不存在就创建，并写入初始值
     QFileInfo settingFile(GlobalHelper::getSettingFilePath());
@@ -1369,9 +1369,8 @@ void MainWindow::slotScanButtonClicked()
     smWindow = new ScanManagerWindow (this);
     smWindow->setAttribute(Qt::WA_ShowModal,true);//模态窗口
     smWindow->show();
-    //屏幕中间显示
     smWindow->move ((QApplication::desktop()->width() - smWindow->width())/2,
-                    (QApplication::desktop()->height() - smWindow->height())/2);
+                    (QApplication::desktop()->height() - smWindow->height())/2);//屏幕中间显示
 
     connect(this, SIGNAL(signalThreadOver()), smWindow, SLOT(slotGetDeviceList()));
     connect(smWindow, SIGNAL(signalSearchDevice()), this, SLOT(openCameraThread()));
@@ -1441,7 +1440,7 @@ void MainWindow::slotListLayoutButtonClicked()
 void MainWindow::slotMenuSetButtonClicked()
 {
     SetWindow *sw = new  SetWindow (this);
-    sw->setAttribute(Qt::WA_ShowModal,true);//模态窗口
+    //sw->setAttribute(Qt::WA_ShowModal,true);//模态窗口
     sw->show();
     //屏幕中间显示
     sw->move ((QApplication::desktop()->width() - sw->width())/2,

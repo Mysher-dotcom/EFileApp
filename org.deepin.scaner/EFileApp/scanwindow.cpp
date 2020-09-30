@@ -68,6 +68,7 @@ void ScanWindow::initUI()
     setWindowIcon(QIcon(":/img/logo/logo-16.svg"));// 状态栏图标
     this->titlebar()->setIcon(QIcon(":/img/logo/logo-16.svg"));//标题栏图标
     this->setWindowTitle(tr("Scan Assistant"));//开始菜单栏上鼠标悬浮在窗口上显示的名称
+    this->setWindowFlags(this->windowFlags()&~Qt::WindowMinimizeButtonHint);//最小化按钮隐藏
 
     //******窗口布局设置******
     //布局关系：窗口的容器Widget -> 主布局Layout -> 容器Widget -> 容器布局Layout -> 控件
@@ -110,6 +111,9 @@ void ScanWindow::startScanThread()
     //扫描中错误信号
     connect(DoScanThread::g_doScanThread,SIGNAL(signalScanError(QString)),this,SLOT(slotScanError(QString)));
 
+    //打开设备出错
+    connect(DoScanThread::g_doScanThread,SIGNAL(signalOpenDevError()),this,SLOT(slotOpenDevError()));
+
     //扫描结束
     connect(DoScanThread::g_doScanThread,SIGNAL(signalScanOver()),this,SLOT(closeThread()));
 
@@ -118,6 +122,30 @@ void ScanWindow::startScanThread()
 
     subThread->start();//开启多线程
 
+}
+
+//打开设备出错
+void ScanWindow::slotOpenDevError()
+{
+    DDialog *dialog = new DDialog ();
+    dialog->setIcon(QIcon(":/img/dialogWarnIcon.svg"));
+    dialog->setTitle(tr("Scan failed"));
+    dialog->setMessage(tr("Unknown error"));
+    dialog->addButton(tr("Confirm"),true);
+    dialog->exec();
+
+    if(listViewIsShow == false)
+    {
+        successScanUI();
+        showImageList();
+        listViewIsShow = true;
+    }
+    changeScanBtnStyle(false);//修改扫描按钮样式，true=扫描中样式，false=普通样式
+    scanBtn->setEnabled(false);
+    closeThread();//发生错误，结束扫描线程
+
+
+    emit signalSearchDevice();//搜索设备
 }
 
 //关闭线程
@@ -465,7 +493,7 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     qDebug("1\n");
 
     delete data;
-    data = NULL;  
+    data = NULL;
 
     //图像处理顺序：裁切-文档优化-黑白图-打水印
     //是否裁切
@@ -648,6 +676,14 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     else if(strcmp(tmp,"png")==NULL)
     {
         unsigned char* dst = mcvGetImageData(srcWater);
+
+        if(srcWater->channel == 3)
+        {
+            color_type=2;
+        }
+        else
+            color_type=0;
+
         CPNG ggpng;
         pic_data outimage;
         outimage.width = srcWater->width;
@@ -668,7 +704,7 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
         outimage.bit_depth = 8;
         outimage.alpha_flag = 0;
         ggpng.write_png_file(part_path,&outimage);
-        //delete outimage.rgba;
+        delete outimage.rgba;
     }
     else
     {

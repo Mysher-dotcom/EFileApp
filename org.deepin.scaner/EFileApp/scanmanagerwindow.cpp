@@ -142,6 +142,7 @@ void ScanManagerWindow::initUI()
     setWindowIcon(QIcon(":/img/logo/logo-16.svg"));// 状态栏图标
     this->titlebar()->setIcon(QIcon(":/img/logo/logo-16.svg"));//标题栏图标
     this->setWindowTitle(tr("Scan Assistant"));//开始菜单栏上鼠标悬浮在窗口上显示的名称
+    this->setWindowFlags(this->windowFlags()&~Qt::WindowMinimizeButtonHint);//最小化按钮隐藏
 
     mainSLayout = new QStackedLayout();//窗口布局
     ui->centralwidget->setLayout(mainSLayout);
@@ -1354,7 +1355,10 @@ void ScanManagerWindow::showImgFormatAndTypeUI(bool isCamera,bool isLicense)
     imgFormatCBB->addItem("jpg");
     imgFormatCBB->addItem("bmp");
     imgFormatCBB->addItem("tif");
-    imgFormatCBB->addItem("png");
+    if(!isCamera)
+    {
+        imgFormatCBB->addItem("png");
+    }
     parHLayoutBB->addWidget(pnameLbl);
     parHLayoutBB->addWidget(imgFormatCBB);
     parWidgetBB->setLayout(parHLayoutBB);
@@ -1528,6 +1532,9 @@ void ScanManagerWindow::slotScanButtonClicked()
         scanWindow->move ((QApplication::desktop()->width() - scanWindow->width())/2,
                           (QApplication::desktop()->height() - scanWindow->height())/2);
         this->close();//本窗口关闭
+        //拍摄仪窗口的关闭信号与主窗口的搜索更新设备连接
+        MainWindow *mainW = (MainWindow*)this->parent();
+        connect(scanWindow,SIGNAL(signalSearchDevice()),mainW,SLOT(openCameraThread()));
     }
     else if(nCurrentDeviceType == 1)//拍摄仪
     {

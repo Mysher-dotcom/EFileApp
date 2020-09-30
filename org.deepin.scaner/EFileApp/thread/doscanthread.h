@@ -29,6 +29,7 @@ signals:
     void signalScanError(QString);//扫描中错误信号
     void signalScanOver();//扫描结束信号
     void signalScanSaveImage(char*,int,int,int,int,int);//扫描保存图像
+    void signalOpenDevError();//打开设备出错
 
 public slots:
     //槽

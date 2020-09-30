@@ -295,7 +295,7 @@ int CPNG::write_png_file(const char *filename , pic_data *out) //生成一个新
         printf("not have alpha ...\n");
     }
     else {
-        channels = 3;
+        channels = 1;
         temp = (out->width);
         printf("not have alpha Gary...\n");
     }
@@ -310,15 +310,19 @@ int CPNG::write_png_file(const char *filename , pic_data *out) //生成一个新
                 row_pointers[i][j+2] = out->rgba[pos++];
                 row_pointers[i][j+1] = out->rgba[pos++];
                 row_pointers[i][j+0] = out->rgba[pos++];
-            } else {
+            } else  if (channels == 3){
                 row_pointers[i][j+0] = out->rgba[pos++];
                 row_pointers[i][j+1] = out->rgba[pos++];
                 row_pointers[i][j+2] = out->rgba[pos++];
             }
+            else {
+                row_pointers[i][j] = out->rgba[pos++];
+            }
         }
     }
+
     //6: 写入rgb数据到Png文件
-    png_write_image(png_ptr, (png_bytepp)row_pointers);
+    png_write_image(png_ptr, row_pointers);
     if (setjmp(png_jmpbuf(png_ptr))) {
         printf("error during init_io ...\n");
         return -1;

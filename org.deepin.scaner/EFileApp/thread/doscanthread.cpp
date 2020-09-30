@@ -65,14 +65,13 @@ int DoScanThread::doScanStatuCB(int nStatus)
 //开始扫描
 void DoScanThread::startScanSlot()
 {
-    QString defaultDeviceModelFilePath =  DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceListInfoFilePath(),
-                                                                   "default",
-                                                                   "config");
+    QString defaultDeviceModelFilePath =  DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceListInfoFilePath(),"default","config");
     int nResult = OpenDev(deviceIndex);//打开设备
     if(nResult != 0)
     {
-        CloseDev(deviceIndex);//关闭设备
+        emit g_doScanThread->signalOpenDevError();//打开扫描仪设备出错
         qDebug()<<"打开扫描仪设备出错:"<<nResult;
+        ExitDev();//CloseDev(deviceIndex);//关闭设备
         emit g_doScanThread->signalScanOver();//扫描结束
         return;
     }
