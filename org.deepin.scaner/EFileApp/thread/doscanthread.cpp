@@ -97,7 +97,11 @@ void DoScanThread::startScanSlot()
         }
     }
 
-    Scan(deviceIndex,doScanReceiveCB,doScanStatuCB);//扫描
+    nResult = Scan(deviceIndex,doScanReceiveCB,doScanStatuCB);//扫描
+    if(nResult != 0)
+    {
+        doScanStatuCB(STATUS_DEVICE_BUSY);//提示卡纸
+    }
     qDebug()<<"scan finish";
     emit g_doScanThread->signalScanOver();//扫描结束
     CloseDev(deviceIndex);//关闭设备

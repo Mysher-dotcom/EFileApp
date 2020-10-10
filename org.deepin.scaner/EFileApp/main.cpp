@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 
     a.setAttribute(Qt::AA_UseHighDpiPixmaps);
     a.loadTranslator();
-    a.setApplicationVersion(DApplication::buildVersion("5.1.0.4-11"));
+    a.setApplicationVersion(DApplication::buildVersion("5.1.0.4-13"));
     a.setProductIcon(QIcon(":/img/logo/logo-16.svg"));
     a.setOrganizationName(QObject::tr("Scan Assistant"));
     a.setProductName(QObject::tr("Scan Assistant"));

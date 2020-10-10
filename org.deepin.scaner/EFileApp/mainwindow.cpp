@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //匹配版本号，用于是否删除配置文件
-    GlobalHelper::softVersion = "5.1.0.4-11";
+    GlobalHelper::softVersion = "5.1.0.4-13";
     GlobalHelper::checkVersion();
     //检查配置文件是否存在，不存在就创建，并写入初始值
     QFileInfo settingFile(GlobalHelper::getSettingFilePath());
@@ -1558,7 +1558,11 @@ void MainWindow::slotListItemChanged(QStandardItem *item)
 //在文件管理器中打开
 void MainWindow::slotTableViewMenuOpenFolder()
 {
-    QDesktopServices::openUrl(QUrl(GlobalHelper::getScanFolder()));
+    //图像文件夹路径
+    QString imgFolderPath =  GlobalHelper::getScanFolder() + "/";
+    //QDesktopServices::openUrl(QUrl::fromEncoded(qba));//GlobalHelper::getScanFolder()));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(imgFolderPath));
+
 }
 
 //右键合并PDF
@@ -1769,13 +1773,20 @@ void MainWindow::slotRenameBtnClicked()
 //文件名文本框文本改变事件
 void MainWindow::slotFileNameTextChanged(const QString & newText )
 {
+    int maxLength = 250; // 最大字符数
+    int trueLength = 83; //中文最大字符数
     QString newName = fileNameText->text().trimmed();
     int length = newName.toLocal8Bit().length();//newName.count();
+    int tmpLength = newName.length();
+    if(tmpLength != 0 && length != 0 )
+    {
+        trueLength = maxLength * tmpLength / length;
+    }
     qDebug()<<"rename's length,"<<length;
-    int maxLength = 250; // 最大字符数
     if(length > maxLength)
     {
-        newName = newName.toLocal8Bit().remove(maxLength,length - maxLength);
+        //newName = newName.toLocal8Bit().remove(maxLength,length - maxLength);
+        newName = newName.remove(trueLength,tmpLength - trueLength);
         qDebug()<<"rename's newName,"<<newName;
         fileNameText->setText(newName);
     }

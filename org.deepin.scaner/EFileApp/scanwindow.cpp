@@ -195,6 +195,7 @@ void ScanWindow::successScanUI()
     scanBtn=new QPushButton ();//扫描按钮
     scanBtn->setStyleSheet("background:transparent;border:none;");
     scanBtn->setFixedSize(QSize(240,36));
+    scanBtn->setEnabled(false);
     QHBoxLayout *btnLayout = new QHBoxLayout ();
     scanBtnSpinner = new DSpinner ();
     scanBtnSpinner->setFixedSize(QSize(28,36));
@@ -394,6 +395,7 @@ void ScanWindow::changeScanBtnStyle(bool isScanning)
     }
     if(isScanning == true)
     {
+        scanBtn->setEnabled(false);
         scanBtnText->setText(tr("Scanning..."));
         scanBtn->setStyleSheet("background:transparent;border:none;");
         scanBtnSpinner->show();
@@ -401,6 +403,7 @@ void ScanWindow::changeScanBtnStyle(bool isScanning)
     }
     else
     {
+        scanBtn->setEnabled(true);
         scanBtnText->setText(tr("Scan"));
         scanBtn->setStyleSheet("");
         scanBtnSpinner->hide();
@@ -446,7 +449,7 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     //图像文件夹路径
     QString imgFolderPath =  GlobalHelper::getScanFolder() + "/";
     char *folderPath;
-    QByteArray qba = imgFolderPath.toLatin1();
+    QByteArray qba = imgFolderPath.toUtf8();//toLatin1();
     folderPath = qba.data();
 
     //编号

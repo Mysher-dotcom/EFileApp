@@ -600,7 +600,7 @@ void CameraWindow::shot()
     //图像文件夹路径
     QString imgFolderPath = GlobalHelper::getScanFolder() + "/";
     char *folderPath;
-    QByteArray qba = imgFolderPath.toLatin1();
+    QByteArray qba = imgFolderPath.toUtf8();//toLatin1();
     folderPath = qba.data();
 
     //编号
