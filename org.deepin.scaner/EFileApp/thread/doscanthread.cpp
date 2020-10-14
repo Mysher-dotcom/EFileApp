@@ -44,21 +44,43 @@ int DoScanThread::doScanStatuCB(int nStatus)
     if(nStatus == STATUS_NO_DOCS)
     {
         msg=tr("Out of paper");//请正确放入纸张！
+        emit g_doScanThread->signalScanError(msg);
     }
     else if(nStatus == STATUS_DEVICE_BUSY)
     {
         msg=tr("Paper jam when scanning");//扫描过程中卡纸！
+        emit g_doScanThread->signalScanError(msg);
     }
     else if(nStatus == STATUS_JAMMED)
     {
         msg=tr("Paper jam in the document feeder");//文档进纸器卡纸！
+        emit g_doScanThread->signalScanError(msg);
     }
-    else
-    {
-        msg=tr("Unknown error:")+nStatus;//未知错误,
-    }
+    /*
+    else if(nStatus == STATUS_JAMMED)
+        msg=tr("Unknown error");//不支持该操作
+    else if(nStatus == STATUS_CANCELLED)
+        msg=tr("Unknown error");//操作被取消
+    else if(nStatus == STATUS_INVAL)
+        msg=tr("Unknown error");//数据或参数无效
+    else if(nStatus == STATUS_EOF)
+        msg=tr("Unknown error");//没有更多可用数据（文件结束）
+    else if(nStatus == STATUS_COVER_OPEN)
+        msg=tr("Unknown error");//扫描仪盖板已打开
+    else if(nStatus == STATUS_IO_ERROR)
+        msg=tr("Unknown error");//设备I/O期间出错
+    else if(nStatus == STATUS_NO_MEM)
+        msg=tr("Unknown error");//内存不足
+    else if(nStatus == STATUS_ACCESS_DENIED)
+        msg=tr("Unknown error");//对资源的访问已被拒绝。
+    else if(nStatus == STATUS_INIT_FAILED)
+        msg=tr("Unknown error");//初始化失败
+    else if(nStatus == STATUS_OPEN_FAILED)
+        msg=tr("Unknown error");//打开失败
+    else if(nStatus == STATUS_CONNECT_FAILED)
+        msg=tr("Unknown error");//连接失败
+    */
 
-    emit g_doScanThread->signalScanError(msg);
     return  0;
 }
 
@@ -69,7 +91,7 @@ void DoScanThread::startScanSlot()
     int nResult = OpenDev(deviceIndex);//打开设备
     if(nResult != 0)
     {
-        emit g_doScanThread->signalOpenDevError();//打开扫描仪设备出错
+        emit g_doScanThread->signalOpenDevError(tr("Unknown error"));//打开扫描仪设备出错
         qDebug()<<"打开扫描仪设备出错:"<<nResult;
         ExitDev();//CloseDev(deviceIndex);//关闭设备
         emit g_doScanThread->signalScanOver();//扫描结束
@@ -97,10 +119,16 @@ void DoScanThread::startScanSlot()
         }
     }
 
-    nResult = Scan(deviceIndex,doScanReceiveCB,doScanStatuCB);//扫描
+    nResult = Scan(deviceIndex,doScanReceiveCB,doScanStatuCB);//扫描    
     if(nResult != 0)
     {
-        doScanStatuCB(STATUS_DEVICE_BUSY);//提示卡纸
+        qDebug()<<"***************扫描失败*********"<<nResult;
+        if(nResult != STATUS_NO_DOCS
+          && nResult != STATUS_DEVICE_BUSY
+          && nResult != STATUS_JAMMED)
+        {
+            emit g_doScanThread->signalOpenDevError(tr("Unknown error"));//扫描出错
+        }
     }
     qDebug()<<"scan finish";
     emit g_doScanThread->signalScanOver();//扫描结束

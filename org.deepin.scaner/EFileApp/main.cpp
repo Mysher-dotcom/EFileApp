@@ -5,6 +5,7 @@
 #include "scanmanagerwindow.h"
 #include <QTranslator>
 #include "helper/loggerhelper.h"
+#include <QLocale>
 
 int main(int argc, char *argv[])
 {
@@ -21,22 +22,22 @@ int main(int argc, char *argv[])
      */
     QTranslator translator;
     QLocale locale;
-    qDebug()<<"current system's language:"<<locale.language();
-    if(locale.language() == QLocale::Chinese )
+    qDebug()<<"current system's language:"<<locale.language()<<",name:"<<locale.name();
+    if(locale.name() == "zh_CN" )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_zh_CN.qm"));//中文（中华人民共和国）
-    else if(locale.language() == QLocale::TraditionalChineseScript )
+    else if(locale.name() == "zh_HK" )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_zh_HK.qm"));//中文（香港特区）
-    else if(locale.language() == QLocale::Taiwan )
+    else if(locale.name() == "zh_TW" )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_zh_TW.qm"));//中文（台湾）
-    else if(locale.language() == QLocale::English )
+    else if(locale.name() == "en_us" )//else if(locale.language() == QLocale::English )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_en_US.qm"));//英文
-    else if(locale.language() == QLocale::Armenian )
+    else if(locale.name() == "am_et" )//else if(locale.language() == QLocale::Armenian )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_am_ET.qm"));//亚美尼亚
-    else if(locale.language() == QLocale::Argentina )
+    else if(locale.name() == "es_AR" )//else if(locale.language() == QLocale::Argentina )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_ar.qm"));//阿根廷
     else if(locale.language() == QLocale::Bulgarian )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_bg.qm"));//保加利亚
-    else if(locale.language() == QLocale::CanadianAboriginalScript)
+    else if(locale.name() == "en_CA" )//else if(locale.language() == QLocale::CanadianAboriginalScript)
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_ca.qm"));//加拿大
     else if(locale.language() == QLocale::Czech )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_cs.qm"));//捷克
@@ -70,7 +71,7 @@ int main(int argc, char *argv[])
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_ko.qm"));//韩国
     else if(locale.language() == QLocale::Lithuanian )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_lt.qm"));//立陶宛
-    else if(locale.language() == QLocale::Montserrat )
+    else if(locale.name() == "ms" )//else if(locale.language() == QLocale::Montserrat )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_ms.qm"));//蒙特塞拉特岛
     else if(locale.language() == QLocale::Dutch )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_nl.qm"));//荷兰
@@ -88,13 +89,13 @@ int main(int argc, char *argv[])
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_sk.qm"));//斯洛伐克
     else if(locale.language() == QLocale::Albanian )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_sq.qm"));//阿尔巴尼亚语
-    else if(locale.language() == QLocale::Suriname )
+    else if(locale.name() == "sr" )//else if(locale.language() == QLocale::Suriname )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_sr.qm"));//苏里南
-    else if(locale.language() == QLocale::ElSalvador )
+    else if(locale.name() == "sv" )//else if(locale.language() == QLocale::ElSalvador )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_sv.qm"));//萨尔瓦多
     else if(locale.language() == QLocale::Turkish )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_tr.qm"));//土耳其
-    else if(locale.language() == QLocale::Uganda)
+    else if(locale.name() == "ug" )//else if(locale.language() == QLocale::Uganda)
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_ug.qm"));//乌干达
     else if(locale.language() == QLocale::Ukrainian )
         translator.load(QString("%1/%2").arg(appPath).arg("translations/scan-assistantts_uk.qm"));//乌克兰
@@ -103,7 +104,7 @@ int main(int argc, char *argv[])
 
     a.setAttribute(Qt::AA_UseHighDpiPixmaps);
     a.loadTranslator();
-    a.setApplicationVersion(DApplication::buildVersion("5.1.0.4-13"));
+    a.setApplicationVersion(DApplication::buildVersion("5.1.0.4-14"));
     a.setProductIcon(QIcon(":/img/logo/logo-16.svg"));
     a.setOrganizationName(QObject::tr("Scan Assistant"));
     a.setProductName(QObject::tr("Scan Assistant"));
@@ -113,7 +114,6 @@ int main(int argc, char *argv[])
 
 
     MainWindow w;
-    //ScanManagerWindow w;
     w.show();
 
     Dtk::Widget::moveToCenter(&w);//让打开时界面显示在正中

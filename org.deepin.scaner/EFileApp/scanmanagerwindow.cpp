@@ -31,6 +31,7 @@
 #include <QDesktopServices>
 #include <QDragEnterEvent>//用于拖拽
 #include <QMimeData>//用于拖拽
+#include <QScreen>
 
 
 ScanManagerWindow::ScanManagerWindow(QWidget *parent) :
@@ -94,6 +95,7 @@ bool ScanManagerWindow::isDarkType()
 
 void ScanManagerWindow::closeEvent(QCloseEvent *event)
 {
+    this->hide();//先隐藏窗口
     if(isScanClose == false && GlobalHelper::getDeviceInfoIsOver == true && isNoDevice == false)
     {
          getImgEditPar();//从UI上获取图像处理参数
@@ -1015,7 +1017,7 @@ void ScanManagerWindow::showDeviceParUI(QString titleName,QString parName,QStrin
         if(!recordedParValue.isEmpty())
         {
             qDebug()<<parName<<"上一次选中参数,"<<recordedParValue<<",下拉框中的下标："<<valueIndex;
-           ptypeCbb->setCurrentIndex(valueIndex);
+            ptypeCbb->setCurrentIndex(valueIndex);
             //设置参数集合
             if(parIndex.toInt() < 0)//小于0,表示是摄像头的参数
             {
@@ -1528,9 +1530,24 @@ void ScanManagerWindow::slotScanButtonClicked()
         }
         scanWindow->setAttribute(Qt::WA_ShowModal,true);//模态窗口
         scanWindow->show();
+        QDesktopWidget * desktop = QApplication::desktop();
+        int currentScreen = desktop->screenNumber(this);//获取程序所在屏幕是第几个屏幕
+        //int screenCount = desktop->screenCount();//获取所有屏幕的个数
+        int nw = 0;
+        int nh = 0;
+        for(int i=0;i<currentScreen;i++)
+        {
+            QRect rectTmp = desktop->screenGeometry(i);//获取屏幕的尺寸
+            nw += rectTmp.width();
+            nh += rectTmp.height();
+        }
+        QRect rect = desktop->screenGeometry(currentScreen);//获取程序所在屏幕的尺寸
+        scanWindow->move((rect.width()-scanWindow->width())/2+nw,(rect.height()-scanWindow->height())/2);
+        /*
         //屏幕中间显示
         scanWindow->move ((QApplication::desktop()->width() - scanWindow->width())/2,
                           (QApplication::desktop()->height() - scanWindow->height())/2);
+        */
         this->close();//本窗口关闭
         //拍摄仪窗口的关闭信号与主窗口的搜索更新设备连接
         MainWindow *mainW = (MainWindow*)this->parent();
@@ -1545,8 +1562,24 @@ void ScanManagerWindow::slotScanButtonClicked()
         }
         cameraWindow->setAttribute(Qt::WA_ShowModal,true);//模态窗口
         cameraWindow->show();
+
+        QDesktopWidget * desktop = QApplication::desktop();
+        int currentScreen = desktop->screenNumber(this);//获取程序所在屏幕是第几个屏幕
+        //int screenCount = desktop->screenCount();//获取所有屏幕的个数
+        int nw = 0;
+        int nh = 0;
+        for(int i=0;i<currentScreen;i++)
+        {
+            QRect rectTmp = desktop->screenGeometry(i);//获取屏幕的尺寸
+            nw += rectTmp.width();
+            nh += rectTmp.height();
+        }
+        QRect rect = desktop->screenGeometry(currentScreen);//获取程序所在屏幕的尺寸
+        cameraWindow->move((rect.width()-cameraWindow->width())/2+nw,(rect.height()-cameraWindow->height())/2);
+        /*
         cameraWindow->move ((QApplication::desktop()->width() - cameraWindow->width())/2,
                           (QApplication::desktop()->height() - cameraWindow->height())/2);
+        */
         this->close();//本窗口关闭
 
         //拍摄仪窗口的关闭信号与主窗口的刷新数据槽连接
@@ -1626,11 +1659,11 @@ void ScanManagerWindow::slotDevListPressed(const QModelIndex)
                         //选中参数集合默认加入第一个参数
                         if(parValueList.size()>0)
                         {
-                           //scannerChoiseParMap.insert(parIndex.toInt(),parValueList.at(0));
 
                            //记录扫描仪参数
                            if(isContainsGroup == false)
                            {
+                                scannerChoiseParMap.insert(parIndex.toInt(),parValueList.at(0));
                                 DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),
                                                         "imgset",
                                                         parName,
@@ -1866,44 +1899,45 @@ void ScanManagerWindow::slotColorButtonClicked()
 //获取图像处理参数
 void ScanManagerWindow::getImgEditPar()
 {
+    QString currentDeviceIniPath = DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel);
     //单图裁剪单选按钮
     if(singleCutrbBtn->isChecked())
     {
-        GlobalHelper::writeSettingValue("imgEdit","isCut","1");
-        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isCut","1");
+        //GlobalHelper::writeSettingValue("imgEdit","isCut","1");
+        DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","isCut","1");
     }
     //不裁剪单选按钮
     if(noCutrbBtn->isChecked())
     {
-        GlobalHelper::writeSettingValue("imgEdit","isCut","0");
-        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isCut","0");
+        //GlobalHelper::writeSettingValue("imgEdit","isCut","0");
+        DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","isCut","0");
     }
     //多图裁剪单选按钮
     if(mulCutrbBtn->isChecked())
     {
-        GlobalHelper::writeSettingValue("imgEdit","isCut","2");
-        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isCut","2");
+        //GlobalHelper::writeSettingValue("imgEdit","isCut","2");
+        DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","isCut","2");
     }
     //无水印单选按钮
     if(noWaterrbBtn->isChecked())
     {
-        GlobalHelper::writeSettingValue("imgEdit","isWaterMark","0");
-        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isWaterMark","0");
+        //GlobalHelper::writeSettingValue("imgEdit","isWaterMark","0");
+        DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","isWaterMark","0");
     }
     //文字水印单选按钮
     if(fontWaterrbBtn->isChecked())
     {
-        GlobalHelper::writeSettingValue("imgEdit","isWaterMark","1");
-        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isWaterMark","1");
+        //GlobalHelper::writeSettingValue("imgEdit","isWaterMark","1");
+        DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","isWaterMark","1");
     }
     //水印文本
-    GlobalHelper::writeSettingValue("imgEdit","waterMarkText",fontWaterText->toPlainText());
-    DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","waterMarkText",fontWaterText->toPlainText());
+    //GlobalHelper::writeSettingValue("imgEdit","waterMarkText",fontWaterText->toPlainText());
+    DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","waterMarkText",fontWaterText->toPlainText());
 
     //文档类型下拉框(0=原始文档，1=文档优化，2=彩色优化，3=红印文档优化，4=反色，5=滤红)
     int nDocType = docTypeCBB->currentIndex();
-    GlobalHelper::writeSettingValue("imgEdit","docType",QString::number(nDocType));
-    DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","docType",QString::number(nDocType));
+    //GlobalHelper::writeSettingValue("imgEdit","docType",QString::number(nDocType));
+    DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","docType",QString::number(nDocType));
 
     /*
     //去噪复选框
@@ -1920,40 +1954,40 @@ void ScanManagerWindow::getImgEditPar()
     //缺角修复复选框
     if(repairCKB->isChecked())
     {
-        GlobalHelper::writeSettingValue("imgEdit","isRepair","0");
-        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isRepair","0");
+        //GlobalHelper::writeSettingValue("imgEdit","isRepair","0");
+        DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","isRepair","0");
     }
     else
     {
-        GlobalHelper::writeSettingValue("imgEdit","isRepair","1");
-        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","isRepair","1");
+        //GlobalHelper::writeSettingValue("imgEdit","isRepair","1");
+        DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","isRepair","1");
     }
 
     //文件类型
-    GlobalHelper::writeSettingValue("imgEdit","imgFormat",imgFormatCBB->currentText());
-    DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","imgFormat",imgFormatCBB->currentText());
+    //GlobalHelper::writeSettingValue("imgEdit","imgFormat",imgFormatCBB->currentText());
+    DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","imgFormat",imgFormatCBB->currentText());
 
     //拍摄仪
     if(nCurrentDeviceType == 1)
     {
         //色彩模式（彩色，灰度，黑白）
-        GlobalHelper::writeSettingValue("imgEdit","imgType",QString::number(imgTypeCBB->currentIndex()));
-        DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","imgType",QString::number(imgTypeCBB->currentIndex()));
+        //GlobalHelper::writeSettingValue("imgEdit","imgType",QString::number(imgTypeCBB->currentIndex()));
+        DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","imgType",QString::number(imgTypeCBB->currentIndex()));
 
         //手动拍摄单选按钮
         if(shotTypeManualrbBtn->isChecked())
         {
-            GlobalHelper::writeSettingValue("imgEdit","shotType","0");
-            DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","shotType","0");
+            //GlobalHelper::writeSettingValue("imgEdit","shotType","0");
+            DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","shotType","0");
         }
 
         //定时拍摄单选按钮
         if(shotTypeTimerrbBtn->isChecked())
         {
-            GlobalHelper::writeSettingValue("imgEdit","shotType","1");
-            GlobalHelper::writeSettingValue("imgEdit","shotTime",shotTypeTimerCBB->currentText());//定时拍摄时间下拉框
-            DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","shotType","1");
-            DeviceInfoHelper::writeValue(DeviceInfoHelper::getDeviceInfoFilePath(currentDeviceModel),"imgset","shotTime",shotTypeTimerCBB->currentText());
+            //GlobalHelper::writeSettingValue("imgEdit","shotType","1");
+            //GlobalHelper::writeSettingValue("imgEdit","shotTime",shotTypeTimerCBB->currentText());//定时拍摄时间下拉框
+            DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","shotType","1");
+            DeviceInfoHelper::writeValue(currentDeviceIniPath,"imgset","shotTime",shotTypeTimerCBB->currentText());
          }
     }
 

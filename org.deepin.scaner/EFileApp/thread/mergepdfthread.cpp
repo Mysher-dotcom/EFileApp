@@ -2,6 +2,8 @@
 #include "hpdfoperation.h"
 #include <QImage>
 #include "cpng.h"
+#include <QFile>
+#include <QFileInfo>
 CJpeg merge_jpg;//CJPEG对象
 CPNG m_png;
 MergePDFThread::MergePDFThread(QObject *parent): QObject(parent)
@@ -21,8 +23,26 @@ void MergePDFThread::startMerge()
         emit signalOver();
         return;
     }
+    //遇到重名的PDF，追加编号
+    QString filePath = fileList.at(0);
+    int index = 1;
+    QFileInfo *fi = new QFileInfo(filePath);
+    QString fileSuffix = "pdf";//fi->suffix().trimmed();
+    QString fileName = fi->fileName();
+    QString fileFolder = fi->absolutePath();
+    fileName = fileName.mid(0,fileName.indexOf("."));
+    filePath = fileFolder+"/"+fileName+"."+fileSuffix;
+    QFile newFile(filePath);
+    while(newFile.exists() == true)
+    {
+       filePath = fileFolder+"/"+fileName+"("+QString::number(index)+")."+fileSuffix;
+       newFile.setFileName(filePath);
+       index++;
+    }
+    delete  fi;
+
     char pdfPath[256]={0};
-    strncpy(pdfPath,fileList.at(0).toUtf8().data(),strlen(fileList.at(0).toUtf8().data())-3);
+    strncpy(pdfPath,filePath.toUtf8().data(),strlen(filePath.toUtf8().data())-3);
     strcat(pdfPath,"pdf");
     qDebug("pdf path is %s\n",pdfPath);
     hpdfoperation pdfop;

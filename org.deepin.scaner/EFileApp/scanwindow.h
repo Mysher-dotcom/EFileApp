@@ -93,7 +93,7 @@ private slots:
     void closeThread();//关闭线程
     void slotFinishThread();//线程停止触发
     void slotScanError(QString);//扫描中错误信号
-    void slotOpenDevError();//打开设备出错
+    void slotOpenDevError(QString);//打开设备出错
     void slotListDoubleClicked(const QModelIndex);//列表项双击
     void slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int nDPI);//存图
 

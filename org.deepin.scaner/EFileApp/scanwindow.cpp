@@ -112,7 +112,7 @@ void ScanWindow::startScanThread()
     connect(DoScanThread::g_doScanThread,SIGNAL(signalScanError(QString)),this,SLOT(slotScanError(QString)));
 
     //打开设备出错
-    connect(DoScanThread::g_doScanThread,SIGNAL(signalOpenDevError()),this,SLOT(slotOpenDevError()));
+    connect(DoScanThread::g_doScanThread,SIGNAL(signalOpenDevError(QString)),this,SLOT(slotOpenDevError(QString)));
 
     //扫描结束
     connect(DoScanThread::g_doScanThread,SIGNAL(signalScanOver()),this,SLOT(closeThread()));
@@ -125,12 +125,12 @@ void ScanWindow::startScanThread()
 }
 
 //打开设备出错
-void ScanWindow::slotOpenDevError()
+void ScanWindow::slotOpenDevError(QString msg)
 {
     DDialog *dialog = new DDialog ();
     dialog->setIcon(QIcon(":/img/dialogWarnIcon.svg"));
     dialog->setTitle(tr("Scan failed"));
-    dialog->setMessage(tr("Unknown error"));
+    dialog->setMessage(msg);
     dialog->addButton(tr("Confirm"),true);
     dialog->exec();
 

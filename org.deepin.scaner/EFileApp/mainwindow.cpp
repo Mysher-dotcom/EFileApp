@@ -42,6 +42,7 @@
 #include <string>
 #include <iostream>
 #include "cmimage.h"
+#include <QScreen>
 
 using namespace std;
 
@@ -54,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //匹配版本号，用于是否删除配置文件
-    GlobalHelper::softVersion = "5.1.0.4-13";
+    GlobalHelper::softVersion = "5.1.0.4-14";
     GlobalHelper::checkVersion();
     //检查配置文件是否存在，不存在就创建，并写入初始值
     QFileInfo settingFile(GlobalHelper::getSettingFilePath());
@@ -1190,6 +1191,7 @@ void MainWindow::addItem(QString path)
     pItem->setData(QVariant::fromValue(itemData),Qt::UserRole+1);//显示的数据
     listViewModel->appendRow(pItem);
     pItem->setToolTip(fi->fileName());//悬浮在Item上，显示文件名
+    //fileListView->setUpdatesEnabled(true);
 
     //***文件信息列表***
     // 获取系统图标、文件类型、最后修改时间
@@ -1356,7 +1358,6 @@ void MainWindow::slotSearchTextChange(QString str)
         }
     }
 }
-
 //扫描按钮
 void MainWindow::slotScanButtonClicked()
 {
@@ -1365,12 +1366,33 @@ void MainWindow::slotScanButtonClicked()
         GlobalHelper::getDeviceInfoIsOver = false;
         qDebug()<<"thread is running";
    }
-
     smWindow = new ScanManagerWindow (this);
     smWindow->setAttribute(Qt::WA_ShowModal,true);//模态窗口
     smWindow->show();
-    smWindow->move ((QApplication::desktop()->width() - smWindow->width())/2,
-                    (QApplication::desktop()->height() - smWindow->height())/2);//屏幕中间显示
+
+
+    QDesktopWidget * desktop = QApplication::desktop();
+    int currentScreen = desktop->screenNumber(this);//获取程序所在屏幕是第几个屏幕
+    //int screenCount = desktop->screenCount();//获取所有屏幕的个数
+    int nw = 0;
+    int nh = 0;
+    for(int i=0;i<currentScreen;i++)
+    {
+        QRect rectTmp = desktop->screenGeometry(i);//获取屏幕的尺寸
+        nw += rectTmp.width();
+        nh += rectTmp.height();
+    }
+    QRect rect = desktop->screenGeometry(currentScreen);//获取程序所在屏幕的尺寸
+    smWindow->move((rect.width()-smWindow->width())/2+nw,(rect.height()-smWindow->height())/2);
+
+    /*
+    //只在主屏幕上居中显示
+    QScreen *mScreen = QGuiApplication::screens().first();
+    smWindow->move((mScreen->geometry().width()-smWindow->width())/2,(mScreen->geometry().height()-smWindow->height())/2);
+    */
+
+    //smWindow->move ((QApplication::desktop()->width() - smWindow->width())/2,
+    //                (QApplication::desktop()->height() - smWindow->height())/2);//屏幕中间显示
 
     connect(this, SIGNAL(signalThreadOver()), smWindow, SLOT(slotGetDeviceList()));
     connect(smWindow, SIGNAL(signalSearchDevice()), this, SLOT(openCameraThread()));
@@ -1440,15 +1462,29 @@ void MainWindow::slotListLayoutButtonClicked()
 void MainWindow::slotMenuSetButtonClicked()
 {
     SetWindow *sw = new  SetWindow (this);
-    //sw->setAttribute(Qt::WA_ShowModal,true);//模态窗口
     sw->show();
+
+    QDesktopWidget * desktop = QApplication::desktop();
+    int currentScreen = desktop->screenNumber(this);//获取程序所在屏幕是第几个屏幕
+    //int screenCount = desktop->screenCount();//获取所有屏幕的个数
+    int nw = 0;
+    int nh = 0;
+    for(int i=0;i<currentScreen;i++)
+    {
+        QRect rectTmp = desktop->screenGeometry(i);//获取屏幕的尺寸
+        nw += rectTmp.width();
+        nh += rectTmp.height();
+    }
+    QRect rect = desktop->screenGeometry(currentScreen);//获取程序所在屏幕的尺寸
+    sw->move((rect.width()-sw->width())/2+nw,(rect.height()-sw->height())/2);
+
+    /*
     //屏幕中间显示
     sw->move ((QApplication::desktop()->width() - sw->width())/2,
                     (QApplication::desktop()->height() - sw->height())/2);
-
+    */
     //设置窗口的关闭信号与本窗口的刷新数据槽连接
     connect(sw,SIGNAL(signalWindowClosed()),this,SLOT(slotRefreshData()));
-
 }
 
 
@@ -1583,8 +1619,24 @@ void MainWindow::slotTableViewMenuOutputPDFFile()
     progressBarWindow = new ProgressBarWindow (1,list.size(),tr("Combining into PDF"),this);
     progressBarWindow->setAttribute(Qt::WA_ShowModal,true);//模态窗口
     progressBarWindow->show();
+
+    QDesktopWidget * desktop = QApplication::desktop();
+    int currentScreen = desktop->screenNumber(this);//获取程序所在屏幕是第几个屏幕
+    //int screenCount = desktop->screenCount();//获取所有屏幕的个数
+    int nw = 0;
+    int nh = 0;
+    for(int i=0;i<currentScreen;i++)
+    {
+        QRect rectTmp = desktop->screenGeometry(i);//获取屏幕的尺寸
+        nw += rectTmp.width();
+        nh += rectTmp.height();
+    }
+    QRect rect = desktop->screenGeometry(currentScreen);//获取程序所在屏幕的尺寸
+    progressBarWindow->move((rect.width()-progressBarWindow->width())/2+nw,(rect.height()-progressBarWindow->height())/2);
+    /*
     progressBarWindow->move ((QApplication::desktop()->width() - progressBarWindow->width())/2,
                             (QApplication::desktop()->height() - progressBarWindow->height())/2);
+    */
     connect(progressBarWindow,SIGNAL(signalWindowClosed()), this,SLOT(slotGetProgressBarCloseSignal()));
 
     mergeThread = new MergePDFThread ();
