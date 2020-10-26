@@ -90,9 +90,22 @@ void MergePDFThread::startMerge()
             char strPath[256]={0};
             strcpy(strPath,fileList.at(i).toUtf8().data());
             QImage* img2 = new QImage(strPath);
-            dstBuf = img2->bits ();
-            pdfop.rgb2pdf(dstBuf,img2->width(),img2->height(),pdfPath,0,true,i == fileList.size() - 1);
+             QImage imgColor;
+            if(img2->format() == QImage::Format_RGB32)
+            {
+                imgColor = img2->convertToFormat(QImage::Format_RGB888);
+                dstBuf = imgColor.bits ();
+            }
+            else {
+                dstBuf = img2->bits ();
+            }
+            if(img2->format() == QImage::Format_RGB32)
+                pdfop.rgb2pdf((unsigned char*)dstBuf,img2->width(),img2->height(),pdfPath,0,true,i == fileList.size() - 1);
+            if(img2->format() == QImage::Format_Indexed8 || img2->format() == QImage::Format_Grayscale8 )
+                pdfop.rgb2pdf((unsigned char*)dstBuf,img2->width(),img2->height(),pdfPath,1,true,i == fileList.size() - 1);
+            delete  img2;
         }
+
         emit signalSingleFileMergeOver(fileList.at(i),i);
     }
     emit signalOver();

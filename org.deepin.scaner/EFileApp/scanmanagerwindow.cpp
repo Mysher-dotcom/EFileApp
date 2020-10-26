@@ -921,6 +921,29 @@ void ScanManagerWindow::addDeviceItem(int type,QString name,QString model,QStrin
  */
 void ScanManagerWindow::showDeviceParUI(QString titleName,QString parName,QString parIndex,int parType, QStringList parValue,bool isAddTitleTopMargin,bool isLastPar)
 {
+    QString str1 = tr("ADF Back");//ADF%20Back=ADF背面
+    QString str2 = tr("ADF Duplex");//ADF%20Duplex=ADF双面
+    QString str3 = tr("ADF Front");//ADF%20Front=ADF正面
+    QString str4 = tr("ADF_DUPLEX");//ADF_DUPLEX=ADF双面
+    QString str5 = tr("ADF_FRONT");//ADF_FRONT=ADF正面
+    QString str6 = tr("FLAT_FRONT");//FLAT_FRONT=平板
+    QString str7 = tr("Simplex");//Simplex=ADF单面
+    QString str8 = tr("Duplex");//Duplex=ADF双面
+    QString str9 = tr("Flatbed");//Flatbed=平板
+    QString str10 = tr("Auto Detection");//Auto%20Detection=自动检测
+    QString str11 = tr("Automatic");//Automatic=自动检测
+    QString str12 = tr("Black & White");//Black%20%26%20White=黑白图
+    QString str13 = tr("Color");//Color=彩色图
+    QString str14 = tr("Color24");//Color24=彩色图
+    QString str15 = tr("Gray");//Gray=灰度图
+    QString str16 = tr("Gray8");//Gray8=灰度图
+    QString str17 = tr("Lineart");//Lineart=黑白图
+    QString str18 = tr("Scan Mode");//ScanMode=扫描模式(翻译改变英文)
+    QString str19 = tr("Scan mode");//source=扫描模式(翻译改变英文)
+    QString str20 = tr("Color mode");//mode=色彩模式(翻译改变英文)
+    QString str21 = tr("Resolution");//resolution=分辨率(翻译改变英文)
+    QString str22 = tr("Video");//format=视频格式(翻译改变英文)
+
     if(titleName.length() > 0)
     {
         DLabel *lbl = new DLabel ();
@@ -949,14 +972,19 @@ void ScanManagerWindow::showDeviceParUI(QString titleName,QString parName,QStrin
     DLabel  *pnameLbl= new DLabel ();//参数名称，显示配置文件中的翻译文本
     pnameLbl->setFixedWidth(80);
 
-    if(locale.language() == QLocale::Chinese )
+    //if(locale.language() == QLocale::Chinese )
+    //pnameLbl->setText(GlobalHelper::readSettingValue("lan",parName));
+    QString tmpParName = parName;
+    if(locale.name() == "zh_CN" || locale.name() == "zh_HK" || locale.name() == "zh_TW")
     {
-        pnameLbl->setText(GlobalHelper::readSettingValue("lan",parName));
+        if(parName == "ScanMode") tmpParName = str18;//ScanMode=扫描模式(翻译改变英文)
+        if(parName == "source") tmpParName = str19;//source=扫描模式(翻译改变英文)
+        if(parName == "mode") tmpParName = str20;//mode=色彩模式(翻译改变英文)
+        if(parName == "resolution") tmpParName = str21;//resolution=分辨率(翻译改变英文)
+        if(parName == "format") tmpParName = str22;//format=视频格式(翻译改变英文)
     }
-    else
-    {
-        pnameLbl->setText(parName);
-    }
+    pnameLbl->setText(tmpParName);
+
    // pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;color:rgba(65,77,104,1);font-size:14px");
     pnameLbl->setStyleSheet("font-family:SourceHanSansSC-Medium,sourceHanSansSC;font-weight:500;font-size:14px");
     parHLayout->addWidget(pnameLbl);
@@ -989,19 +1017,33 @@ void ScanManagerWindow::showDeviceParUI(QString titleName,QString parName,QStrin
         {
             ptypeCbb->setObjectName(parIndex);//一定要设置名称，否则无法获取到具体的控件,以参数下标命名
         }
-        //for(QString pvalue : parValue)
         for(int i = 0;i < parValue.size();i++)
         {
             if(parValue.at(i).isNull() || parValue.at(i).isEmpty()) continue;
             QString tmpParValue = parValue.at(i);
-            if(locale.language() == QLocale::Chinese )
+//            if(locale.language() == QLocale::Chinese ) tmpParValue = GlobalHelper::readSettingValue("lan",parValue.at(i));
+//            if(tmpParValue.isNull() || tmpParValue.isEmpty()) tmpParValue = parValue.at(i);
+            if(locale.name() == "zh_CN" || locale.name() == "zh_HK" || locale.name() == "zh_TW")
             {
-                tmpParValue = GlobalHelper::readSettingValue("lan",parValue.at(i));
+                if(tmpParValue == "ADF Back") tmpParValue = str1;//ADF%20Back=ADF背面
+                if(tmpParValue == "ADF Duplex") tmpParValue = str2;//ADF%20Duplex=ADF双面
+                if(tmpParValue == "ADF Front") tmpParValue = str3;//ADF%20Front=ADF正面
+                if(tmpParValue == "ADF_DUPLEX") tmpParValue = str4;//ADF_DUPLEX=ADF双面
+                if(tmpParValue == "ADF_FRONT") tmpParValue = str5;//ADF_FRONT=ADF正面
+                if(tmpParValue == "FLAT_FRONT") tmpParValue = str6;//FLAT_FRONT=平板
+                if(tmpParValue == "Simplex") tmpParValue = str7;//Simplex=ADF单面
+                if(tmpParValue == "Duplex") tmpParValue = str8;//Duplex=ADF双面
+                if(tmpParValue == "Flatbed") tmpParValue = str9;//Flatbed=平板
+                if(tmpParValue == "Auto Detection") tmpParValue = str10;//Auto%20Detection=自动检测
+                if(tmpParValue == "Automatic") tmpParValue = str11 ;//Automatic=自动检测
+                if(tmpParValue == "Black & White") tmpParValue = str12;//Black%20%26%20White=黑白图
+                if(tmpParValue == "Color") tmpParValue = str13;//Color=彩色图
+                if(tmpParValue == "Color24") tmpParValue = str14;//Color24=彩色图
+                if(tmpParValue == "Gray") tmpParValue = str15;//Gray=灰度图
+                if(tmpParValue == "Gray8") tmpParValue = str16;//Gray8=灰度图
+                if(tmpParValue == "Lineart") tmpParValue = str17;//Lineart=黑白图
             }
-            if(tmpParValue.isNull() || tmpParValue.isEmpty())
-            {
-                tmpParValue = parValue.at(i);
-            }
+
             ptypeCbb->addItem(tmpParValue);
 
             qDebug()<<"对比："<<parValue.at(i)<<","<<recordedParValue;
@@ -1221,7 +1263,7 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     docTypeCBB = new DComboBox ();
     docTypeCBB->addItem(tr("Original"));//原始文档
     docTypeCBB->addItem(tr("Document"));//文档优化
-    docTypeCBB->addItem(tr("Color"));//彩色优化
+    docTypeCBB->addItem(tr("Enhanced color"));//彩色优化
     docTypeCBB->addItem(tr("Red seal"));//红印文档优化
     docTypeCBB->addItem(tr("Invert colors"));//反色
     //docTypeCBB->addItem(tr("滤红"));

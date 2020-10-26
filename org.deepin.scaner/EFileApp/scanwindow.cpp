@@ -492,6 +492,22 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     }
     else
         color_type=0;
+
+    if(sImgSuffix=="bmp"||sImgSuffix=="tif")
+       {
+           if(channel == 3)
+           {
+               for(int byteIndex = 0; byteIndex< nSize;byteIndex += 3)
+               {
+                   char tempByte = * (data + byteIndex);
+                   * (data + byteIndex) = * (data + byteIndex + 2);
+                   * (data + byteIndex + 2)= tempByte;
+               }
+
+           }
+
+       }
+
     MImage * src = mcvCreateImageFromArray(width,height,channel,data,false);
     qDebug("1\n");
 

@@ -13,6 +13,7 @@
 
 int deviceIndex;
 QMap<int ,QString> scanParMap;//扫描需要的参数
+bool isShowErrorMsg;//是否已经在错误回调中弹过错误信息
 
 DoScanThread *DoScanThread::g_doScanThread = NULL;//全局线程对象，供扫描窗口绑定信号槽
 
@@ -22,6 +23,7 @@ DoScanThread::DoScanThread(int devIndex,QMap<int ,QString> map,QObject *parent) 
     isStop=false;
     deviceIndex = devIndex;
     scanParMap = map;
+    isShowErrorMsg = false;
 }
 
 void DoScanThread::closeThread()
@@ -45,16 +47,19 @@ int DoScanThread::doScanStatuCB(int nStatus)
     {
         msg=tr("Out of paper");//请正确放入纸张！
         emit g_doScanThread->signalScanError(msg);
+        isShowErrorMsg = true;
     }
     else if(nStatus == STATUS_DEVICE_BUSY)
     {
         msg=tr("Paper jam when scanning");//扫描过程中卡纸！
         emit g_doScanThread->signalScanError(msg);
+        isShowErrorMsg = true;
     }
     else if(nStatus == STATUS_JAMMED)
     {
         msg=tr("Paper jam in the document feeder");//文档进纸器卡纸！
         emit g_doScanThread->signalScanError(msg);
+        isShowErrorMsg = true;
     }
     /*
     else if(nStatus == STATUS_JAMMED)
@@ -123,11 +128,27 @@ void DoScanThread::startScanSlot()
     if(nResult != 0)
     {
         qDebug()<<"***************扫描失败*********"<<nResult;
-        if(nResult != STATUS_NO_DOCS
-          && nResult != STATUS_DEVICE_BUSY
-          && nResult != STATUS_JAMMED)
+        if(isShowErrorMsg == false)
+        //if(nResult != STATUS_NO_DOCS && nResult != STATUS_DEVICE_BUSY && nResult != STATUS_JAMMED)
         {
-            emit g_doScanThread->signalOpenDevError(tr("Unknown error"));//扫描出错
+            if(nResult == STATUS_NO_DOCS)
+            {
+                emit g_doScanThread->signalOpenDevError(tr("Out of paper"));//请正确放入纸张！
+            }
+            else if(nResult == STATUS_DEVICE_BUSY)
+            {
+                emit g_doScanThread->signalOpenDevError(tr("Paper jam when scanning"));//扫描过程中卡纸！
+            }
+            else if(nResult == STATUS_JAMMED)
+            {
+                emit g_doScanThread->signalOpenDevError(tr("Paper jam in the document feeder"));//文档进纸器卡纸！
+            }
+            else
+            {
+                emit g_doScanThread->signalOpenDevError(tr("Unknown error"));//扫描出错
+            }
+
+            isShowErrorMsg = false;
         }
     }
     qDebug()<<"scan finish";

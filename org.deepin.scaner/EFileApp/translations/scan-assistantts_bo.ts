@@ -2,118 +2,119 @@
 <context>
     <name>CameraWindow</name>
     <message>
-        <location filename="../camerawindow.cpp" line="76"/>
+        <location filename="../camerawindow.cpp" line="92"/>
         <source>Scanner</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་ཆས།</translation>
     </message>
     <message>
-        <location filename="../camerawindow.cpp" line="110"/>
+        <location filename="../camerawindow.cpp" line="126"/>
         <source>1:1 Size</source>
-        <translation type="unfinished"/>
+        <translation>ཆེ་ཆུང་1:1</translation>
     </message>
     <message>
-        <location filename="../camerawindow.cpp" line="116"/>
+        <location filename="../camerawindow.cpp" line="130"/>
         <source>Zoom in</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../camerawindow.cpp" line="122"/>
-        <source>Zoom out</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../camerawindow.cpp" line="128"/>
-        <source>Rotate counterclockwise</source>
-        <translation type="unfinished"/>
+        <translation>ཆེ་སྒྱུར།</translation>
     </message>
     <message>
         <location filename="../camerawindow.cpp" line="134"/>
-        <source>Rotate clockwise</source>
-        <translation type="unfinished"/>
+        <source>Zoom out</source>
+        <translation>ཆུང་སྒྱུར།</translation>
     </message>
     <message>
-        <location filename="../camerawindow.cpp" line="140"/>
-        <source>Crop</source>
-        <translation type="unfinished"/>
+        <location filename="../camerawindow.cpp" line="138"/>
+        <source>Rotate counterclockwise</source>
+        <translation>ཕྱི་སྐོར་རྒྱག་པ།</translation>
+    </message>
+    <message>
+        <location filename="../camerawindow.cpp" line="142"/>
+        <source>Rotate clockwise</source>
+        <translation>ནང་སྐོར་རྒྱག་པ།</translation>
     </message>
     <message>
         <location filename="../camerawindow.cpp" line="146"/>
+        <source>Crop</source>
+        <translation>དྲས་པ།</translation>
+    </message>
+    <message>
+        <location filename="../camerawindow.cpp" line="150"/>
         <source>Book</source>
-        <translation type="unfinished"/>
+        <translation>དེབ་པར་བ།</translation>
     </message>
     <message>
-        <location filename="../camerawindow.cpp" line="152"/>
-        <location filename="../camerawindow.cpp" line="523"/>
-        <location filename="../camerawindow.cpp" line="527"/>
+        <location filename="../camerawindow.cpp" line="155"/>
+        <location filename="../camerawindow.cpp" line="570"/>
+        <location filename="../camerawindow.cpp" line="574"/>
         <source>Scan</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས།</translation>
     </message>
     <message>
-        <location filename="../camerawindow.cpp" line="154"/>
+        <location filename="../camerawindow.cpp" line="157"/>
         <source>View Files</source>
-        <translation type="unfinished"/>
+        <translation>ཡིག་ཆ་ལྟ་བ།</translation>
     </message>
     <message>
-        <location filename="../camerawindow.cpp" line="189"/>
-        <location filename="../camerawindow.cpp" line="935"/>
+        <location filename="../camerawindow.cpp" line="192"/>
+        <location filename="../camerawindow.cpp" line="982"/>
         <source>s</source>
-        <translation type="unfinished"/>
+        <translation>སྐར་ཆ། </translation>
     </message>
     <message>
-        <location filename="../camerawindow.cpp" line="459"/>
-        <location filename="../camerawindow.cpp" line="516"/>
-        <location filename="../camerawindow.cpp" line="535"/>
+        <location filename="../camerawindow.cpp" line="503"/>
+        <location filename="../camerawindow.cpp" line="563"/>
+        <location filename="../camerawindow.cpp" line="582"/>
         <source>Stop</source>
-        <translation type="unfinished"/>
+        <translation>མཚམས་འཇོག</translation>
     </message>
     <message>
-        <location filename="../camerawindow.cpp" line="833"/>
+        <location filename="../camerawindow.cpp" line="880"/>
         <source>The file already exists. Do you want to replace it?</source>
-        <translation type="unfinished"/>
+        <translation>ཡིག་ཆ་ཡོད་ཟིན་པས། ཁྱེད་ཀྱིས་བརྗེ་པོ་རྒྱག་གམ།</translation>
     </message>
     <message>
-        <location filename="../camerawindow.cpp" line="834"/>
+        <location filename="../camerawindow.cpp" line="881"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>འདོར་བ།</translation>
     </message>
     <message>
-        <location filename="../camerawindow.cpp" line="835"/>
+        <location filename="../camerawindow.cpp" line="882"/>
         <source>Replace</source>
-        <translation type="unfinished"/>
+        <translation>བརྗེ་བ།</translation>
     </message>
     <message>
-        <location filename="../camerawindow.cpp" line="879"/>
-        <location filename="../camerawindow.cpp" line="883"/>
+        <location filename="../camerawindow.cpp" line="926"/>
+        <location filename="../camerawindow.cpp" line="930"/>
         <source>copy</source>
-        <translation type="unfinished"/>
+        <translation>བུ་ཡིག</translation>
     </message>
 </context>
 <context>
     <name>DoScanThread</name>
     <message>
         <location filename="../thread/doscanthread.cpp" line="43"/>
+        <location filename="../thread/doscanthread.cpp" line="94"/>
+        <location filename="../thread/doscanthread.cpp" line="130"/>
         <source>Unknown error</source>
-        <translation type="unfinished"/>
+        <translation>མི་ཤེས་པའི་ནོར་འཁྲུལ།</translation>
     </message>
     <message>
         <location filename="../thread/doscanthread.cpp" line="46"/>
         <source>Out of paper</source>
-        <translation type="unfinished"/>
+        <translation>ཤོག་བུ་བླུགས་རོགས་གནང་།</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="50"/>
+        <location filename="../thread/doscanthread.cpp" line="51"/>
         <source>Paper jam when scanning</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་བྱེད་རིམ་ཁྲོད་ཤོག་བུ་འགག་འདུག</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="54"/>
+        <location filename="../thread/doscanthread.cpp" line="56"/>
         <source>Paper jam in the document feeder</source>
-        <translation type="unfinished"/>
+        <translation>ཡིག་ཚགས་ཤོག་འཇུག་ཆས་སུ་ཤོག་བུ་འགག་འདུག</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="58"/>
         <source>Unknown error:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">མི་ཤེས་པའི་ནོར་འཁྲུལ།</translation>
     </message>
 </context>
 <context>
@@ -121,156 +122,155 @@
     <message>
         <location filename="../thread/getcamerainfothread.cpp" line="43"/>
         <source>Capture</source>
-        <translation type="unfinished"/>
+        <translation>པར་ལེན་ཆས།</translation>
     </message>
 </context>
 <context>
     <name>GetScannerInfoThread</name>
     <message>
-        <location filename="../thread/getscannerinfothread.cpp" line="178"/>
+        <location filename="../thread/getscannerinfothread.cpp" line="179"/>
         <source>General</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་སྒྲིག་བཀོད། </translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../mainwindow.cpp" line="100"/>
+        <location filename="../mainwindow.cpp" line="120"/>
         <source>Scan Assistant</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་དོ་དམ་ཆས།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="107"/>
+        <location filename="../mainwindow.cpp" line="127"/>
         <source>Scan</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="131"/>
-        <location filename="../mainwindow.cpp" line="996"/>
-        <location filename="../mainwindow.cpp" line="1054"/>
+        <location filename="../mainwindow.cpp" line="151"/>
+        <location filename="../mainwindow.cpp" line="1069"/>
+        <location filename="../mainwindow.cpp" line="1127"/>
         <source>Export</source>
-        <translation type="unfinished"/>
+        <translation>ཕྱིར་འདྲེན།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="133"/>
-        <location filename="../mainwindow.cpp" line="1002"/>
-        <location filename="../mainwindow.cpp" line="1060"/>
+        <location filename="../mainwindow.cpp" line="153"/>
+        <location filename="../mainwindow.cpp" line="1075"/>
+        <location filename="../mainwindow.cpp" line="1133"/>
         <source>Attach to mail</source>
-        <translation type="unfinished"/>
+        <translation>སྦྲག་ཡིག་ཐོག་ཏུ་སྣོན་པ།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="186"/>
+        <location filename="../mainwindow.cpp" line="207"/>
         <source>Settings</source>
-        <translation type="unfinished"/>
+        <translation>སྒྲིག་བཀོད།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="210"/>
+        <location filename="../mainwindow.cpp" line="231"/>
         <source>File name</source>
-        <translation type="unfinished"/>
+        <translation>ཡིག་ཆའི་མིང་།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="214"/>
         <source>Required</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">ངེས་པར་སྐོང་རྒྱུ།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="218"/>
+        <location filename="../mainwindow.cpp" line="239"/>
         <source>Start at</source>
-        <translation type="unfinished"/>
+        <translation>+ཨང་རིམ།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="227"/>
+        <location filename="../mainwindow.cpp" line="248"/>
         <source>Tips: Sort by selected file order</source>
-        <translation type="unfinished"/>
+        <translation>དྲན་སྐུལ། འདེམས་པའི་ཡིག་ཆའི་གོ་རིམ་ལྟར་གྲལ་སྒྲིག་རྒྱུ།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="230"/>
-        <location filename="../mainwindow.cpp" line="1616"/>
+        <location filename="../mainwindow.cpp" line="251"/>
+        <location filename="../mainwindow.cpp" line="1749"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>འདོར་བ།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="233"/>
-        <location filename="../mainwindow.cpp" line="997"/>
-        <location filename="../mainwindow.cpp" line="1055"/>
+        <location filename="../mainwindow.cpp" line="254"/>
+        <location filename="../mainwindow.cpp" line="1070"/>
+        <location filename="../mainwindow.cpp" line="1128"/>
         <source>Rename</source>
-        <translation type="unfinished"/>
+        <translation>མིང་བསྐྱར་འདོགས།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="957"/>
+        <location filename="../mainwindow.cpp" line="1028"/>
         <source>No scanned images</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="959"/>
-        <source>Click Scan button to start</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="994"/>
-        <location filename="../mainwindow.cpp" line="1052"/>
-        <source>Open</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="995"/>
-        <location filename="../mainwindow.cpp" line="1053"/>
-        <source>Edit</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="999"/>
-        <location filename="../mainwindow.cpp" line="1057"/>
-        <source>Display in file manager</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1000"/>
-        <location filename="../mainwindow.cpp" line="1058"/>
-        <source>Combine into PDF</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1004"/>
-        <location filename="../mainwindow.cpp" line="1062"/>
-        <location filename="../mainwindow.cpp" line="1617"/>
-        <source>Delete</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་ཡིག་ཆ་མེད།</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1031"/>
+        <source>Click Scan button to start</source>
+        <translation>བཤར་འབེབས་མཐེབ་གཅུས་མནན་ནས་བཤར་འབེབས་ཡིག་ཆ་བསྣན་ཆོག</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1067"/>
+        <location filename="../mainwindow.cpp" line="1125"/>
+        <source>Open</source>
+        <translation>ཁ་ཕྱེ།</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1068"/>
+        <location filename="../mainwindow.cpp" line="1126"/>
+        <source>Edit</source>
+        <translation>རྩོམ་སྒྲིག</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1072"/>
+        <location filename="../mainwindow.cpp" line="1130"/>
+        <source>Display in file manager</source>
+        <translation>ཡིག་ཆ་དོ་དམ་ཆས་སུ་མངོན་པ།</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1073"/>
+        <location filename="../mainwindow.cpp" line="1131"/>
+        <source>Combine into PDF</source>
+        <translation>PDFཟླ་སྒྲིལ་བ།</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1077"/>
+        <location filename="../mainwindow.cpp" line="1135"/>
+        <location filename="../mainwindow.cpp" line="1750"/>
+        <source>Delete</source>
+        <translation>སུབ་པ།</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1104"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>མིང་།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1032"/>
+        <location filename="../mainwindow.cpp" line="1105"/>
         <source>Time Modified</source>
-        <translation type="unfinished"/>
+        <translation>བཅོས་པའི་དུས་ཚོད།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1033"/>
+        <location filename="../mainwindow.cpp" line="1106"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>རིགས་གྲས།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1034"/>
+        <location filename="../mainwindow.cpp" line="1107"/>
         <source>Size</source>
-        <translation type="unfinished"/>
+        <translation>ཆེ་ཆུང་།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1430"/>
+        <location filename="../mainwindow.cpp" line="1537"/>
         <source>Select a location</source>
-        <translation type="unfinished"/>
+        <translation>ཤོང་གསོག་བྱེད་གནས་འདེམས་རྒྱུ།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1502"/>
+        <location filename="../mainwindow.cpp" line="1619"/>
         <source>Combining into PDF</source>
-        <translation type="unfinished"/>
+        <translation>PDFཟླ་སྒྲིལ་བཞིན་པ།</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1615"/>
+        <location filename="../mainwindow.cpp" line="1748"/>
         <source>Are you sure you want to delete the file(s) permanently?</source>
-        <translation type="unfinished"/>
+        <translation>ཁྱེད་ཀྱིས་རྦད་དེ་སུམ་རྒྱུ་གཏན་འཁེལ་ལམ།</translation>
     </message>
 </context>
 <context>
@@ -278,310 +278,417 @@
     <message>
         <location filename="../progressbarwindow.cpp" line="35"/>
         <source>Combining into PDF...</source>
-        <translation type="unfinished"/>
+        <translation>PDFཟླ་སྒྲིལ་བཞིན་པ།</translation>
     </message>
     <message>
         <location filename="../progressbarwindow.cpp" line="48"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>འདོར་བ།</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../main.cpp" line="38"/>
-        <location filename="../main.cpp" line="39"/>
-        <location filename="../main.cpp" line="40"/>
+        <location filename="../main.cpp" line="109"/>
+        <location filename="../main.cpp" line="110"/>
+        <location filename="../main.cpp" line="111"/>
         <source>Scan Assistant</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་དོ་དམ་ཆས།</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="41"/>
+        <location filename="../main.cpp" line="112"/>
         <source>Scan Assistant is a scanner management tool that supports a variety of scanning devices.</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་དོ་དམ་ཆས་ནི་ཧ་ཅང་སྟབས་བདེ་བའི་བཤར་འབེབས་ཡོ་བྱད་ཞིག་ཡིན་པ་དང་། བཤར་འབེབས་སྒྲིག་ཆས་མང་པོར་རྒྱབ་སྐྱོར་བྱེད་ཐུབ།</translation>
     </message>
 </context>
 <context>
     <name>ScanManagerWindow</name>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="91"/>
-        <location filename="../scanmanagerwindow.cpp" line="92"/>
-        <location filename="../scanmanagerwindow.cpp" line="579"/>
-        <location filename="../scanmanagerwindow.cpp" line="580"/>
+        <location filename="../scanmanagerwindow.cpp" line="128"/>
+        <location filename="../scanmanagerwindow.cpp" line="129"/>
+        <location filename="../scanmanagerwindow.cpp" line="813"/>
+        <location filename="../scanmanagerwindow.cpp" line="814"/>
         <source>Driver path:</source>
-        <translation type="unfinished"/>
+        <translation>རང་སའི་སྒུལ་བྱེད་ལམ་བུ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="109"/>
+        <location filename="../scanmanagerwindow.cpp" line="146"/>
         <source>Scan Assistant</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་དོ་དམ་ཆས།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="127"/>
-        <location filename="../scanmanagerwindow.cpp" line="193"/>
-        <location filename="../scanmanagerwindow.cpp" line="254"/>
+        <location filename="../scanmanagerwindow.cpp" line="165"/>
+        <location filename="../scanmanagerwindow.cpp" line="285"/>
+        <location filename="../scanmanagerwindow.cpp" line="382"/>
         <source>Scanners</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་ཆས།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="131"/>
+        <location filename="../scanmanagerwindow.cpp" line="196"/>
         <source>No scanners found</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་སྒྲིག་ཆས་རྙེད་མ་བྱུང་།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="160"/>
+        <location filename="../scanmanagerwindow.cpp" line="238"/>
         <source>Make sure your scanner is powered on and connected</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་ཆས་ཁ་ཕྱེ་ཟིན་པ་མ་ཟད་གློག་ཀླད་དང་སྦྲེལ་ཡོད་པར་ཁག་ཐེག་བྱ་རྒྱུ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="201"/>
+        <location filename="../scanmanagerwindow.cpp" line="300"/>
         <source>Detecting...</source>
-        <translation type="unfinished"/>
+        <translation>བཤེར་འཇལ་བྱེད་བཞིན་པ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="211"/>
+        <location filename="../scanmanagerwindow.cpp" line="324"/>
         <source>If it takes a long time, use another USB port, or restart your scanner and PC</source>
-        <translation type="unfinished"/>
+        <translation>གལ་ཏེ་ཡུན་རིང་ལན་འདེབས་མེད་ན། USBམཐུད་ཁ་བརྗེ་རོགས་གནང་། ཡང་ན་བཤར་འབེབས་ཆས་སམ་གློག་ཀླད་བསྐྱར་སློང་གནང་རོགས།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="261"/>
+        <location filename="../scanmanagerwindow.cpp" line="186"/>
+        <location filename="../scanmanagerwindow.cpp" line="395"/>
         <source>Refresh</source>
-        <translation type="unfinished"/>
+        <translation>གསར་འཇུག</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="304"/>
+        <location filename="../scanmanagerwindow.cpp" line="446"/>
         <source>Start</source>
-        <translation type="unfinished"/>
+        <translation>འགོ་ཚུགས། </translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="361"/>
+        <location filename="../scanmanagerwindow.cpp" line="517"/>
         <source>Back</source>
-        <translation type="unfinished"/>
+        <translation>ཕྱིར་ལོག</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="368"/>
+        <location filename="../scanmanagerwindow.cpp" line="524"/>
         <source>Add a driver</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་ཆས་ཀྱི་སྐུལ་བྱེད་སྣོན་པ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="373"/>
+        <location filename="../scanmanagerwindow.cpp" line="536"/>
         <source>Find drivers</source>
-        <translation type="unfinished"/>
+        <translation>དྲ་ཐོག་སྐུལ་བྱེད་སྒྲིག་སྦྱོར་བྱེད་པ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="380"/>
+        <location filename="../scanmanagerwindow.cpp" line="543"/>
         <source>Local drivers</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../scanmanagerwindow.cpp" line="391"/>
-        <location filename="../scanmanagerwindow.cpp" line="544"/>
-        <source>Select a driver</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../scanmanagerwindow.cpp" line="398"/>
-        <location filename="../scanmanagerwindow.cpp" line="400"/>
-        <source>None</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../scanmanagerwindow.cpp" line="402"/>
-        <source>No drivers detected, but you can install a local driver</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../scanmanagerwindow.cpp" line="421"/>
-        <source>Vendor</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../scanmanagerwindow.cpp" line="429"/>
-        <source>Model</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../scanmanagerwindow.cpp" line="437"/>
-        <source>Driver</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../scanmanagerwindow.cpp" line="456"/>
-        <source>Drag a local driver here</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../scanmanagerwindow.cpp" line="459"/>
-        <source>or</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../scanmanagerwindow.cpp" line="463"/>
-        <source>Import Local Driver</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../scanmanagerwindow.cpp" line="475"/>
-        <source>Install Driver</source>
-        <translation type="unfinished"/>
+        <translation>ལག་སྒུལ་ངང་སྐུལ་བྱེད་སྒྲིག་སྦྱོར་བྱེད་པ།</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="554"/>
-        <location filename="../scanmanagerwindow.cpp" line="570"/>
-        <source>Select a local driver</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="778"/>
+        <source>Select a driver</source>
+        <translation>སྐུལ་བྱེད་འདེམས་པ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="622"/>
-        <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="576"/>
+        <location filename="../scanmanagerwindow.cpp" line="578"/>
+        <source>None</source>
+        <translation>གནས་སྐབས་མེད།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="623"/>
-        <location filename="../scanmanagerwindow.cpp" line="1295"/>
-        <source>Idle</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="580"/>
+        <source>No drivers detected, but you can install a local driver</source>
+        <translation>འབྲེལ་ཡོད་སྐུལ་བྱེད་ཚོར་མ་བྱུང་། ཁྱེད་ཀྱིས་རང་སའི་སྐུལ་བྱེད་འདེམས་ནས་སྒྲིག་སྦྱོར་བྱེད་ཆོག</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="624"/>
-        <source>Busy</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="617"/>
+        <source>Vendor</source>
+        <translation>བཟོ་བདག</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="668"/>
-        <source>Model:</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="625"/>
+        <source>Model</source>
+        <translation>བཟོ་རྟགས།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="633"/>
+        <source>Driver</source>
+        <translation>སྐུལ་བྱེད།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="659"/>
+        <source>Drag a local driver here</source>
+        <translation>རང་སའི་སྐུལ་བྱེད་ཡིག་ཆ་འདི་རུ་འཇོག་རོགས།</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="669"/>
+        <source>or</source>
+        <translation>ཡང་ན། </translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="680"/>
+        <source>Import Local Driver</source>
+        <translation>རང་སའི་སྐུལ་བྱེད་ནང་འདྲེན་བྱ་རྒྱུ།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="692"/>
+        <source>Install Driver</source>
+        <translation>སྐུལ་བྱེད་སྒྲིག་སྦྱོར།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="788"/>
+        <location filename="../scanmanagerwindow.cpp" line="804"/>
+        <source>Select a local driver</source>
+        <translation>རང་སའི་སྐུལ་བྱེད་འདེམས་པ།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="859"/>
+        <source>Disconnected</source>
+        <translation>སྦྲེལ་མེད་པ།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="860"/>
+        <location filename="../scanmanagerwindow.cpp" line="1743"/>
+        <source>Idle</source>
+        <translation>ཁོམ་པ།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="861"/>
+        <source>Busy</source>
+        <translation>བཟུང་བ།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="905"/>
+        <source>Model:</source>
+        <translation>བཟོ་རྟགས།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="906"/>
         <source>Status:</source>
-        <translation type="unfinished"/>
+        <translation>རྣམ་པ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="811"/>
-        <source>Crop</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="924"/>
+        <source>ADF Back</source>
+        <translation>ADFརྒྱབ་ངོས།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="819"/>
-        <source>No crop</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="925"/>
+        <source>ADF Duplex</source>
+        <translation>ADFངོས་ཟུང་།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="829"/>
-        <source>Single area</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="926"/>
+        <source>ADF Front</source>
+        <translation>ADFམདུན་ངོས།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="838"/>
-        <source>Multiple areas</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="927"/>
+        <source>ADF_DUPLEX</source>
+        <translation>ADFངོས་ཟུང་།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="851"/>
-        <source>Watermark</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="928"/>
+        <source>ADF_FRONT</source>
+        <translation>ADFམདུན་ངོས།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="858"/>
-        <source>No watermark</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="929"/>
+        <source>FLAT_FRONT</source>
+        <translation>སྙོམས་ལེབ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="868"/>
-        <source>Text</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="930"/>
+        <source>Simplex</source>
+        <translation>ADFངོས་གཅིག</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="898"/>
-        <source>Images</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="931"/>
+        <source>Duplex</source>
+        <translation>ADFངོས་ཟུང་།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="907"/>
-        <source>Optimization</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="932"/>
+        <source>Flatbed</source>
+        <translation>སྙོམས་ལེབ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="912"/>
-        <source>Original</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="933"/>
+        <source>Auto Detection</source>
+        <translation>རང་འགུལ་བཤེར་འཇལ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="913"/>
-        <source>Document</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="934"/>
+        <source>Automatic</source>
+        <translation>རང་འགུལ་བཤེར་འཇལ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="914"/>
-        <source>Color</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="935"/>
+        <source>Black &amp; White</source>
+        <translation>ཚོན་མེད་རི་མོ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="915"/>
-        <source>Red seal</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../scanmanagerwindow.cpp" line="916"/>
-        <source>Invert colors</source>
-        <translation type="unfinished"/>
+        <location filename="../scanmanagerwindow.cpp" line="937"/>
+        <source>Color24</source>
+        <translation>ཚོན་ཅན་རི་མོ།</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="938"/>
+        <source>Gray</source>
+        <translation>སྐྱ་ཚད་རི་མོ།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="939"/>
+        <source>Gray8</source>
+        <translation>སྐྱ་ཚད་རི་མོ།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="940"/>
+        <source>Lineart</source>
+        <translation>ཚོན་མེད་རི་མོ།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1075"/>
+        <source>Crop</source>
+        <translation>དྲས་པ།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1097"/>
+        <source>No crop</source>
+        <translation>མི་དྲས།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1114"/>
+        <source>Single area</source>
+        <translation>རི་མོ་རྐྱང་པ་དྲས་པ།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1130"/>
+        <source>Multiple areas</source>
+        <translation>རི་མོ་མང་པོ་དྲས་པ།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1143"/>
+        <source>Watermark</source>
+        <translation>ཆུ་པར།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1164"/>
+        <source>No watermark</source>
+        <translation>ཆུ་པར་མེད།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1181"/>
+        <source>Text</source>
+        <translation>ཡི་གེའི་ཆུ་པར།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1211"/>
+        <source>Images</source>
+        <translation>པར་རིས་ཐག་གཅོད།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1234"/>
+        <source>Optimization</source>
+        <translation>པར་རིས་རིགས་གྲས།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1245"/>
+        <source>Original</source>
+        <translation>ཐོག་པའི་ཡིག་ཚགས།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1246"/>
+        <source>Document</source>
+        <translation>ཡིག་ཚགས་ལེགས་སྒྱུར།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="936"/>
+        <source>Color</source>
+        <translation>ཚོན་ཅན་རི་མོ།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1248"/>
+        <source>Red seal</source>
+        <translation>དམར་པར་ཡིག་ཚགས་ལེགས་སྒྱུར།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1249"/>
+        <source>Invert colors</source>
+        <translation>ལྡོག་ཚོན།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1278"/>
         <source>Fill missing corners</source>
-        <translation type="unfinished"/>
+        <translation>ཟུར་མེད་ཉམས་གསོ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1000"/>
+        <location filename="../scanmanagerwindow.cpp" line="1370"/>
         <source>Image</source>
-        <translation type="unfinished"/>
+        <translation>རི་མོའི་དཔེ་དབྱིབས།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1022"/>
+        <location filename="../scanmanagerwindow.cpp" line="943"/>
+        <location filename="../scanmanagerwindow.cpp" line="1408"/>
         <source>Color mode</source>
-        <translation type="unfinished"/>
+        <translation>ཚོན་ཁྲའི་དཔེ་དབྱིབས།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1026"/>
+        <location filename="../scanmanagerwindow.cpp" line="941"/>
+        <source>Scan Mode</source>
+        <translation>བཤར་འབེབས་དཔེ་དབྱིབས།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="942"/>
+        <source>Scan mode</source>
+        <translation>བཤར་འབེབས་དཔེ་དབྱིབས།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="944"/>
+        <source>Resolution</source>
+        <translation>ཤན་འབྱེད་ཕྱོད།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="945"/>
+        <source>Video</source>
+        <translation>བརྙན་ཟློས་དཔེ་དབྱིབས།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1247"/>
+        <source>Enhanced color</source>
+        <translation>ཚོན་ཁྲ་ལེགས་སྒྱུར།</translation>
+    </message>
+    <message>
+        <location filename="../scanmanagerwindow.cpp" line="1419"/>
         <source>Colorful</source>
-        <translation type="unfinished"/>
+        <translation>ཚོན་ཁྲ།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1027"/>
+        <location filename="../scanmanagerwindow.cpp" line="1420"/>
         <source>Grey</source>
-        <translation type="unfinished"/>
+        <translation>སྐྱ་ཚད།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1028"/>
+        <location filename="../scanmanagerwindow.cpp" line="1421"/>
         <source>Black and white</source>
-        <translation type="unfinished"/>
+        <translation>ཚོན་མེད།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1051"/>
+        <location filename="../scanmanagerwindow.cpp" line="1444"/>
         <source>Method</source>
-        <translation type="unfinished"/>
+        <translation>པར་ལེན་ཐབས།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1060"/>
+        <location filename="../scanmanagerwindow.cpp" line="1467"/>
         <source>Manual scan</source>
-        <translation type="unfinished"/>
+        <translation>ལག་འགུལ་པར་ལེན།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1071"/>
+        <location filename="../scanmanagerwindow.cpp" line="1485"/>
         <source>Set timer</source>
-        <translation type="unfinished"/>
+        <translation>དུས་བཅད་པར་ལེན།</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1081"/>
+        <location filename="../scanmanagerwindow.cpp" line="1495"/>
         <source>s</source>
-        <translation type="unfinished"/>
+        <translation>སྐར་ཆ། </translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1230"/>
-        <location filename="../scanmanagerwindow.cpp" line="1267"/>
+        <location filename="../scanmanagerwindow.cpp" line="1678"/>
+        <location filename="../scanmanagerwindow.cpp" line="1715"/>
         <source>General</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་སྒྲིག་བཀོད། </translation>
     </message>
 </context>
 <context>
@@ -589,93 +696,95 @@
     <message>
         <location filename="../scanwindow.cpp" line="70"/>
         <source>Scan Assistant</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་དོ་དམ་ཆས།</translation>
     </message>
     <message>
-        <location filename="../scanwindow.cpp" line="83"/>
-        <location filename="../scanwindow.cpp" line="369"/>
+        <location filename="../scanwindow.cpp" line="84"/>
+        <location filename="../scanwindow.cpp" line="399"/>
         <source>Scanning...</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་བྱེད་བཞིན་པ།</translation>
     </message>
     <message>
-        <location filename="../scanwindow.cpp" line="174"/>
-        <location filename="../scanwindow.cpp" line="376"/>
+        <location filename="../scanwindow.cpp" line="203"/>
+        <location filename="../scanwindow.cpp" line="407"/>
         <source>Scan</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས།</translation>
     </message>
     <message>
-        <location filename="../scanwindow.cpp" line="239"/>
+        <location filename="../scanwindow.cpp" line="268"/>
         <source>The file already exists. Do you want to replace it?</source>
-        <translation type="unfinished"/>
+        <translation>ཡིག་ཆ་ཡོད་ཟིན་པས། ཁྱེད་ཀྱིས་བརྗེ་པོ་རྒྱག་གམ།</translation>
     </message>
     <message>
-        <location filename="../scanwindow.cpp" line="240"/>
+        <location filename="../scanwindow.cpp" line="269"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>འདོར་བ།</translation>
     </message>
     <message>
-        <location filename="../scanwindow.cpp" line="241"/>
+        <location filename="../scanwindow.cpp" line="270"/>
         <source>Replace</source>
-        <translation type="unfinished"/>
+        <translation>བརྗེ་བ།</translation>
     </message>
     <message>
-        <location filename="../scanwindow.cpp" line="285"/>
-        <location filename="../scanwindow.cpp" line="289"/>
+        <location filename="../scanwindow.cpp" line="314"/>
+        <location filename="../scanwindow.cpp" line="318"/>
         <source>copy</source>
-        <translation type="unfinished"/>
+        <translation>བུ་ཡིག</translation>
     </message>
     <message>
-        <location filename="../scanwindow.cpp" line="388"/>
+        <location filename="../scanwindow.cpp" line="132"/>
+        <location filename="../scanwindow.cpp" line="419"/>
         <source>Scan failed</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་བྱེད་མི་ཐུབ།</translation>
     </message>
     <message>
-        <location filename="../scanwindow.cpp" line="390"/>
+        <location filename="../scanwindow.cpp" line="134"/>
+        <location filename="../scanwindow.cpp" line="421"/>
         <source>Confirm</source>
-        <translation type="unfinished"/>
+        <translation>གཏན་འཁེལ།</translation>
     </message>
 </context>
 <context>
     <name>SetWindow</name>
     <message>
-        <location filename="../setwindow.cpp" line="46"/>
+        <location filename="../setwindow.cpp" line="62"/>
         <source>Scan Assistant</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་དོ་དམ་ཆས།</translation>
     </message>
     <message>
-        <location filename="../setwindow.cpp" line="60"/>
+        <location filename="../setwindow.cpp" line="87"/>
         <source>General Settings</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་དོ་དམ་སྒྲིག་བཀོད།</translation>
     </message>
     <message>
-        <location filename="../setwindow.cpp" line="68"/>
+        <location filename="../setwindow.cpp" line="112"/>
         <source>Location</source>
-        <translation type="unfinished"/>
+        <translation>ཤོང་གསོག་བྱེད་ས།</translation>
     </message>
     <message>
-        <location filename="../setwindow.cpp" line="83"/>
+        <location filename="../setwindow.cpp" line="137"/>
         <source>Notify me when overwriting</source>
-        <translation type="unfinished"/>
+        <translation>འགེབས་སྐབས་ཉེན་བརྡ།</translation>
     </message>
     <message>
-        <location filename="../setwindow.cpp" line="95"/>
+        <location filename="../setwindow.cpp" line="157"/>
         <source>Notify me when no scanners found</source>
-        <translation type="unfinished"/>
+        <translation>བཤར་འབེབས་ཆས་མེད་པའི་ཉེན་བརྡ།</translation>
     </message>
     <message>
-        <location filename="../setwindow.cpp" line="107"/>
+        <location filename="../setwindow.cpp" line="177"/>
         <source>Play a sound when completed</source>
-        <translation type="unfinished"/>
+        <translation>ལེགས་གྲུབ་བྱུང་བའི་དྲན་སྐུལ་སྒྲ།</translation>
     </message>
     <message>
-        <location filename="../setwindow.cpp" line="119"/>
+        <location filename="../setwindow.cpp" line="197"/>
         <source>Exit when completed</source>
-        <translation type="unfinished"/>
+        <translation>ལེགས་གྲུབ་བྱུང་རྗེས་ཕྱིར་འབུད་པ།</translation>
     </message>
     <message>
-        <location filename="../setwindow.cpp" line="228"/>
+        <location filename="../setwindow.cpp" line="323"/>
         <source>Select a location</source>
-        <translation type="unfinished"/>
+        <translation>ཤོང་གསོག་བྱེད་གནས་འདེམས་རྒྱུ།</translation>
     </message>
 </context>
 </TS>
