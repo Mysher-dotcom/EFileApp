@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //匹配版本号，用于是否删除配置文件
-    GlobalHelper::softVersion = "5.1.0.4-15";
+    GlobalHelper::softVersion = "5.1.0.4-16";
     GlobalHelper::checkVersion();
     //检查配置文件是否存在，不存在就创建，并写入初始值
     QFileInfo settingFile(GlobalHelper::getSettingFilePath());
@@ -1825,8 +1825,8 @@ void MainWindow::slotRenameBtnClicked()
 //文件名文本框文本改变事件
 void MainWindow::slotFileNameTextChanged(const QString & newText )
 {
-    int maxLength = 250; // 最大字符数
-    int trueLength = 83; //中文最大字符数
+    int maxLength = 230; // 最大字符数250
+    int trueLength = 70; //中文最大字符数83
     QString newName = fileNameText->text().trimmed();
     int length = newName.toLocal8Bit().length();//newName.count();
     int tmpLength = newName.length();

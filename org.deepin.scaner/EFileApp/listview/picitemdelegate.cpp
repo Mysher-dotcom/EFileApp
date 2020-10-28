@@ -330,6 +330,7 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
             }
         }
 
+        /*
         if(picItemData.isRename == true)
         {
             qDebug()<<"**************"<<parentCtrl->metaObject()->className();
@@ -345,16 +346,9 @@ void PicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
                 lineEdit->setFocus();
              }
         }
-
-
-        delete  imgPreview;
-        imgPreview =NULL;
-//        if (isPic == true &&fileSuffix.contains("png"))
-//        {
-//            free(out.rgba);
-//            out.rgba=NULL;
-//        }
-
+        */
+        delete imgPreview;
+        imgPreview = NULL;
         painter->restore();
     }
 

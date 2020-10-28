@@ -4,6 +4,8 @@
 #include "cpng.h"
 #include <QFile>
 #include <QFileInfo>
+#include <QDebug>
+
 CJpeg merge_jpg;//CJPEG对象
 CPNG m_png;
 MergePDFThread::MergePDFThread(QObject *parent): QObject(parent)
@@ -41,13 +43,15 @@ void MergePDFThread::startMerge()
     }
     delete  fi;
 
-    char pdfPath[256]={0};
-    strncpy(pdfPath,filePath.toUtf8().data(),strlen(filePath.toUtf8().data())-3);
-    strcat(pdfPath,"pdf");
-    qDebug("pdf path is %s\n",pdfPath);
+    //char pdfPath[256]={0};
+   // strncpy(pdfPath,filePath.toUtf8().data(),);
+   // strcat(pdfPath,"pdf");
+    qDebug("pdf path is %s\n",filePath.toUtf8().data());
+    qDebug()<<"pdf path lenght:"<<filePath.toLocal8Bit().length()<<","<<filePath.toUtf8().length();
     hpdfoperation pdfop;
     for(int i=0;i<fileList.size();i++)
     {
+        int nMergeResult = 0;
         unsigned char* dstBuf = NULL;
         JPEGInfo jpgInfo;
         int dstW,dstH;
@@ -61,11 +65,11 @@ void MergePDFThread::startMerge()
 
             if(jpgInfo.colorSpace == 1)
             {
-                pdfop.rgb2pdf(dstBuf,jpgInfo.width,jpgInfo.height,pdfPath,1,true,i == fileList.size() - 1);
+                nMergeResult = pdfop.rgb2pdf(dstBuf,jpgInfo.width,jpgInfo.height,filePath.toUtf8().data(),1,true,i == fileList.size() - 1);
             }
             else
             {
-                pdfop.rgb2pdf(dstBuf,jpgInfo.width,jpgInfo.height,pdfPath,0,true,i == fileList.size() - 1);
+                nMergeResult =pdfop.rgb2pdf(dstBuf,jpgInfo.width,jpgInfo.height,filePath.toUtf8().data(),0,true,i == fileList.size() - 1);
             }
 
             //pdfop.jpeg2pdf(jpgPath,pdfPath,HPDF_PAGE_SIZE_A4,true,i == fileList.size() - 1);
@@ -77,11 +81,11 @@ void MergePDFThread::startMerge()
 
             if(out.color_type == 0)
             {
-                pdfop.rgb2pdf(out.rgba,out.width,out.height,pdfPath,1,true,i == fileList.size() - 1);
+                nMergeResult = pdfop.rgb2pdf(out.rgba,out.width,out.height,filePath.toUtf8().data(),1,true,i == fileList.size() - 1);
             }
             else
             {
-                pdfop.rgb2pdf(out.rgba,out.width,out.height,pdfPath,0,true,i == fileList.size() - 1);
+                nMergeResult = pdfop.rgb2pdf(out.rgba,out.width,out.height,filePath.toUtf8().data(),0,true,i == fileList.size() - 1);
             }
             //pdfop.png2pdf(jpgPath,pdfPath,HPDF_PAGE_SIZE_A4,true,i == fileList.size() - 1);
         }
@@ -96,16 +100,22 @@ void MergePDFThread::startMerge()
                 imgColor = img2->convertToFormat(QImage::Format_RGB888);
                 dstBuf = imgColor.bits ();
             }
-            else {
+            else
+            {
                 dstBuf = img2->bits ();
             }
             if(img2->format() == QImage::Format_RGB32)
-                pdfop.rgb2pdf((unsigned char*)dstBuf,img2->width(),img2->height(),pdfPath,0,true,i == fileList.size() - 1);
+            {
+               nMergeResult = pdfop.rgb2pdf((unsigned char*)dstBuf,img2->width(),img2->height(),filePath.toUtf8().data(),0,true,i == fileList.size() - 1);
+            }
             if(img2->format() == QImage::Format_Indexed8 || img2->format() == QImage::Format_Grayscale8 )
-                pdfop.rgb2pdf((unsigned char*)dstBuf,img2->width(),img2->height(),pdfPath,1,true,i == fileList.size() - 1);
-            delete  img2;
+            {
+               nMergeResult =pdfop.rgb2pdf((unsigned char*)dstBuf,img2->width(),img2->height(),filePath.toUtf8().data(),1,true,i == fileList.size() - 1);
+            }
+            delete img2;
         }
 
+        qDebug()<<"合并PDF函数返回结果："<<nMergeResult;
         emit signalSingleFileMergeOver(fileList.at(i),i);
     }
     emit signalOver();

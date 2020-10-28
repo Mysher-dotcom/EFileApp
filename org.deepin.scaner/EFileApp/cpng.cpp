@@ -186,9 +186,10 @@ int CPNG::decode_png(const char *filename, pic_data *out) //取出png文件中�
             for (j = 0; j < out->width * 4; j += 4)
                 for (k = temp; k >= 0; k--)
                     out->rgba[pos++] = row_pointers[i][j + k];
-    } else if (channels == 3 || color_type == PNG_COLOR_TYPE_RGB) { //判断颜色深度是24位还是32位
+    } else if (channels == 3 || color_type == PNG_COLOR_TYPE_RGB ||channels == 1 ||  color_type == PNG_COLOR_TYPE_GRAY) { //判断颜色深度是24位还是32位
         out->alpha_flag = NOT_HAVE_ALPHA;
-        size *= (sizeof(unsigned char) * 3);
+        int widthStep =  (out->width * channels * 8  + 31)/32 * 4;
+        size =  widthStep * out->height;
         out->rgba = (png_bytep)malloc(size);
         if (NULL == out->rgba) {
             printf("malloc rgba faile ...\n");
@@ -197,35 +198,13 @@ int CPNG::decode_png(const char *filename, pic_data *out) //取出png文件中�
             return -1;
         }
         //从row_pointers里读出实际的rgb数据
-        temp = (3 * out->width);
+
         for (i = 0; i < out->height; i ++) {
-            for (j = 0; j < temp; j += 3) {
-                out->rgba[pos++] = row_pointers[i][j+2];
-                out->rgba[pos++] = row_pointers[i][j+1];
-                out->rgba[pos++] = row_pointers[i][j+0];
-            }
+            memcpy(out->rgba + pos,row_pointers[i],out->width * channels);
+            pos += (widthStep);
         }
     }
-    else if (channels == 1 || color_type == PNG_COLOR_TYPE_GRAY) { //判断颜色深度是24位还是32位
-            out->alpha_flag = NOT_HAVE_ALPHA;
-            size *= (sizeof(unsigned char));
-            out->rgba = (png_bytep)malloc(size);
-            if (NULL == out->rgba) {
-                printf("malloc rgba faile ...\n");
-                png_destroy_read_struct(&png_ptr, &info_ptr, 0);
-                fclose(fp);
-                return -1;
-            }
-            //从row_pointers里读出实际的rgb数据
-            temp = ( out->width);
-            for (i = 0; i < out->height; i ++) {
-                for (j = 0; j < temp; j += 3) {
-                    out->rgba[pos++] = row_pointers[i][j+2];
-                    out->rgba[pos++] = row_pointers[i][j+1];
-                    out->rgba[pos++] = row_pointers[i][j+0];
-                }
-            }
-        }
+
     else return -1;
     //6:销毁内存
     png_destroy_read_struct(&png_ptr, &info_ptr, 0);

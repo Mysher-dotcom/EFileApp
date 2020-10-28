@@ -137,8 +137,32 @@ int hpdfoperation::rgb2pdf(unsigned char *srcData, int srcDataWidth, int srcData
             return ERROR_ARGV;
     }
 
+    int bpp = colorType == 0?3:1;
+    int pdfImageWidthStep = bpp *srcDataWidth;
+    int imageWidthStep = (bpp* srcDataWidth * 8  + 31)/32 * 4;
+    unsigned char *pdfImageData = NULL;
+    unsigned char * pdfImage = srcData;
+    if(pdfImageWidthStep == imageWidthStep)
+    {
+        pdfImage = srcData;
+    }
+    else {
+        pdfImageData = new unsigned char [bpp * srcDataWidth * srcDataHeight];
+        unsigned char *pdfImageDataSrc = pdfImageData;
+        memcpy(pdfImageDataSrc,srcData,pdfImageWidthStep);
+        for (int heightIndex = 1 ;heightIndex < srcDataHeight;heightIndex ++) {
+            pdfImageDataSrc += pdfImageWidthStep;
+            srcData +=imageWidthStep;
+            memcpy(pdfImageDataSrc,srcData,pdfImageWidthStep);
+        }
+        pdfImage = pdfImageData;
+    }
+
+
+
     if(!pdf){
                pdf = HPDF_New (error_handler_mz, NULL);
+               //HPDF_SetCompressionMode (pdf, HPDF_COMP_IMAGE);
     }
 
     if (!pdf) {
@@ -157,35 +181,37 @@ int hpdfoperation::rgb2pdf(unsigned char *srcData, int srcDataWidth, int srcData
 
     /*load picture*/
     if(colorType == 0){
-         hpdfImage = HPDF_LoadRawImageFromMem(pdf, srcData,srcDataWidth,srcDataHeight,HPDF_CS_DEVICE_RGB,8);
+         hpdfImage = HPDF_LoadRawImageFromMem(pdf, pdfImage,srcDataWidth,srcDataHeight,HPDF_CS_DEVICE_RGB,8);
     }else {
-          hpdfImage = HPDF_LoadRawImageFromMem(pdf, srcData,srcDataWidth,srcDataHeight,HPDF_CS_DEVICE_GRAY,8);
+          hpdfImage = HPDF_LoadRawImageFromMem(pdf, pdfImage,srcDataWidth,srcDataHeight,HPDF_CS_DEVICE_GRAY,8);
     }
 
-    /*Create new page*/
- page = HPDF_AddPage (pdf);
- /*Set page ozbject*/
-HPDF_Page_SetSize (page, HPDF_PAGE_SIZE_A4, HPDF_PAGE_LANDSCAPE);
- dst = HPDF_Page_CreateDestination (page);
+        /*Create new page*/
+     page = HPDF_AddPage (pdf);
+     /*Set page ozbject*/
+    HPDF_Page_SetSize (page, HPDF_PAGE_SIZE_A4, HPDF_PAGE_LANDSCAPE);
+     dst = HPDF_Page_CreateDestination (page);
 
- HPDF_Destination_SetXYZ (dst, 0, HPDF_Page_GetHeight (page), 1);
- HPDF_SetOpenAction(pdf, dst);
+     HPDF_Destination_SetXYZ (dst, 0, HPDF_Page_GetHeight (page), 1);
+     HPDF_SetOpenAction(pdf, dst);
 
- //将页的宽高设置为image的宽高
- HPDF_Page_SetHeight (page, HPDF_Image_GetHeight(hpdfImage));
- HPDF_Page_SetWidth (page, HPDF_Image_GetWidth(hpdfImage));
+     //将页的宽高设置为image的宽高
+     HPDF_Page_SetHeight (page, HPDF_Image_GetHeight(hpdfImage));
+     HPDF_Page_SetWidth (page, HPDF_Image_GetWidth(hpdfImage));
 
- int x = 0;
- int y = 0;
- HPDF_Page_DrawImage(page, hpdfImage, x, y, HPDF_Image_GetWidth(hpdfImage),HPDF_Image_GetHeight(hpdfImage));
+     int x = 0;
+     int y = 0;
+     HPDF_Page_DrawImage(page, hpdfImage, x, y, HPDF_Image_GetWidth(hpdfImage),HPDF_Image_GetHeight(hpdfImage));
 
- if(multipage_saveFlag){
-     /* save the document to a file */
-         HPDF_SaveToFile (pdf, destFile);
-         /* clean up */
-         HPDF_Free (pdf);
-         pdf = NULL;
+     if(multipage_saveFlag){
+         /* save the document to a file */
+             HPDF_SaveToFile (pdf, destFile);
+             /* clean up */
+             HPDF_Free (pdf);
+             pdf = NULL;
 
- }
-       return ERROR_GOOD;
+     }
+    if(pdfImageData != NULL)
+        delete pdfImageData;
+      return ERROR_GOOD;
 }
