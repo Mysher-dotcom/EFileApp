@@ -54,16 +54,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //匹配版本号，用于是否删除配置文件
-    GlobalHelper::softVersion = "5.1.0.4-16";
-    GlobalHelper::checkVersion();
+
+    //GlobalHelper::softVersion = "5.1.0.4-21";
+    GlobalHelper::getVersion();
+    GlobalHelper::checkVersion();//匹配版本号，用于是否删除配置文件
+
     //检查配置文件是否存在，不存在就创建，并写入初始值
     QFileInfo settingFile(GlobalHelper::getSettingFilePath());
     if(settingFile.exists()==false)
     {
         GlobalHelper::writeSettingFile();
     }
-    WebHelper::writeWebDefault();
+    //WebHelper::writeWebDefault();
 
     initUI();
     initConnection();

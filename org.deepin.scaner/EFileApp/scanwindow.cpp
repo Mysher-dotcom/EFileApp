@@ -549,7 +549,8 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
             }
         }
     }
-    else {
+    else
+    {
         srcCut = mcvClone(src);
         if(src)
         {

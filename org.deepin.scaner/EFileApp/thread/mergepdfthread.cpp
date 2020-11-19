@@ -55,9 +55,9 @@ void MergePDFThread::startMerge()
         unsigned char* dstBuf = NULL;
         JPEGInfo jpgInfo;
         int dstW,dstH;
-        char jpgPath[256] = {0};
+        char jpgPath[2048] = {0};
         strcpy(jpgPath,fileList.at(i).toUtf8().data());
-
+         qDebug("jpgPath path is %s\n",jpgPath);
         QString tt = fileList.at(i).right(3);
         if(QString::compare(tt,"jpg")==0)
         {

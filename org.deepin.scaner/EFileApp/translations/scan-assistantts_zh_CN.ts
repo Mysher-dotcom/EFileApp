@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="zh_CN" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="zh_CN">
 <context>
     <name>CameraWindow</name>
     <message>
@@ -91,24 +93,27 @@
 <context>
     <name>DoScanThread</name>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="43"/>
-        <location filename="../thread/doscanthread.cpp" line="94"/>
-        <location filename="../thread/doscanthread.cpp" line="130"/>
+        <location filename="../thread/doscanthread.cpp" line="45"/>
+        <location filename="../thread/doscanthread.cpp" line="99"/>
+        <location filename="../thread/doscanthread.cpp" line="148"/>
         <source>Unknown error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="46"/>
+        <location filename="../thread/doscanthread.cpp" line="48"/>
+        <location filename="../thread/doscanthread.cpp" line="136"/>
         <source>Out of paper</source>
         <translation>请放入纸张</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="51"/>
+        <location filename="../thread/doscanthread.cpp" line="54"/>
+        <location filename="../thread/doscanthread.cpp" line="140"/>
         <source>Paper jam when scanning</source>
         <translation>扫描过程中卡纸</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="56"/>
+        <location filename="../thread/doscanthread.cpp" line="60"/>
+        <location filename="../thread/doscanthread.cpp" line="144"/>
         <source>Paper jam in the document feeder</source>
         <translation>文档进纸器卡纸</translation>
     </message>
@@ -439,7 +444,7 @@
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="860"/>
-        <location filename="../scanmanagerwindow.cpp" line="1743"/>
+        <location filename="../scanmanagerwindow.cpp" line="1762"/>
         <source>Idle</source>
         <translation>空闲</translation>
     </message>
@@ -539,57 +544,57 @@
         <translation>黑白图</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1075"/>
+        <location filename="../scanmanagerwindow.cpp" line="1094"/>
         <source>Crop</source>
         <translation>裁剪</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1097"/>
+        <location filename="../scanmanagerwindow.cpp" line="1116"/>
         <source>No crop</source>
         <translation>不裁剪</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1114"/>
+        <location filename="../scanmanagerwindow.cpp" line="1133"/>
         <source>Single area</source>
         <translation>单图裁剪</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1130"/>
+        <location filename="../scanmanagerwindow.cpp" line="1149"/>
         <source>Multiple areas</source>
         <translation>多图裁剪</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1143"/>
+        <location filename="../scanmanagerwindow.cpp" line="1162"/>
         <source>Watermark</source>
         <translation>水印</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1164"/>
+        <location filename="../scanmanagerwindow.cpp" line="1183"/>
         <source>No watermark</source>
         <translation>无水印</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1181"/>
+        <location filename="../scanmanagerwindow.cpp" line="1200"/>
         <source>Text</source>
         <translation>文字水印</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1211"/>
+        <location filename="../scanmanagerwindow.cpp" line="1230"/>
         <source>Images</source>
         <translation>图像处理</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1234"/>
+        <location filename="../scanmanagerwindow.cpp" line="1253"/>
         <source>Optimization</source>
         <translation>图像类型</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1245"/>
+        <location filename="../scanmanagerwindow.cpp" line="1264"/>
         <source>Original</source>
         <translation>原始文档</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1246"/>
+        <location filename="../scanmanagerwindow.cpp" line="1265"/>
         <source>Document</source>
         <translation>文档优化</translation>
     </message>
@@ -599,28 +604,28 @@
         <translation>彩色图</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1248"/>
+        <location filename="../scanmanagerwindow.cpp" line="1267"/>
         <source>Red seal</source>
         <translation>红印文档优化</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1249"/>
+        <location filename="../scanmanagerwindow.cpp" line="1268"/>
         <source>Invert colors</source>
         <translation>反色</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1278"/>
+        <location filename="../scanmanagerwindow.cpp" line="1297"/>
         <source>Fill missing corners</source>
         <translation>缺角修复</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1370"/>
+        <location filename="../scanmanagerwindow.cpp" line="1389"/>
         <source>Image</source>
         <translation>图片格式</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="943"/>
-        <location filename="../scanmanagerwindow.cpp" line="1408"/>
+        <location filename="../scanmanagerwindow.cpp" line="1427"/>
         <source>Color mode</source>
         <translation>色彩模式</translation>
     </message>
@@ -645,48 +650,48 @@
         <translation>视频格式</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1247"/>
+        <location filename="../scanmanagerwindow.cpp" line="1266"/>
         <source>Enhanced color</source>
         <translation>彩色优化</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1419"/>
+        <location filename="../scanmanagerwindow.cpp" line="1438"/>
         <source>Colorful</source>
         <translation>彩色</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1420"/>
+        <location filename="../scanmanagerwindow.cpp" line="1439"/>
         <source>Grey</source>
         <translation>灰度</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1421"/>
+        <location filename="../scanmanagerwindow.cpp" line="1440"/>
         <source>Black and white</source>
         <translation>黑白</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1444"/>
+        <location filename="../scanmanagerwindow.cpp" line="1463"/>
         <source>Method</source>
         <translation>拍摄方式</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1467"/>
+        <location filename="../scanmanagerwindow.cpp" line="1486"/>
         <source>Manual scan</source>
         <translation>手动拍摄</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1485"/>
+        <location filename="../scanmanagerwindow.cpp" line="1504"/>
         <source>Set timer</source>
         <translation>定时拍摄</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1495"/>
+        <location filename="../scanmanagerwindow.cpp" line="1514"/>
         <source>s</source>
         <translation>秒</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1678"/>
-        <location filename="../scanmanagerwindow.cpp" line="1715"/>
+        <location filename="../scanmanagerwindow.cpp" line="1697"/>
+        <location filename="../scanmanagerwindow.cpp" line="1734"/>
         <source>General</source>
         <translation>扫描设置</translation>
     </message>

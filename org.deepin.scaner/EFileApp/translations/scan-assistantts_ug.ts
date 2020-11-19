@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="ug" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="ug">
 <context>
     <name>CameraWindow</name>
     <message>
@@ -91,24 +93,27 @@
 <context>
     <name>DoScanThread</name>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="43"/>
-        <location filename="../thread/doscanthread.cpp" line="94"/>
-        <location filename="../thread/doscanthread.cpp" line="130"/>
+        <location filename="../thread/doscanthread.cpp" line="45"/>
+        <location filename="../thread/doscanthread.cpp" line="99"/>
+        <location filename="../thread/doscanthread.cpp" line="148"/>
         <source>Unknown error</source>
         <translation>نامەلۇم خاتالىق</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="46"/>
+        <location filename="../thread/doscanthread.cpp" line="48"/>
+        <location filename="../thread/doscanthread.cpp" line="136"/>
         <source>Out of paper</source>
         <translation>قەغەز سېلىڭ</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="51"/>
+        <location filename="../thread/doscanthread.cpp" line="54"/>
+        <location filename="../thread/doscanthread.cpp" line="140"/>
         <source>Paper jam when scanning</source>
         <translation>سايىلەش جەريانىدا قەغەز قىسىلىپ قالدى</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="56"/>
+        <location filename="../thread/doscanthread.cpp" line="60"/>
+        <location filename="../thread/doscanthread.cpp" line="144"/>
         <source>Paper jam in the document feeder</source>
         <translation>ھۆججەت كىرىش ئېغىزىدا قەغەز قىسىلىپ قالدى</translation>
     </message>
@@ -439,7 +444,7 @@
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="860"/>
-        <location filename="../scanmanagerwindow.cpp" line="1743"/>
+        <location filename="../scanmanagerwindow.cpp" line="1762"/>
         <source>Idle</source>
         <translation>بوش</translation>
     </message>
@@ -461,135 +466,135 @@
     <message>
         <location filename="../scanmanagerwindow.cpp" line="924"/>
         <source>ADF Back</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="925"/>
         <source>ADF Duplex</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="926"/>
         <source>ADF Front</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="927"/>
         <source>ADF_DUPLEX</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="928"/>
         <source>ADF_FRONT</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="929"/>
         <source>FLAT_FRONT</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="930"/>
         <source>Simplex</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="931"/>
         <source>Duplex</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="932"/>
         <source>Flatbed</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="933"/>
         <source>Auto Detection</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="934"/>
         <source>Automatic</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="935"/>
         <source>Black &amp; White</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="937"/>
         <source>Color24</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="938"/>
         <source>Gray</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="939"/>
         <source>Gray8</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="940"/>
         <source>Lineart</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1075"/>
+        <location filename="../scanmanagerwindow.cpp" line="1094"/>
         <source>Crop</source>
         <translation>كېسىش</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1097"/>
+        <location filename="../scanmanagerwindow.cpp" line="1116"/>
         <source>No crop</source>
         <translation>كەسمەيمەن</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1114"/>
+        <location filename="../scanmanagerwindow.cpp" line="1133"/>
         <source>Single area</source>
         <translation>بىر رەسىمنى كېسىش</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1130"/>
+        <location filename="../scanmanagerwindow.cpp" line="1149"/>
         <source>Multiple areas</source>
         <translation>كۆپ رەسىمنى كېسىش</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1143"/>
+        <location filename="../scanmanagerwindow.cpp" line="1162"/>
         <source>Watermark</source>
         <translation>تامغا</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1164"/>
+        <location filename="../scanmanagerwindow.cpp" line="1183"/>
         <source>No watermark</source>
         <translation>تامغىسىز</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1181"/>
+        <location filename="../scanmanagerwindow.cpp" line="1200"/>
         <source>Text</source>
         <translation>يېزىق تامغا</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1211"/>
+        <location filename="../scanmanagerwindow.cpp" line="1230"/>
         <source>Images</source>
         <translation>رەسىم بىر تەرەپ قىلىش</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1234"/>
+        <location filename="../scanmanagerwindow.cpp" line="1253"/>
         <source>Optimization</source>
         <translation>رەسىم تۈرى</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1245"/>
+        <location filename="../scanmanagerwindow.cpp" line="1264"/>
         <source>Original</source>
         <translation>ئەسلى ھۆججەت</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1246"/>
+        <location filename="../scanmanagerwindow.cpp" line="1265"/>
         <source>Document</source>
         <translation>ھۆججەتنى ئەلالاشتۇرۇش</translation>
     </message>
@@ -599,94 +604,94 @@
         <translation>رەڭنى ئەلالاشتۇرۇش</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1248"/>
+        <location filename="../scanmanagerwindow.cpp" line="1267"/>
         <source>Red seal</source>
         <translation>قىزىل تامغىلىق ھۆججەتنى ئەلالاشتۇرۇش</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1249"/>
+        <location filename="../scanmanagerwindow.cpp" line="1268"/>
         <source>Invert colors</source>
         <translation>ئەكس رەڭ</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1278"/>
+        <location filename="../scanmanagerwindow.cpp" line="1297"/>
         <source>Fill missing corners</source>
         <translation>بۇلۇڭنى چىقىرىۋېتىپ تۈزەش</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1370"/>
+        <location filename="../scanmanagerwindow.cpp" line="1389"/>
         <source>Image</source>
         <translation>رەسىم فورماتى</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="943"/>
-        <location filename="../scanmanagerwindow.cpp" line="1408"/>
+        <location filename="../scanmanagerwindow.cpp" line="1427"/>
         <source>Color mode</source>
         <translation>رەڭ ھالىتى</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="941"/>
         <source>Scan Mode</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="942"/>
         <source>Scan mode</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="944"/>
         <source>Resolution</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="945"/>
         <source>Video</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1247"/>
+        <location filename="../scanmanagerwindow.cpp" line="1266"/>
         <source>Enhanced color</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1419"/>
+        <location filename="../scanmanagerwindow.cpp" line="1438"/>
         <source>Colorful</source>
         <translation>رەڭلىك</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1420"/>
+        <location filename="../scanmanagerwindow.cpp" line="1439"/>
         <source>Grey</source>
         <translation>غۇۋالىق دەرىجىسى</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1421"/>
+        <location filename="../scanmanagerwindow.cpp" line="1440"/>
         <source>Black and white</source>
         <translation>رەڭسىز</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1444"/>
+        <location filename="../scanmanagerwindow.cpp" line="1463"/>
         <source>Method</source>
         <translation>سۈرەتكە تارتىش ئۇسۇلى</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1467"/>
+        <location filename="../scanmanagerwindow.cpp" line="1486"/>
         <source>Manual scan</source>
         <translation>قولدا تارتىش</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1485"/>
+        <location filename="../scanmanagerwindow.cpp" line="1504"/>
         <source>Set timer</source>
         <translation>ۋاقىت بەلگىلەپ تارتىش</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1495"/>
+        <location filename="../scanmanagerwindow.cpp" line="1514"/>
         <source>s</source>
         <translation>سېكونت</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1678"/>
-        <location filename="../scanmanagerwindow.cpp" line="1715"/>
+        <location filename="../scanmanagerwindow.cpp" line="1697"/>
+        <location filename="../scanmanagerwindow.cpp" line="1734"/>
         <source>General</source>
         <translation>سايىلەش تەڭشىكى</translation>
     </message>

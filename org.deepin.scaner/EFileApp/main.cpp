@@ -6,6 +6,7 @@
 #include <QTranslator>
 #include "helper/loggerhelper.h"
 #include <QLocale>
+#include "helper/globalhelper.h"
 
 int main(int argc, char *argv[])
 {
@@ -104,7 +105,7 @@ int main(int argc, char *argv[])
 
     a.setAttribute(Qt::AA_UseHighDpiPixmaps);
     a.loadTranslator();
-    a.setApplicationVersion(DApplication::buildVersion("5.1.0.4-16"));
+    a.setApplicationVersion(DApplication::buildVersion(GlobalHelper::getVersion()));
     a.setProductIcon(QIcon(":/img/logo/logo-16.svg"));
     a.setOrganizationName(QObject::tr("Scan Assistant"));
     a.setProductName(QObject::tr("Scan Assistant"));

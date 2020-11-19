@@ -21,7 +21,7 @@ TEMPLATE = app
 # deprecated API in order to know how to port your code away from it.
 
 DEFINES += QT_DEPRECATED_WARNINGS
-DESTDIR =/opt/apps/org.deepin.scaner/files/scaner/bin #$$PWD/../../target_EFile
+DESTDIR =/opt/apps/org.deepin.scanner/files/scanner/bin #$$PWD/../../target_EFile
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -113,36 +113,36 @@ RESOURCES += \
 #LIBS += /lib64/libsane.so.1 #中标麒麟+龙芯 sane路径
 #LIBS += /usr/lib/x86_64-linux-gnu/libsane.so.1 #x86+uos sane路径
 #LIBS += /usr/lib/aarch64-linux-gnu/libsane.so.1 #arm+uos sane路径
-LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/lib/sane/libsane.so.1
+LIBS += /opt/apps/org.deepin.scanner/files/scanner/bin/lib/sane/libsane.so.1
 
 #扫描仪
 
-INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/jpeg
-INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/hdf
-INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/png
-LIBS += -L/opt/apps/org.deepin.scaner/files/scaner/bin/lib/jpeg  -ljpeg
-LIBS += -L/opt/apps/org.deepin.scaner/files/scaner/bin/lib/hdf -lhpdf
-LIBS += -L/opt/apps/org.deepin.scaner/files/scaner/bin/lib/png -lpng
+INCLUDEPATH += /opt/apps/org.deepin.scanner/files/scanner/bin/include/jpeg
+INCLUDEPATH += /opt/apps/org.deepin.scanner/files/scanner/bin/include/hdf
+INCLUDEPATH += /opt/apps/org.deepin.scanner/files/scanner/bin/include/png
+LIBS += -L/opt/apps/org.deepin.scanner/files/scanner/bin/lib/jpeg  -ljpeg
+LIBS += -L/opt/apps/org.deepin.scanner/files/scanner/bin/lib/hdf -lhpdf
+LIBS += -L/opt/apps/org.deepin.scanner/files/scanner/bin/lib/png -lpng
 #拍摄仪
-INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/CamScanSDK
-INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/CmImage
-INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include/CamCaptureSDK
-LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/libCamScanSDK.so.1 #此目录下所有包含CamScanSDK命名的so文件
-LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/libCmImage.so.1
-LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/libCamCaptureSDK.so.1
+INCLUDEPATH += /opt/apps/org.deepin.scanner/files/scanner/bin/include/CamScanSDK
+INCLUDEPATH += /opt/apps/org.deepin.scanner/files/scanner/bin/include/CmImage
+INCLUDEPATH += /opt/apps/org.deepin.scanner/files/scanner/bin/include/CamCaptureSDK
+LIBS += /opt/apps/org.deepin.scanner/files/scanner/bin/libCamScanSDK.so.1 #此目录下所有包含CamScanSDK命名的so文件
+LIBS += /opt/apps/org.deepin.scanner/files/scanner/bin/libCmImage.so.1
+LIBS += /opt/apps/org.deepin.scanner/files/scanner/bin/libCamCaptureSDK.so.1
 
 #加载opencv
-INCLUDEPATH += /opt/apps/org.deepin.scaner/files/scaner/bin/include \
-               /opt/apps/org.deepin.scaner/files/scaner/bin/include/opencv \
-               /opt/apps/org.deepin.scaner/files/scaner/bin/include/opencv2
+INCLUDEPATH += /opt/apps/org.deepin.scanner/files/scanner/bin/include \
+               /opt/apps/org.deepin.scanner/files/scanner/bin/include/opencv \
+               /opt/apps/org.deepin.scanner/files/scanner/bin/include/opencv2
 
-LIBS += /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_highgui.so \
-        /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_core.so \
-        /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_flann.so \
-        /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_features2d.so \
-        /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_calib3d.so \
-        /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_imgproc.so \
-        /opt/apps/org.deepin.scaner/files/scaner/bin/lib/libopencv_photo.so
+LIBS += /opt/apps/org.deepin.scanner/files/scanner/bin/lib/libopencv_highgui.so \
+        /opt/apps/org.deepin.scanner/files/scanner/bin/lib/libopencv_core.so \
+        /opt/apps/org.deepin.scanner/files/scanner/bin/lib/libopencv_flann.so \
+        /opt/apps/org.deepin.scanner/files/scanner/bin/lib/libopencv_features2d.so \
+        /opt/apps/org.deepin.scanner/files/scanner/bin/lib/libopencv_calib3d.so \
+        /opt/apps/org.deepin.scanner/files/scanner/bin/lib/libopencv_imgproc.so \
+        /opt/apps/org.deepin.scanner/files/scanner/bin/lib/libopencv_photo.so
 
 
 

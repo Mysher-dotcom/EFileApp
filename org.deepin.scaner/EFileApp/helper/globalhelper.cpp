@@ -25,6 +25,31 @@ GlobalHelper::~GlobalHelper()
 bool GlobalHelper::getDeviceInfoIsOver;
 QString GlobalHelper::softVersion;//版本号
 
+//获取程序的版本号
+QString GlobalHelper::getVersion()
+{
+    QString versionFilePath = QCoreApplication::applicationDirPath() + "/appInfo.ini";
+    //检查版本号文件，没有就写默认程序默认的版本号
+    QFileInfo settingFile(versionFilePath);
+    if(settingFile.exists()==false)
+    {
+        //版本号文件存储路径替换到文档下
+        versionFilePath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/EFile_config/appInfo.ini";
+        QSettings * psettings = new QSettings (versionFilePath,QSettings::IniFormat);
+        psettings->setIniCodec(QTextCodec::codecForName("GB2312"));
+        //版本信息
+        psettings->beginGroup("info");
+        psettings->setValue("version","5.1.0.4-22");
+        delete  psettings;
+    }
+    QSettings setting(versionFilePath,QSettings::IniFormat);
+    setting.setIniCodec(QTextCodec::codecForName("GB2312"));
+    QString qvar = setting.value(QString("%1/%2").arg("info").arg("version")).toString();
+    softVersion = qvar;
+    qDebug()<<"软件版本："<<softVersion;
+    return qvar;
+}
+
 //获取扫描存放文件夹路径
 QString GlobalHelper::getScanFolder()
 {

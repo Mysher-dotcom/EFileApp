@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="uk" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="uk">
 <context>
     <name>CameraWindow</name>
     <message>
@@ -91,24 +93,27 @@
 <context>
     <name>DoScanThread</name>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="43"/>
-        <location filename="../thread/doscanthread.cpp" line="94"/>
-        <location filename="../thread/doscanthread.cpp" line="130"/>
+        <location filename="../thread/doscanthread.cpp" line="45"/>
+        <location filename="../thread/doscanthread.cpp" line="99"/>
+        <location filename="../thread/doscanthread.cpp" line="148"/>
         <source>Unknown error</source>
         <translation>Невідома помилка</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="46"/>
+        <location filename="../thread/doscanthread.cpp" line="48"/>
+        <location filename="../thread/doscanthread.cpp" line="136"/>
         <source>Out of paper</source>
         <translation>Вичерпано папір</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="51"/>
+        <location filename="../thread/doscanthread.cpp" line="54"/>
+        <location filename="../thread/doscanthread.cpp" line="140"/>
         <source>Paper jam when scanning</source>
         <translation>Під час сканування зам&apos;ято папір</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="56"/>
+        <location filename="../thread/doscanthread.cpp" line="60"/>
+        <location filename="../thread/doscanthread.cpp" line="144"/>
         <source>Paper jam in the document feeder</source>
         <translation>У засобі подавання документів зам&apos;ято папір</translation>
     </message>
@@ -439,7 +444,7 @@
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="860"/>
-        <location filename="../scanmanagerwindow.cpp" line="1743"/>
+        <location filename="../scanmanagerwindow.cpp" line="1762"/>
         <source>Idle</source>
         <translation>Бездіяльний</translation>
     </message>
@@ -461,135 +466,135 @@
     <message>
         <location filename="../scanmanagerwindow.cpp" line="924"/>
         <source>ADF Back</source>
-        <translation type="unfinished"/>
+        <translation>Зворот ADF</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="925"/>
         <source>ADF Duplex</source>
-        <translation type="unfinished"/>
+        <translation>Двобічний ADF</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="926"/>
         <source>ADF Front</source>
-        <translation type="unfinished"/>
+        <translation>Передній бік ADF</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="927"/>
         <source>ADF_DUPLEX</source>
-        <translation type="unfinished"/>
+        <translation>ADF_DUPLEX</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="928"/>
         <source>ADF_FRONT</source>
-        <translation type="unfinished"/>
+        <translation>ADF_FRONT</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="929"/>
         <source>FLAT_FRONT</source>
-        <translation type="unfinished"/>
+        <translation>FLAT_FRONT</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="930"/>
         <source>Simplex</source>
-        <translation type="unfinished"/>
+        <translation>Однобічний</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="931"/>
         <source>Duplex</source>
-        <translation type="unfinished"/>
+        <translation>Двобічний</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="932"/>
         <source>Flatbed</source>
-        <translation type="unfinished"/>
+        <translation>Планшетний</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="933"/>
         <source>Auto Detection</source>
-        <translation type="unfinished"/>
+        <translation>Автовизначення</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="934"/>
         <source>Automatic</source>
-        <translation type="unfinished"/>
+        <translation>Автоматично</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="935"/>
         <source>Black &amp; White</source>
-        <translation type="unfinished"/>
+        <translation>Чорно-білий</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="937"/>
         <source>Color24</source>
-        <translation type="unfinished"/>
+        <translation>Колір24</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="938"/>
         <source>Gray</source>
-        <translation type="unfinished"/>
+        <translation>Сірий</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="939"/>
         <source>Gray8</source>
-        <translation type="unfinished"/>
+        <translation>Сірий8</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="940"/>
         <source>Lineart</source>
-        <translation type="unfinished"/>
+        <translation>Графіка</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1075"/>
+        <location filename="../scanmanagerwindow.cpp" line="1094"/>
         <source>Crop</source>
         <translation>Обрізати</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1097"/>
+        <location filename="../scanmanagerwindow.cpp" line="1116"/>
         <source>No crop</source>
         <translation>Без обрізання</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1114"/>
+        <location filename="../scanmanagerwindow.cpp" line="1133"/>
         <source>Single area</source>
         <translation>Одиночна область</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1130"/>
+        <location filename="../scanmanagerwindow.cpp" line="1149"/>
         <source>Multiple areas</source>
         <translation>Декілька ділянок</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1143"/>
+        <location filename="../scanmanagerwindow.cpp" line="1162"/>
         <source>Watermark</source>
         <translation>Водяний знак</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1164"/>
+        <location filename="../scanmanagerwindow.cpp" line="1183"/>
         <source>No watermark</source>
         <translation>Без водяного знаку</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1181"/>
+        <location filename="../scanmanagerwindow.cpp" line="1200"/>
         <source>Text</source>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1211"/>
+        <location filename="../scanmanagerwindow.cpp" line="1230"/>
         <source>Images</source>
         <translation>Зображення</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1234"/>
+        <location filename="../scanmanagerwindow.cpp" line="1253"/>
         <source>Optimization</source>
         <translation>Оптимізація</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1245"/>
+        <location filename="../scanmanagerwindow.cpp" line="1264"/>
         <source>Original</source>
         <translation>Оригінал</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1246"/>
+        <location filename="../scanmanagerwindow.cpp" line="1265"/>
         <source>Document</source>
         <translation>Документ</translation>
     </message>
@@ -599,94 +604,94 @@
         <translation>Колір</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1248"/>
+        <location filename="../scanmanagerwindow.cpp" line="1267"/>
         <source>Red seal</source>
         <translation>Червона печатка</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1249"/>
+        <location filename="../scanmanagerwindow.cpp" line="1268"/>
         <source>Invert colors</source>
         <translation>Інвертувати кольори</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1278"/>
+        <location filename="../scanmanagerwindow.cpp" line="1297"/>
         <source>Fill missing corners</source>
         <translation>Заповнити пропущені кути</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1370"/>
+        <location filename="../scanmanagerwindow.cpp" line="1389"/>
         <source>Image</source>
         <translation>Зображення</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="943"/>
-        <location filename="../scanmanagerwindow.cpp" line="1408"/>
+        <location filename="../scanmanagerwindow.cpp" line="1427"/>
         <source>Color mode</source>
         <translation>Режим кольорів</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="941"/>
         <source>Scan Mode</source>
-        <translation type="unfinished"/>
+        <translation>Режим сканування</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="942"/>
         <source>Scan mode</source>
-        <translation type="unfinished"/>
+        <translation>Режим сканування</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="944"/>
         <source>Resolution</source>
-        <translation type="unfinished"/>
+        <translation>Роздільність</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="945"/>
         <source>Video</source>
-        <translation type="unfinished"/>
+        <translation>Відео</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1247"/>
+        <location filename="../scanmanagerwindow.cpp" line="1266"/>
         <source>Enhanced color</source>
-        <translation type="unfinished"/>
+        <translation>Удосконалені кольори</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1419"/>
+        <location filename="../scanmanagerwindow.cpp" line="1438"/>
         <source>Colorful</source>
         <translation>Кольоровий</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1420"/>
+        <location filename="../scanmanagerwindow.cpp" line="1439"/>
         <source>Grey</source>
         <translation>Відтінки сірого</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1421"/>
+        <location filename="../scanmanagerwindow.cpp" line="1440"/>
         <source>Black and white</source>
         <translation>Чорно-біле</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1444"/>
+        <location filename="../scanmanagerwindow.cpp" line="1463"/>
         <source>Method</source>
         <translation>Метод</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1467"/>
+        <location filename="../scanmanagerwindow.cpp" line="1486"/>
         <source>Manual scan</source>
         <translation>Сканування вручну</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1485"/>
+        <location filename="../scanmanagerwindow.cpp" line="1504"/>
         <source>Set timer</source>
         <translation>Встановити таймер</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1495"/>
+        <location filename="../scanmanagerwindow.cpp" line="1514"/>
         <source>s</source>
         <translation>с</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1678"/>
-        <location filename="../scanmanagerwindow.cpp" line="1715"/>
+        <location filename="../scanmanagerwindow.cpp" line="1697"/>
+        <location filename="../scanmanagerwindow.cpp" line="1734"/>
         <source>General</source>
         <translation>Загальне</translation>
     </message>

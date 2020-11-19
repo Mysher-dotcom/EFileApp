@@ -159,12 +159,12 @@ void CameraWindow::initUI()
 
     rightWidget->setFixedWidth(220);//右侧容器固定220px宽
 
-    /*
+
     QColor bgColor(255,255,255,255);
     QPalette palr(rightWidget->palette());
     palr.setColor(QPalette::Background, bgColor);
     rightWidget->setAutoFillBackground(true);
-    rightWidget->setPalette(palr);*/
+    rightWidget->setPalette(palr);
 /*
     QColor bgColor2(247,247,247,255);
     //leftBottomWidget->setGeometry(0, 0, 300, 100);
@@ -961,7 +961,12 @@ void CameraWindow::slotListDoubleClicked(const QModelIndex index)
 
 void CameraWindow::slotStartShotTime()
 {
-    nShotTime = GlobalHelper::readSettingValue("imgEdit","shotTime").toInt();
+    //nShotTime = GlobalHelper::readSettingValue("imgEdit","shotTime").toInt();
+    QString defaultDeviceModelFilePath =  DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceListInfoFilePath(),
+                                                                   "default",
+                                                                   "config");
+    nShotTime = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","shotTime").toInt();//定时拍秒
+    qDebug()<<"定时拍摄，"<<nShotTime<<"秒";
     shotTimer = new QTimer ();
     connect(shotTimer,SIGNAL(timeout()),this,SLOT(slotShotTimerUpdate()));
     shotTimer->start(1000);
@@ -977,7 +982,11 @@ void CameraWindow::slotShotTimerUpdate()
     if(nShotTime <= 0)
     {
         shot();
-        nShotTime = GlobalHelper::readSettingValue("imgEdit","shotTime").toInt();
+        QString defaultDeviceModelFilePath =  DeviceInfoHelper::readValue(DeviceInfoHelper::getDeviceListInfoFilePath(),
+                                                                       "default",
+                                                                       "config");
+        nShotTime = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","shotTime").toInt();//定时拍秒
+       // nShotTime = GlobalHelper::readSettingValue("imgEdit","shotTime").toInt();
     }
     timerLabel->setText(QString("%1 %2").arg(QString::number(nShotTime)).arg(tr("s")));
     nShotTime--;

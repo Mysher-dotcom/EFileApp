@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="fr" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="fr">
 <context>
     <name>CameraWindow</name>
     <message>
@@ -91,24 +93,27 @@
 <context>
     <name>DoScanThread</name>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="43"/>
-        <location filename="../thread/doscanthread.cpp" line="94"/>
-        <location filename="../thread/doscanthread.cpp" line="130"/>
+        <location filename="../thread/doscanthread.cpp" line="45"/>
+        <location filename="../thread/doscanthread.cpp" line="99"/>
+        <location filename="../thread/doscanthread.cpp" line="148"/>
         <source>Unknown error</source>
         <translation>Erreur inconnue</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="46"/>
+        <location filename="../thread/doscanthread.cpp" line="48"/>
+        <location filename="../thread/doscanthread.cpp" line="136"/>
         <source>Out of paper</source>
         <translation>Plus de papier</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="51"/>
+        <location filename="../thread/doscanthread.cpp" line="54"/>
+        <location filename="../thread/doscanthread.cpp" line="140"/>
         <source>Paper jam when scanning</source>
         <translation>Bourrage papier lors de la numérisation</translation>
     </message>
     <message>
-        <location filename="../thread/doscanthread.cpp" line="56"/>
+        <location filename="../thread/doscanthread.cpp" line="60"/>
+        <location filename="../thread/doscanthread.cpp" line="144"/>
         <source>Paper jam in the document feeder</source>
         <translation>Bourrage papier dans le chargeur de documents</translation>
     </message>
@@ -439,7 +444,7 @@
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="860"/>
-        <location filename="../scanmanagerwindow.cpp" line="1743"/>
+        <location filename="../scanmanagerwindow.cpp" line="1762"/>
         <source>Idle</source>
         <translation>Pause</translation>
     </message>
@@ -461,135 +466,135 @@
     <message>
         <location filename="../scanmanagerwindow.cpp" line="924"/>
         <source>ADF Back</source>
-        <translation type="unfinished"/>
+        <translation>ADF Arrière</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="925"/>
         <source>ADF Duplex</source>
-        <translation type="unfinished"/>
+        <translation>ADF Double</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="926"/>
         <source>ADF Front</source>
-        <translation type="unfinished"/>
+        <translation>ADF Avant</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="927"/>
         <source>ADF_DUPLEX</source>
-        <translation type="unfinished"/>
+        <translation>ADF_DUPLEX</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="928"/>
         <source>ADF_FRONT</source>
-        <translation type="unfinished"/>
+        <translation>ADF_FRONT</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="929"/>
         <source>FLAT_FRONT</source>
-        <translation type="unfinished"/>
+        <translation>FLAT_FRONT</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="930"/>
         <source>Simplex</source>
-        <translation type="unfinished"/>
+        <translation>Simple</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="931"/>
         <source>Duplex</source>
-        <translation type="unfinished"/>
+        <translation>Double</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="932"/>
         <source>Flatbed</source>
-        <translation type="unfinished"/>
+        <translation>Plateau</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="933"/>
         <source>Auto Detection</source>
-        <translation type="unfinished"/>
+        <translation>Détection automatique</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="934"/>
         <source>Automatic</source>
-        <translation type="unfinished"/>
+        <translation>Automatique</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="935"/>
         <source>Black &amp; White</source>
-        <translation type="unfinished"/>
+        <translation>Noir et blanc</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="937"/>
         <source>Color24</source>
-        <translation type="unfinished"/>
+        <translation>Couleur</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="938"/>
         <source>Gray</source>
-        <translation type="unfinished"/>
+        <translation>Gris</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="939"/>
         <source>Gray8</source>
-        <translation type="unfinished"/>
+        <translation>Gris</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="940"/>
         <source>Lineart</source>
-        <translation type="unfinished"/>
+        <translation>Dessin au trait</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1075"/>
+        <location filename="../scanmanagerwindow.cpp" line="1094"/>
         <source>Crop</source>
         <translation>Recadrer</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1097"/>
+        <location filename="../scanmanagerwindow.cpp" line="1116"/>
         <source>No crop</source>
         <translation>Non recadrer</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1114"/>
+        <location filename="../scanmanagerwindow.cpp" line="1133"/>
         <source>Single area</source>
         <translation>Zone unique</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1130"/>
+        <location filename="../scanmanagerwindow.cpp" line="1149"/>
         <source>Multiple areas</source>
         <translation>Plusieurs zones</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1143"/>
+        <location filename="../scanmanagerwindow.cpp" line="1162"/>
         <source>Watermark</source>
         <translation>Filigrane</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1164"/>
+        <location filename="../scanmanagerwindow.cpp" line="1183"/>
         <source>No watermark</source>
         <translation>Pas de filigrane</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1181"/>
+        <location filename="../scanmanagerwindow.cpp" line="1200"/>
         <source>Text</source>
         <translation>Texte</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1211"/>
+        <location filename="../scanmanagerwindow.cpp" line="1230"/>
         <source>Images</source>
         <translation>Images</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1234"/>
+        <location filename="../scanmanagerwindow.cpp" line="1253"/>
         <source>Optimization</source>
         <translation>Optimisation</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1245"/>
+        <location filename="../scanmanagerwindow.cpp" line="1264"/>
         <source>Original</source>
         <translation>Original</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1246"/>
+        <location filename="../scanmanagerwindow.cpp" line="1265"/>
         <source>Document</source>
         <translation>Document</translation>
     </message>
@@ -599,94 +604,94 @@
         <translation>Couleur</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1248"/>
+        <location filename="../scanmanagerwindow.cpp" line="1267"/>
         <source>Red seal</source>
         <translation>Sceau rouge</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1249"/>
+        <location filename="../scanmanagerwindow.cpp" line="1268"/>
         <source>Invert colors</source>
         <translation>Inverser les couleurs</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1278"/>
+        <location filename="../scanmanagerwindow.cpp" line="1297"/>
         <source>Fill missing corners</source>
         <translation>Remplir les coins manquants</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1370"/>
+        <location filename="../scanmanagerwindow.cpp" line="1389"/>
         <source>Image</source>
         <translation>Image</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="943"/>
-        <location filename="../scanmanagerwindow.cpp" line="1408"/>
+        <location filename="../scanmanagerwindow.cpp" line="1427"/>
         <source>Color mode</source>
         <translation>Mode de couleur</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="941"/>
         <source>Scan Mode</source>
-        <translation type="unfinished"/>
+        <translation>Mode de balayage</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="942"/>
         <source>Scan mode</source>
-        <translation type="unfinished"/>
+        <translation>Mode de balayage</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="944"/>
         <source>Resolution</source>
-        <translation type="unfinished"/>
+        <translation>Résolution</translation>
     </message>
     <message>
         <location filename="../scanmanagerwindow.cpp" line="945"/>
         <source>Video</source>
-        <translation type="unfinished"/>
+        <translation>Vidéo</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1247"/>
+        <location filename="../scanmanagerwindow.cpp" line="1266"/>
         <source>Enhanced color</source>
-        <translation type="unfinished"/>
+        <translation>Couleur améliorée</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1419"/>
+        <location filename="../scanmanagerwindow.cpp" line="1438"/>
         <source>Colorful</source>
         <translation>En couleur</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1420"/>
+        <location filename="../scanmanagerwindow.cpp" line="1439"/>
         <source>Grey</source>
         <translation>Gris</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1421"/>
+        <location filename="../scanmanagerwindow.cpp" line="1440"/>
         <source>Black and white</source>
         <translation>Noir et blanc</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1444"/>
+        <location filename="../scanmanagerwindow.cpp" line="1463"/>
         <source>Method</source>
         <translation>Méthode</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1467"/>
+        <location filename="../scanmanagerwindow.cpp" line="1486"/>
         <source>Manual scan</source>
         <translation>Scan manuel</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1485"/>
+        <location filename="../scanmanagerwindow.cpp" line="1504"/>
         <source>Set timer</source>
         <translation>Régler la minuterie</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1495"/>
+        <location filename="../scanmanagerwindow.cpp" line="1514"/>
         <source>s</source>
         <translation>s</translation>
     </message>
     <message>
-        <location filename="../scanmanagerwindow.cpp" line="1678"/>
-        <location filename="../scanmanagerwindow.cpp" line="1715"/>
+        <location filename="../scanmanagerwindow.cpp" line="1697"/>
+        <location filename="../scanmanagerwindow.cpp" line="1734"/>
         <source>General</source>
         <translation>Général</translation>
     </message>
