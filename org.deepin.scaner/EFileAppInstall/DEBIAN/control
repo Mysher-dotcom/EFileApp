@@ -1,7 +1,0 @@
-Package:org.deepin.scaner
-Version:5.1.0.3
-Section:utils
-Maintainer:emily@mysher.com
-Architecture:amd64
-Installed-Size:512
-Description:org.deepin.scaner

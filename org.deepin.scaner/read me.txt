@@ -1,0 +1,22 @@
+使用QT5编译，依赖sane开源库，不同平台对应不同的环境包
+
+目录介绍：
+１．CamScanSDK ，扫描仪功能模块
+２．CmImage　，　图像算法模块
+３．CamCaptureSDK　，拍摄仪功能模块
+４．EFileApp　，　应用界面
+５．编译环境　
+
+编译环境搭建：
+１．在不同平台上，安装对应的包　com.viisan.cmscantools_1.0.3_xxx.deb
+２．安装目录在/opt/apps/org.deepin.scanner/files/scanner/bin
+３．将include,lib, translations,三个文件夹和appInfo.ini，替换到安装目录
+
+编译顺序：
+１．CamScanSDK ，扫描仪功能模块
+２．CmImage　，　图像算法模块
+３．CamCaptureSDK　，拍摄仪功能模块
+４．EFileApp　，　应用界面
+
+打包：
+/opt/apps/org.deepin.scanner/files/scanner/bin目录下所有文件都需要，除了include,lib两个文件夹
