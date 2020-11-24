@@ -10,7 +10,7 @@
 编译环境搭建：
 １．在不同平台上，安装对应的包　com.viisan.cmscantools_1.0.3_xxx.deb
 ２．安装目录在/opt/apps/org.deepin.scanner/files/scanner/bin
-３．将include,lib, translations,三个文件夹和appInfo.ini，替换到安装目录
+３．将translations文件夹和appInfo.ini，拷贝到安装目录
 
 编译顺序：
 １．CamScanSDK ，扫描仪功能模块

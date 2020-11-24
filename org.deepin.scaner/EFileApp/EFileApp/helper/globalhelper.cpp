@@ -39,7 +39,7 @@ QString GlobalHelper::getVersion()
         psettings->setIniCodec(QTextCodec::codecForName("GB2312"));
         //版本信息
         psettings->beginGroup("info");
-        psettings->setValue("version","5.1.0.4-23");
+        psettings->setValue("version","5.1.0.4-22");
         delete  psettings;
     }
     QSettings setting(versionFilePath,QSettings::IniFormat);

@@ -1281,6 +1281,7 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
     parHLayoutFD->addWidget(filterDenoisingCKB);
     parWidgetFD->setLayout(parHLayoutFD);
     */
+
     DWidget *parWidgetRepair = new DWidget ();
     parWidgetRepair->setFixedHeight(48);
     if(isDarkType()==true)
@@ -1347,16 +1348,6 @@ void ScanManagerWindow::showImgEditParUI(bool isLicense)
         parWidgetBB->setEnabled(false);
         parWidgetRepair->setEnabled(false);
     }
-
-    //去掉算法功能界面　2020-11-23
-    parWidgetMulCut->setVisible(false);
-    lblWM->setVisible(false);
-    parWidgetNoWM->setVisible(false);
-    parWidgetFontWM->setVisible(false);
-    lblIE->setVisible(false);
-    parWidgetBB->setVisible(false);
-    parWidgetRepair->setVisible(false);
-    repairCKB->setVisible(false);
 
 }
 

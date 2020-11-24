@@ -558,9 +558,6 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
             src = NULL;
         }
     }
-
-    //去掉算法功能界面　2020-11-23
-    /*
     //文档类型下拉框(0=原始文档，1=文档优化，2=彩色优化，3=红印文档优化，4=反色，5=滤红)
     //int nDocType = GlobalHelper::readSettingValue("imgEdit","docType").toInt();
     int nDocType= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","docType").toInt();
@@ -569,9 +566,9 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
         case 1:
             mcvBrightBalance(srcCut);//文档优化
             break;
-       //case 2:
-       //     src = mcvColorBlance(srcCut);//彩色优化
-       //     break;
+       /* case 2:
+            src = mcvColorBlance(srcCut);//彩色优化
+            break;*/
         case 3:
             mcvEnhancement3In1(srcCut,2);//红印文档优化(Linux 红蓝参数颠倒一下)
             break;
@@ -582,7 +579,6 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
             mcvColorDropout(srcCut,240);//滤红(Linux 红蓝参数颠倒一下)
             break;
     }
-    //彩色优化
     if(nDocType==2)
     {
         src = mcvColorBlance(srcCut);
@@ -605,23 +601,20 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     {
         mcvFillBorder(srcCut);
     }
-*/
+
     //去噪
-    // int nIsNoise = GlobalHelper::readSettingValue("imgEdit","isFilterDenoising").toInt();
-    // if(nIsNoise == 0)
-    // {
-    //     mcvNoise(srcCut,0);
-    // }
-
+   // int nIsNoise = GlobalHelper::readSettingValue("imgEdit","isFilterDenoising").toInt();
+   // if(nIsNoise == 0)
+    {
+   //     mcvNoise(srcCut,0);
+    }
     //黑白图，二值化
-
-    MImage* srcWater = NULL;
-    //MImage* srcThreshold = NULL;
+    MImage* srcThreshold = NULL;
     //int nIsLineart = GlobalHelper::readSettingValue("imgEdit","nIsLineart").toInt();
     QString strIsLineart = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","nIsLineart");
     if(strIsLineart.isEmpty() || strIsLineart.toInt() == 1)
     {
-        srcWater = mcvClone(srcCut);
+        srcThreshold = mcvClone(srcCut);
         if(srcCut)
         {
             mcvReleaseImage1(srcCut);
@@ -630,19 +623,20 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     }
     else
     {
-        srcWater = mcvAdaptiveThreshold(srcCut);
+        srcThreshold = mcvAdaptiveThreshold(srcCut);
         if(srcCut)
         {
             mcvReleaseImage1(srcCut);
             srcCut = NULL;
         }
     }
-    /*
     //水印
     MImage* srcWater = NULL;
+    //int nIsWaterMark= GlobalHelper::readSettingValue("imgEdit","isWaterMark").toInt();
     int nIsWaterMark= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","isWaterMark").toInt();
     if(nIsWaterMark==1)
     {
+        //QString strWaterMarkText = GlobalHelper::readSettingValue("imgEdit","waterMarkText");
         QString strWaterMarkText= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkText");
         if(strWaterMarkText.isEmpty())
         {
@@ -651,15 +645,21 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
         char *cWaterMarkText;
         QByteArray qbaWaterMarkText= strWaterMarkText.toUtf8();
         cWaterMarkText = qbaWaterMarkText.data();
+        //long color_r = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_r").toLong();
+        //long color_g = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_g").toLong();
+        //long color_b = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_b").toLong();
         long color_r = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkColor_r").toLong();
         long color_g = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkColor_g").toLong();
         long color_b = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkColor_b").toLong();
+        //src = mcvWaterMark2(src,cWaterMarkText,"./simhei.ttf",color_r,color_g,color_b,0,0);
         //水印颜色 R B颠倒，字号给0为自适应
         //获取路径
         QString str = QCoreApplication::applicationDirPath();
         QString strFontPath = QString("%1/%2").arg(str).arg("simhei.ttf");
         qDebug()<<"watermark font file's path:"<<strFontPath;
         qDebug()<<"QApplication::font():"<<QApplication::font().toString();
+        //QFontDatabase::addApplicationFont(QApplication::font().toString());
+        //QDesktopServices::openUrl(QUrl::fromLocalFile(strFontPath));
         srcWater = mcvWaterMark2(srcThreshold,cWaterMarkText,strFontPath.toLocal8Bit().data(),0,color_b,color_g,color_r,0,0);
         if(srcThreshold)
         {
@@ -676,7 +676,6 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
             srcThreshold = NULL;
         }
     }
-    */
     char* tmp = substrend(part_path,2);
     if(strcmp(tmp,"jpg")==NULL)
     {
@@ -731,7 +730,7 @@ void ScanWindow::slotScanSaveImage(char* data,int nSize,int w,int h,int nBpp,int
     {
         mcvSaveImage(part_path,srcWater,200,200);
     }
-    mcvReleaseImage1(srcWater);
+    mcvReleaseImage(&srcWater);
     srcWater = NULL;
 
     addItem(part_path);

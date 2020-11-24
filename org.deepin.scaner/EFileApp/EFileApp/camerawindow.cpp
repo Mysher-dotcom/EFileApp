@@ -638,9 +638,13 @@ void CameraWindow::shot()
     {
         bIsWater = true;
     }
+    //int nR = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_r").toInt();
+    //int nG = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_g").toInt();
+    //int nB = GlobalHelper::readSettingValue("imgEdit","waterMarkColor_b").toInt();
     int nR = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkColor_r").toInt();
     int nG = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkColor_g").toInt();
     int nB = DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkColor_b").toInt();
+    //QString szWaterContent = GlobalHelper::readSettingValue("imgEdit","waterMarkText");
     QString szWaterContent= DeviceInfoHelper::readValue(defaultDeviceModelFilePath,"imgset","waterMarkText");
 
     //文档类型(0=原始文档，1=文档优化，2=彩色优化，3=红印文档优化，4=反色，5=滤红)
@@ -695,7 +699,7 @@ void CameraWindow::shot()
     }
     imgparam.nRotate = nVideoRotateAngle;//旋转角度
     imgparam.nColorType = nImgColorType; //颜色类型（彩色、灰度、黑白）
-    imgparam.bIsWater = false;//  bIsWater;//水印
+    imgparam.bIsWater = bIsWater;//水印
     imgparam.nR= nR;//水印颜色
     imgparam.nG= nG;
     imgparam.nB= nB;
@@ -706,13 +710,13 @@ void CameraWindow::shot()
     }
     string tmp = szWaterContent.toStdString();
     imgparam.szWaterContent = (char*)tmp.c_str();
-    imgparam.bIsTextEn = false;// bIsTextEn;//文档优化
-    imgparam.bColorBlance =  false;// bColorBlance;//彩色优化
-    imgparam.bRedEn =  false;// bRedEn;//红印文档
-    imgparam.bInverse =  false;// bInverse;//反色
-    imgparam.bColorDropOut =  false;// bColorDropOut;//滤红
-    imgparam.bNoise =  false;// bNoise;//去噪
-    imgparam.bFillBorder =  false;// bFillBorder;//缺角修复
+    imgparam.bIsTextEn = bIsTextEn;//文档优化
+    imgparam.bColorBlance = bColorBlance;//彩色优化
+    imgparam.bRedEn = bRedEn;//红印文档
+    imgparam.bInverse = bInverse;//反色
+    imgparam.bColorDropOut = bColorDropOut;//滤红
+    imgparam.bNoise = bNoise;//去噪
+    imgparam.bFillBorder = bFillBorder;//缺角修复
     //imgparam.bIsBook = m_bIsBook;
 
      Cam_CameraCaptureFile(0,part_path,imgparam);

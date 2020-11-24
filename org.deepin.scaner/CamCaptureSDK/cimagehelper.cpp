@@ -67,7 +67,7 @@ int CImageHelper::WriteFile(unsigned char* srcData,int len,FILE * destfb)
 }
 bool CImageHelper::Rotate(uchar* srcBuf,int &nSize,int &nWidth,int &nHeight,int nRotateA)
 {
-   /* MImage* src = NULL;
+    MImage* src = NULL;
     if(srcBuf)
     {
       src  = mcvCreateImageFromArray(nWidth,nHeight,3,(char*)srcBuf,false);
@@ -92,7 +92,7 @@ bool CImageHelper::Rotate(uchar* srcBuf,int &nSize,int &nWidth,int &nHeight,int 
         srcRotateLeft = NULL;
         //srcBuf = NULL;
     }
-    //memcpy(srcBuf,(char*)dstBuf,nSize);*/
+    //memcpy(srcBuf,(char*)dstBuf,nSize);
     return true;
 }
 bool CImageHelper::SaveImage(uchar* srcBuf,int nSize,int nWidth,int nHeight)
@@ -170,11 +170,11 @@ bool CImageHelper::DrawLine(char*ImgBuff,int &nSize,int &nWidth,int &nHeight,int
        mrectRA.m_rectR[0] = rectR;
     }
     else {
-      //  mrectRA = mcvDetectRectMulti(src,MRect(0,0,0,0));
+        mrectRA = mcvDetectRectMulti(src,MRect(0,0,0,0));
     }
    if(src)
    {
-       mcvReleaseImage1(src);
+       mcvReleaseImage(&src);
        src = NULL;
 
    }
@@ -232,7 +232,7 @@ long CImageHelper::AutoCropPreviewFlipAngle(unsigned char *srcData, int srcDataT
 }
 bool CImageHelper::CompareImgae(char* srcData,int width,int height,int size)
 {
-  /*  if(m_ImageLastCompare==NULL)
+    if(m_ImageLastCompare==NULL)
     {
         unsigned char* dstBuf = NULL;
         unsigned char* srcBuf = new unsigned char[size];
@@ -273,7 +273,7 @@ bool CImageHelper::CompareImgae(char* srcData,int width,int height,int size)
             gCameraRecv(imgParam.buffer,imgParam.nSize,imgParam.nWidth,imgParam.nHeight,0);
         }
 */
-    /*    bool bRe = false;
+        bool bRe = false;
         bRe = mcvCompare(srcImage,m_ImageLastCompare,200,NULL,0);
         if(bRe)
         {
@@ -286,7 +286,7 @@ bool CImageHelper::CompareImgae(char* srcData,int width,int height,int size)
         mcvReleaseImage1(m_ImageLastCompare);
         m_ImageLastCompare = srcImage;
     }
-*/
+
     return true;
 }
 void CImageHelper::ProcessImage(ImageParam imgParam,char* szFilePath)
@@ -334,7 +334,7 @@ void CImageHelper::ProcessImage(ImageParam imgParam,char* szFilePath)
             //qDebug("data is %s,%s",out.rgba[0],out.rgba[1]);
             m_png.write_png_file(szFilePath,&out);
             delete out.rgba;
-            mcvReleaseImage1(src);
+            mcvReleaseImage(&src);
             src=NULL;
         }
         else
@@ -418,10 +418,39 @@ void CImageHelper::ProcessImage(ImageParam imgParam,char* szFilePath)
         rectRA.m_rectR[0] = rectR;
         break;
     case 2:
+        rectRA = mcvDetectRectMulti(src,MRect(0,0,0,0));
         break;
     case 3:
+
+        //左边位置计算
+        rc_Left.m_pt[0].x = 0;
+        rc_Left.m_pt[0].y = 0;
+        rc_Left.m_pt[1].x = src->width*(dMiddlePersent+dMiddlePersentBook);
+        rc_Left.m_pt[1].y = 0;
+        rc_Left.m_pt[2].x = 0;
+        rc_Left.m_pt[2].y = src->height;
+        rc_Left.m_pt[3].x = src->width*(dMiddlePersent+dMiddlePersentBook);
+        rc_Left.m_pt[3].y = src->height;
+
+        rc_Right.m_pt[0].x = src->width*(dMiddlePersent-dMiddlePersentBook);;
+        rc_Right.m_pt[0].y = 0;
+        rc_Right.m_pt[1].x = src->width;
+        rc_Right.m_pt[1].y = 0;
+        rc_Right.m_pt[2].x = src->width*(dMiddlePersent-dMiddlePersentBook);
+        rc_Right.m_pt[2].y = src->height;
+        rc_Right.m_pt[3].x = src->width;
+        rc_Right.m_pt[3].y = src->height;
+        rectRA.m_nCount = 2;
+        rectRA.m_rectR[0] = rc_Left;
+        rectRA.m_rectR[1] = rc_Right;
         break;
     case 4:
+        for(int i = 0;i < 4;i++)
+        {
+            rectR.m_pt[i].x= imgParam.mp4[i].x;
+            rectR.m_pt[i].y = imgParam.mp4[i].y;
+
+        }
         break;
     default:
         srcCut = mcvClone(src);
@@ -447,41 +476,219 @@ void CImageHelper::ProcessImage(ImageParam imgParam,char* szFilePath)
                 //单图裁切和多图裁切
                  srcCut = mcvCutR(src,rectRA.m_rectR[var]);
             }
+            else {
+                //拍书
+
+                MImage* src_left = NULL;
+                MImage* src_Right = NULL;
+                MBookInfo *mbookInfo_Left = new MBookInfo;
+                MBookInfo *mbookInfo_Right = new MBookInfo;
+               // MImage* outimage = NULL;
+                if(var == 1)
+                {
+                    //右边图像
+                     src_Right = mcvCutR2(src,&rectRA.m_rectR[var]);
+                     mcvBookStretch_Getlandamarks(src_left,src_Right,mbookInfo_Left,mbookInfo_Right);
+                     src_left = NULL;
+                     MImage* outimage = mcvBookStretch_landamarksStretch(src_left,src_Right,mbookInfo_Left,mbookInfo_Left,mbookInfo_Right,mbookInfo_Right,false);
+                     if(src_Right)
+                     {
+                         mcvReleaseImage1(src_Right);
+                         src_Right = NULL;
+                     }
+                     MImage* src_RightFinger = NULL;
+                     //去手指
+                     if(imgParam.bRemoveFinger)
+                     {
+                         src_RightFinger = mcvBookStretch_FingerRemoval(outimage, 2);
+                         if(outimage)
+                         {
+                             mcvReleaseImage1(outimage);
+                             outimage = NULL;
+                         }
+                     }
+                     else {
+                         src_RightFinger = mcvClone(outimage);
+                         if(outimage)
+                         {
+                             mcvReleaseImage1(outimage);
+                             outimage = NULL;
+                         }
+                     }
+                     srcCut=mcvBookStretch_inpaint(src_RightFinger,0);
+                     if(src_RightFinger)
+                     {
+                         mcvReleaseImage1(src_RightFinger);
+                         src_RightFinger = NULL;
+                     }
+                }
+                else {
+                    src_left  = mcvCutR2(src,&rectRA.m_rectR[var]);
+                    mcvBookStretch_Getlandamarks(src_left,src_Right,mbookInfo_Left,mbookInfo_Right);
+                    src_Right = NULL;
+                    //先处理左边图线
+                    MImage* outimageleft = mcvBookStretch_landamarksStretch(src_left,src_Right,mbookInfo_Left,mbookInfo_Left,mbookInfo_Right,mbookInfo_Right,false);
+                    if(src_left)
+                    {
+                        mcvReleaseImage1(src_left);
+                        src_left = NULL;
+                    }
+                    MImage* src_leftFinger = NULL;
+                    //去手指
+                    if(imgParam.bRemoveFinger)
+                    {
+                       src_leftFinger  = mcvBookStretch_FingerRemoval(outimageleft, 1);
+                        if(outimageleft)
+                        {
+                            mcvReleaseImage1(outimageleft);
+                            outimageleft = NULL;
+                        }
+                    }
+                    else {
+                        src_leftFinger = mcvClone(outimageleft);
+                        if(outimageleft)
+                        {
+                            mcvReleaseImage1(outimageleft);
+                            outimageleft = NULL;
+                        }
+                    }
+                    srcCut=mcvBookStretch_inpaint(src_leftFinger,0);
+                    if(src_leftFinger)
+                    {
+                        mcvReleaseImage1(src_leftFinger);
+                        src_leftFinger = NULL;
+                    }
+                }
+                delete mbookInfo_Left;
+                delete mbookInfo_Right;
+                mbookInfo_Left = NULL;
+                mbookInfo_Right = NULL;
+
+            }
+            //文档优化
+             if(imgParam.bIsTextEn)
+             {
+                mcvBrightBalance(srcCut);
+             }
+             MImage* srcRotate = NULL;
+             //旋转
+             if(imgParam.nRotate != 0)
+             {
+                srcRotate = mcvRotateImage(srcCut,imgParam.nRotate);
+                if(srcCut)
+                {
+                    mcvReleaseImage1(srcCut);
+                    srcCut = NULL;
+                }
+             }
+             else {
+                 srcRotate = mcvClone(srcCut);
+                 if(srcCut)
+                 {
+                     mcvReleaseImage1(srcCut);
+                     srcCut = NULL;
+                 }
+             }
+
+            //彩色优化
+             if(imgParam.bColorBlance)
+             {
+                 mcvColorEnhance(srcRotate,1);//彩色优化
+             }
+             //红印文档
+             if(imgParam.bRedEn)
+             {
+                mcvEnhancement3In1(srcRotate,2);
+             }
+             //反色
+             if(imgParam.bInverse)
+             {
+                mcvInverse(srcRotate);
+             }
+             //滤红
+             if(imgParam.bColorDropOut)
+             {
+               mcvColorDropout(srcRotate,240);
+             }
+             //缺角修复
+             if(imgParam.bFillBorder)
+             {
+                mcvFillBorder(srcRotate);
+             }
+             //去噪
+             if(imgParam.bNoise)
+             {
+                  mcvNoise(srcRotate,0);
+             }
+             MImage* srcWater = NULL;
+             //水印
+             if(imgParam.bIsWater)
+             {
+
+                 if(imgParam.bIsWaterImage)
+                 {
+                     MImage* srcwaterImage = mcvLoadImage(imgParam.szWaterImagePath);
+                     MPoint pt;
+                     pt.x = imgParam.x;
+                     pt.y = imgParam.y;
+                     float transparent = 0.5;
+                     srcWater = mcvWaterMark(srcRotate, srcwaterImage,pt,transparent);
+                     if(srcRotate)
+                     {
+                         mcvReleaseImage(&srcRotate);
+                         srcRotate=NULL;
+                     }
+                 }
+                 else {
+                     //获取路径
+                     QString str = QCoreApplication::applicationDirPath();
+                     QString strFontPath = QString("%1/%2").arg(str).arg("simhei.ttf");
+                     srcWater = mcvWaterMark2(srcRotate,imgParam.szWaterContent,strFontPath.toLocal8Bit().data(),imgParam.nFont,imgParam.nB,imgParam.nG,imgParam.nR,1,0);
+                     mcvReleaseImage(&srcRotate);
+                     srcRotate=NULL;
+                 }
+
+             }
+             else {
+                 srcWater = mcvClone(srcRotate);
+                 mcvReleaseImage(&srcRotate);
+                 srcRotate=NULL;
+             }
              MImage* srcGary = NULL;
              //颜色模式，彩色、灰度、黑白
              switch (imgParam.nColorType) {
              case 0:
-                 srcGary = mcvClone(srcCut);
-                 if(srcCut)
+                 srcGary = mcvClone(srcWater);
+                 if(srcWater)
                  {
-                     mcvReleaseImage1(srcCut);
-                     srcCut = NULL;
+                     mcvReleaseImage1(srcWater);
+                     srcWater = NULL;
                  }
                  break;
              case 1:
                  //灰度
-                 srcGary = mcvGrayStyle(srcCut);
-                 if(srcCut)
+                 srcGary = mcvGrayStyle(srcWater);
+                 if(srcWater)
                  {
-                     mcvReleaseImage1(srcCut);
-                     srcCut = NULL;
+                     mcvReleaseImage1(srcWater);
+                     srcWater = NULL;
                  }
                  break;
              case 2:
                  //黑白
-                 srcGary = mcvAdaptiveThreshold(srcCut);
-                 if(srcCut)
+                 srcGary = mcvAdaptiveThreshold(srcWater);
+                 if(srcWater)
                  {
-                     mcvReleaseImage1(srcCut);
-                     srcCut = NULL;
+                     mcvReleaseImage1(srcWater);
+                     srcWater = NULL;
                  }
                  break;
              default:
-                 srcGary = mcvClone(srcCut);
-                 if(srcCut)
+                 srcGary = mcvClone(srcWater);
+                 if(srcWater)
                  {
-                     mcvReleaseImage1(srcCut);
-                     srcCut = NULL;
+                     mcvReleaseImage1(srcWater);
+                     srcWater = NULL;
                  }
                  break;
              }
@@ -556,7 +763,7 @@ void CImageHelper::ProcessImage(ImageParam imgParam,char* szFilePath)
                  jpgInfo.yResolution.a =200*jpgInfo.yResolution.b;
                  jpgInfo.compression = 50;
                  long lret = m_decode.saveImageToJpeg(dst,srcGary->width,srcGary->height,srcGary->channel*8,filePathLater,jpgInfo);
-                 mcvReleaseImage1(srcGary);
+                 mcvReleaseImage(&srcGary);
                  srcGary=NULL;
             }
             else if(strcmp(tmp,"png")==NULL)
@@ -579,13 +786,13 @@ void CImageHelper::ProcessImage(ImageParam imgParam,char* szFilePath)
                 //qDebug("data is %s,%s",out.rgba[0],out.rgba[1]);
                 m_png.write_png_file(filePathLater,&out);
                 delete out.rgba;
-                mcvReleaseImage1(srcGary);
+                mcvReleaseImage(&srcGary);
                 srcGary=NULL;
             }
             else
             {
                  mcvSaveImage(filePathLater,srcGary,200,200);
-                 mcvReleaseImage1(srcGary);
+                 mcvReleaseImage(&srcGary);
                  srcGary=NULL;
             }
             if(imgParam.nCropType==2||imgParam.nCropType==3)
@@ -598,7 +805,7 @@ void CImageHelper::ProcessImage(ImageParam imgParam,char* szFilePath)
             else {
                strcat(szFilePath,filePathLater);
             }
-            mcvReleaseImage1(srcCut);
+            mcvReleaseImage(&srcCut);
             srcCut=NULL;
 
         }
@@ -615,41 +822,130 @@ void CImageHelper::ProcessImage(ImageParam imgParam,char* szFilePath)
         strcpy(FilePath,szFilePath);
         strcpy(filePathLater,szFilePath);
         memset(szFilePath,0,sizeof(szFilePath));
+        //文档优化
+         if(imgParam.bIsTextEn)
+         {
+            mcvBrightBalance(srcCut);
+         }
+         MImage* srcRotate = NULL;
+         //旋转
+         if(imgParam.nRotate != 0)
+         {
+            srcRotate = mcvRotateImage(srcCut,imgParam.nRotate);
+            if(srcCut)
+            {
+                mcvReleaseImage1(srcCut);
+                srcCut = NULL;
+            }
+         }
+         else {
+             srcRotate = mcvClone(srcCut);
+             if(srcCut)
+             {
+                 mcvReleaseImage1(srcCut);
+                 srcCut = NULL;
+             }
+         }
+
+        //彩色优化
+         if(imgParam.bColorBlance)
+         {
+             mcvColorEnhance(srcRotate,1);//彩色优化
+         }
+         //红印文档
+         if(imgParam.bRedEn)
+         {
+            mcvEnhancement3In1(srcRotate,2);
+         }
+         //反色
+         if(imgParam.bInverse)
+         {
+            mcvInverse(srcRotate);
+         }
+         //滤红
+         if(imgParam.bColorDropOut)
+         {
+           mcvColorDropout(srcRotate,240);
+         }
+         //缺角修复
+         if(imgParam.bFillBorder)
+         {
+            mcvFillBorder(srcRotate);
+         }
+         //去噪
+         if(imgParam.bNoise)
+         {
+              mcvNoise(srcRotate,0);
+         }
+         MImage* srcWater = NULL;
+         //水印
+         if(imgParam.bIsWater)
+         {
+
+             if(imgParam.bIsWaterImage)
+             {
+                 MImage* srcwaterImage = mcvLoadImage(imgParam.szWaterImagePath);
+                 MPoint pt;
+                 pt.x = imgParam.x;
+                 pt.y = imgParam.y;
+                 float transparent = 0.5;
+                 srcWater = mcvWaterMark(srcRotate, srcwaterImage,pt,transparent);
+                 if(srcRotate)
+                 {
+                     mcvReleaseImage(&srcRotate);
+                     srcRotate=NULL;
+                 }
+             }
+             else {
+                 //获取路径
+                 QString str = QCoreApplication::applicationDirPath();
+                 QString strFontPath = QString("%1/%2").arg(str).arg("simhei.ttf");
+                 srcWater = mcvWaterMark2(srcRotate,imgParam.szWaterContent,strFontPath.toLocal8Bit().data(),imgParam.nFont,imgParam.nB,imgParam.nG,imgParam.nR,1,0);
+                 mcvReleaseImage(&srcRotate);
+                 srcRotate=NULL;
+             }
+
+         }
+         else {
+             srcWater = mcvClone(srcRotate);
+             mcvReleaseImage(&srcRotate);
+             srcRotate=NULL;
+         }
          MImage* srcGary = NULL;
          //颜色模式，彩色、灰度、黑白
          switch (imgParam.nColorType) {
          case 0:
-             srcGary = mcvClone(srcCut);
-             if(srcCut)
+             srcGary = mcvClone(srcWater);
+             if(srcWater)
              {
-                 mcvReleaseImage1(srcCut);
-                 srcCut = NULL;
+                 mcvReleaseImage1(srcWater);
+                 srcWater = NULL;
              }
              break;
          case 1:
              //灰度
-             srcGary = mcvGrayStyle(srcCut);
-             if(srcCut)
+             srcGary = mcvGrayStyle(srcWater);
+             if(srcWater)
              {
-                 mcvReleaseImage1(srcCut);
-                 srcCut = NULL;
+                 mcvReleaseImage1(srcWater);
+                 srcWater = NULL;
              }
              break;
          case 2:
              //黑白
-             srcGary = mcvAdaptiveThreshold(srcCut);
-             if(srcCut)
+             srcGary = mcvAdaptiveThreshold(srcWater);
+             if(srcWater)
              {
-                 mcvReleaseImage1(srcCut);
-                 srcCut = NULL;
+                 mcvReleaseImage1(srcWater);
+                 srcWater = NULL;
              }
              break;
          default:
-             srcGary = mcvClone(srcCut);
-             if(srcCut)
+             srcGary = mcvClone(srcWater);
+             if(srcWater)
              {
-                 mcvReleaseImage1(srcCut);
-                 srcCut = NULL;
+                 mcvReleaseImage1(srcWater);
+                 srcWater = NULL;
              }
              break;
          }
@@ -724,7 +1020,7 @@ void CImageHelper::ProcessImage(ImageParam imgParam,char* szFilePath)
              jpgInfo.yResolution.a =200*jpgInfo.yResolution.b;
              jpgInfo.compression = 50;
              long lret = m_decode.saveImageToJpeg(dst,srcGary->width,srcGary->height,srcGary->channel*8,filePathLater,jpgInfo);
-             mcvReleaseImage1(srcGary);
+             mcvReleaseImage(&srcGary);
              srcGary=NULL;
         }
         else if(strcmp(tmp,"png")==NULL)
@@ -747,13 +1043,13 @@ void CImageHelper::ProcessImage(ImageParam imgParam,char* szFilePath)
             //qDebug("data is %s,%s",out.rgba[0],out.rgba[1]);
             m_png.write_png_file(filePathLater,&out);
             free(out.rgba);
-            mcvReleaseImage1(srcGary);
+            mcvReleaseImage(&srcGary);
             srcGary=NULL;
         }
         else
         {
              mcvSaveImage(filePathLater,srcGary,200,200);
-             mcvReleaseImage1(srcGary);
+             mcvReleaseImage(&srcGary);
              srcGary=NULL;
         }
         if(imgParam.nCropType==2||imgParam.nCropType==3)
@@ -766,7 +1062,7 @@ void CImageHelper::ProcessImage(ImageParam imgParam,char* szFilePath)
         else {
            strcat(szFilePath,filePathLater);
         }
-        mcvReleaseImage1(srcCut);
+        mcvReleaseImage(&srcCut);
         srcCut=NULL;
 
     }
