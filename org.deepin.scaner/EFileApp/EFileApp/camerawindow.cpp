@@ -719,7 +719,12 @@ void CameraWindow::shot()
     imgparam.bFillBorder = bFillBorder;//缺角修复
     //imgparam.bIsBook = m_bIsBook;
 
-     Cam_CameraCaptureFile(0,part_path,imgparam);
+    int nShotResult = Cam_CameraCaptureFile(0,part_path,imgparam);
+    if(nShotResult == -1)
+    {
+        scanBtn->setEnabled(false);
+        return;
+    }
     if(imgparam.nCropType==2||imgparam.nCropType == 3)
     {
         char szout[20][100] = {0};

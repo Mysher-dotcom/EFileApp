@@ -303,6 +303,10 @@ long Cam_SetCameraFormat(long nDevIndex,long nFormatType)
 }
 long Cam_CameraCaptureFile(long nDevIndex,char* szFile,ImageParam imgParam)
 {
+    //vector 2021-01-12
+    if(g_CamptureV4L.camera==0)
+        return -1;
+    //vector 2021-01-12
 
     imgParam.nHeight = g_CamptureV4L.camera->height;
     imgParam.nWidth = g_CamptureV4L.camera->width;

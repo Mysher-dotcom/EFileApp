@@ -72,9 +72,5 @@ using namespace std;
 //#include "Model/MImageModel/MImageDataPool.h"
 
 
-#include "./ImgProc/BookProcess/BookProcess.h"
-#include "./ImgProc/BookProcess/Test_Book.h"
-
-
 
 #endif // STDAFX_H

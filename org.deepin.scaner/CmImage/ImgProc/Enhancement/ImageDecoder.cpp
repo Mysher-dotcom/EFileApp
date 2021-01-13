@@ -3,7 +3,7 @@
 
 //更改Jpg文件DPI
 #if defined(__linux__)
-	#include <sys/io.h>
+//	#include <sys/io.h>
 #else
 	#include <io.h>
 #endif

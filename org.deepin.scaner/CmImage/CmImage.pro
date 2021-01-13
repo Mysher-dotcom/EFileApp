@@ -42,8 +42,6 @@ SOURCES += cmimage.cpp \
     ImgProc/Transform/CropRectByCV.cpp \
     ImgProc/Transform/MergerImage.cpp \
     ImgProc/Transform/Rotate.cpp \
-    ImgProc/BookProcess/BookProcess.cpp \
-    ImgProc/BookProcess/Test_Book.cpp \
     ImgProc/Enhancement/BrightnessBalance.cpp \
     ImgProc/Enhancement/Halftone.cpp \
     ImgProc/Enhancement/newColorEnhance.cpp \
@@ -84,8 +82,6 @@ HEADERS += \
     ImgProc/Transform/CropRectByCV.h \
     ImgProc/Transform/MergerImage.h \
     ImgProc/Transform/Rotate.h\
-    ImgProc/BookProcess/BookProcess.h \
-    ImgProc/BookProcess/Test_Book.h \
     ImgProc/Enhancement/BrightnessBalance.h \
     ImgProc/Enhancement/Halftone.h \
     ImgProc/Enhancement/newColorEnhance.h \
